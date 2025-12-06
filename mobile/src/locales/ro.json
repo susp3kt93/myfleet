@@ -1,0 +1,86 @@
+{
+    "tabs": {
+        "overview": "Prezentare",
+        "tasks": "Taskuri",
+        "earnings": "Câștiguri",
+        "profile": "Profil"
+    },
+    "stats": {
+        "totalEarnings": "Total Câștiguri",
+        "monthlyEarnings": "Luna Aceasta",
+        "completedTasks": "Taskuri Completate",
+        "rating": "Rating",
+        "thisWeek": "Săptămâna Aceasta",
+        "thisMonth": "Câștiguri Luna Aceasta"
+    },
+    "tasks": {
+        "available": "Disponibile",
+        "active": "În Lucru",
+        "completed": "Finalizate",
+        "upcomingTasks": "Taskuri Viitoare",
+        "availableTasks": "Taskuri Disponibile",
+        "activeTasks": "Taskuri În Lucru",
+        "completedTasks": "Taskuri Finalizate",
+        "noAvailable": "📭 Nu sunt taskuri disponibile momentan",
+        "noActive": "📋 Nu ai taskuri în lucru",
+        "noCompleted": "✅ Nu ai completat încă niciun task",
+        "details": "Detalii",
+        "taskCount": "taskuri completate",
+        "taskCountSingular": "task completat"
+    },
+    "earnings": {
+        "title": "Câștiguri",
+        "monthly": "Luna Aceasta",
+        "weekly": "Săptămâna Aceasta",
+        "history": "Istoric Lunar",
+        "noHistory": "📊 Nu există date pentru lunile anterioare",
+        "tasksCompleted": "taskuri completate",
+        "taskCompleted": "task"
+    },
+    "profile": {
+        "title": "Profil",
+        "logout": "Deconectare",
+        "settings": "Setări",
+        "language": "Limbă"
+    },
+    "actions": {
+        "accept": "Acceptă",
+        "reject": "Refuză",
+        "complete": "Finalizează",
+        "cancel": "Anulează",
+        "save": "Salvează",
+        "edit": "Editează"
+    },
+    "common": {
+        "loading": "Se încarcă...",
+        "error": "Eroare",
+        "success": "Succes",
+        "confirm": "Confirmă",
+        "back": "Înapoi",
+        "close": "Închide"
+    },
+    "login": {
+        "title": "Autentificare",
+        "personalId": "ID Personal",
+        "password": "Parolă",
+        "login": "Autentificare",
+        "invalidCredentials": "Credențiale invalide"
+    },
+    "taskDetails": {
+        "title": "Detalii Task",
+        "description": "Descriere",
+        "location": "Locație",
+        "scheduledDate": "Data programată",
+        "scheduledTime": "Ora programată",
+        "price": "Preț",
+        "status": "Status",
+        "statusPending": "DISPONIBIL",
+        "statusAccepted": "ÎN LUCRU",
+        "statusCompleted": "FINALIZAT",
+        "statusCancelled": "ANULAT",
+        "confirmAccept": "Sigur doriți să acceptați acest task?",
+        "confirmReject": "Sigur doriți să refuzați acest task?",
+        "confirmComplete": "Sigur doriți să finalizați acest task?",
+        "confirmCancel": "Sigur doriți să anulați acest task?"
+    }
+}

@@ -1,0 +1,86 @@
+{
+    "tabs": {
+        "overview": "Overview",
+        "tasks": "Tasks",
+        "earnings": "Earnings",
+        "profile": "Profile"
+    },
+    "stats": {
+        "totalEarnings": "Total Earnings",
+        "monthlyEarnings": "This Month",
+        "completedTasks": "Completed Tasks",
+        "rating": "Rating",
+        "thisWeek": "This Week",
+        "thisMonth": "Earnings This Month"
+    },
+    "tasks": {
+        "available": "Available",
+        "active": "Active",
+        "completed": "Completed",
+        "upcomingTasks": "Upcoming Tasks",
+        "availableTasks": "Available Tasks",
+        "activeTasks": "Active Tasks",
+        "completedTasks": "Completed Tasks",
+        "noAvailable": "📭 No available tasks at the moment",
+        "noActive": "📋 You have no active tasks",
+        "noCompleted": "✅ You haven't completed any tasks yet",
+        "details": "Details",
+        "taskCount": "tasks completed",
+        "taskCountSingular": "task completed"
+    },
+    "earnings": {
+        "title": "Earnings",
+        "monthly": "This Month",
+        "weekly": "This Week",
+        "history": "Monthly History",
+        "noHistory": "📊 No data for previous months",
+        "tasksCompleted": "tasks completed",
+        "taskCompleted": "task"
+    },
+    "profile": {
+        "title": "Profile",
+        "logout": "Logout",
+        "settings": "Settings",
+        "language": "Language"
+    },
+    "actions": {
+        "accept": "Accept",
+        "reject": "Reject",
+        "complete": "Complete",
+        "cancel": "Cancel",
+        "save": "Save",
+        "edit": "Edit"
+    },
+    "common": {
+        "loading": "Loading...",
+        "error": "Error",
+        "success": "Success",
+        "confirm": "Confirm",
+        "back": "Back",
+        "close": "Close"
+    },
+    "login": {
+        "title": "Login",
+        "personalId": "Personal ID",
+        "password": "Password",
+        "login": "Login",
+        "invalidCredentials": "Invalid credentials"
+    },
+    "taskDetails": {
+        "title": "Task Details",
+        "description": "Description",
+        "location": "Location",
+        "scheduledDate": "Scheduled Date",
+        "scheduledTime": "Scheduled Time",
+        "price": "Price",
+        "status": "Status",
+        "statusPending": "AVAILABLE",
+        "statusAccepted": "ACTIVE",
+        "statusCompleted": "COMPLETED",
+        "statusCancelled": "CANCELLED",
+        "confirmAccept": "Are you sure you want to accept this task?",
+        "confirmReject": "Are you sure you want to reject this task?",
+        "confirmComplete": "Are you sure you want to complete this task?",
+        "confirmCancel": "Are you sure you want to cancel this task?"
+    }
+}

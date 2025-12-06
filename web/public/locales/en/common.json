@@ -1,0 +1,47 @@
+{
+    "buttons": {
+        "save": "Save",
+        "cancel": "Cancel",
+        "edit": "Edit",
+        "delete": "Delete",
+        "add": "Add",
+        "create": "Create",
+        "update": "Update",
+        "back": "Back",
+        "close": "Close",
+        "confirm": "Confirm",
+        "yes": "Yes",
+        "no": "No",
+        "accept": "Accept",
+        "reject": "Reject",
+        "complete": "Complete",
+        "submit": "Submit"
+    },
+    "navigation": {
+        "overview": "Overview",
+        "tasks": "Tasks",
+        "available": "Available",
+        "profile": "Profile",
+        "earnings": "Earnings",
+        "settings": "Settings",
+        "logout": "Logout"
+    },
+    "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "completed": "Completed",
+        "cancelled": "Cancelled",
+        "active": "Active",
+        "inactive": "Inactive"
+    },
+    "time": {
+        "today": "Today",
+        "week": "Week",
+        "month": "Month",
+        "year": "Year",
+        "previous": "Previous",
+        "next": "Next",
+        "current": "Current"
+    }
+}

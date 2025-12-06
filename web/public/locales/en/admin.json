@@ -1,0 +1,79 @@
+{
+    "dashboard": {
+        "title": "Admin Dashboard",
+        "stats": {
+            "totalDrivers": "Total Drivers",
+            "totalTasks": "Total Tasks",
+            "pendingTasks": "Pending Tasks",
+            "completed": "Completed"
+        },
+        "actions": {
+            "manageUsers": "Manage Users",
+            "manageUsersDesc": "Add, edit, or remove drivers",
+            "manageTasks": "Manage Tasks",
+            "manageTasksDesc": "Create and assign tasks to drivers",
+            "weeklyReports": "Weekly Reports",
+            "weeklyReportsDesc": "View driver performance by week"
+        }
+    },
+    "users": {
+        "title": "User Management",
+        "addUser": "+ Add User",
+        "createNew": "Create New User",
+        "personalId": "Personal ID",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "password": "Password",
+        "role": "Role",
+        "status": "Status",
+        "contact": "Contact",
+        "actions": "Actions",
+        "edit": "Edit",
+        "delete": "Delete",
+        "confirmDelete": "Are you sure you want to delete this user?",
+        "editUser": "Edit User",
+        "rating": "Rating",
+        "userUpdated": "User updated successfully!",
+        "errorUpdating": "Error updating user"
+    },
+    "tasks": {
+        "title": "Task Management",
+        "createTask": "+ Create Task",
+        "createNew": "Create New Task",
+        "title_label": "Title",
+        "description": "Description",
+        "taskType": "Task Type",
+        "singleDay": "Single Day",
+        "multipleDays": "Multiple Days (Recurring)",
+        "date": "Date",
+        "dateRange": "Date Range",
+        "from": "From",
+        "to": "To",
+        "repeatOn": "Repeat on:",
+        "willCreate": "Will create",
+        "task": "task",
+        "tasks_plural": "tasks",
+        "time": "Time",
+        "price": "Price (RON)",
+        "location": "Location",
+        "assignTo": "Assign To",
+        "optional": "Optional",
+        "createTask_button": "Create Task",
+        "createTasks_button": "Create Tasks",
+        "markComplete": "Mark Complete",
+        "taskCompleted": "Task marcat ca îndeplinit!",
+        "errorCompleting": "Eroare la marcarea taskului."
+    },
+    "reports": {
+        "title": "Weekly Reports",
+        "driver": "Driver",
+        "completed": "Completed",
+        "accepted": "Accepted",
+        "pending": "Pending",
+        "earnings": "Earnings",
+        "rating": "Rating",
+        "total": "TOTAL",
+        "loadingReport": "Loading report..."
+    }
+}

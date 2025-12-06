@@ -1,0 +1,101 @@
+{
+    "header": {
+        "title": "Dashboard Șofer",
+        "welcome": "Bine ai venit"
+    },
+    "tabs": {
+        "overview": "Prezentare Generală",
+        "tasks": "Task-urile Mele",
+        "calendar": "Disponibile",
+        "earnings": "Câștiguri",
+        "profile": "Profil"
+    },
+    "stats": {
+        "totalEarnings": "Total Câștiguri",
+        "thisMonth": "Luna Aceasta",
+        "completedTasks": "Task-uri Completate",
+        "rating": "Rating"
+    },
+    "weeklyTasks": {
+        "title": "Task-uri Completate Săptămânal",
+        "scheduled": "Programat",
+        "completed": "Completat",
+        "weeklyTotal": "Total Săptămânal",
+        "earnings": "Câștiguri",
+        "tasksCompleted": "task-uri completate",
+        "noTasks": "Nu există task-uri completate în această săptămână",
+        "previousWeek": "← Săptămâna Anterioară",
+        "currentWeek": "Săptămâna Curentă",
+        "nextWeek": "Săptămâna Următoare →"
+    },
+    "upcomingTasks": {
+        "title": "Taskuri Viitoare (Acceptate)"
+    },
+    "taskCard": {
+        "location": "Locație",
+        "price": "Preț"
+    },
+    "marketplace": {
+        "title": "Piață",
+        "description": "Task-uri disponibile pentru acceptare"
+    },
+    "messages": {
+        "taskCompleted": "Task marcat ca îndeplinit!",
+        "taskCancelled": "Task-ul a fost anulat",
+        "taskAccepted": "Task acceptat cu succes!",
+        "taskRejected": "Task respins"
+    },
+    "profile": {
+        "title": "Profil Personal",
+        "name": "Nume",
+        "email": "Email",
+        "phone": "Telefon",
+        "personalId": "ID Personal",
+        "vehicleInfo": "Informații Vehicul",
+        "comingSoon": "Funcționalitate în curând...",
+        "driver": "Șofer",
+        "changePhoto": "Schimbă poza",
+        "photoUpdated": "Poză de profil actualizată cu succes!",
+        "photoError": "Eroare la încărcarea pozei."
+    },
+    "tasks": {
+        "acceptedTasks": "Taskuri Acceptate",
+        "accept": "Acceptă",
+        "reject": "Respinge",
+        "complete": "Îndeplinit",
+        "cancel": "Anulează Task"
+    },
+    "earnings": {
+        "monthTitle": "Câștiguri Luna Aceasta",
+        "tasksCompleted": "taskuri completate",
+        "historyTitle": "Istoric Câștiguri",
+        "task": "Task",
+        "date": "Data",
+        "amount": "Sumă"
+    },
+    "modals": {
+        "confirmation": "Confirmare",
+        "confirmComplete": "Confirmați că ați îndeplinit acest task?",
+        "cancel": "Anulează",
+        "confirm": "Confirmă",
+        "warning": "Atenție",
+        "confirmCancelTask": "Sigur doriți să anulați acest task acceptat?",
+        "ratingPenalty": "Ratingul dvs. va scădea cu 0.1 puncte!",
+        "back": "Înapoi",
+        "confirmCancel": "Confirmă Anulare"
+    },
+    "calendar": {
+        "previous": "← Anterior",
+        "today": "Azi",
+        "next": "Următor →",
+        "monday": "Lun",
+        "tuesday": "Mar",
+        "wednesday": "Mie",
+        "thursday": "Joi",
+        "friday": "Vin",
+        "saturday": "Sâm",
+        "sunday": "Dum",
+        "moreTasksSingular": "mai mult",
+        "moreTasksPlural": "mai multe"
+    }
+}

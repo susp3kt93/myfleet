@@ -1,0 +1,79 @@
+{
+    "dashboard": {
+        "title": "Dashboard Administrator",
+        "stats": {
+            "totalDrivers": "Total Șoferi",
+            "totalTasks": "Total Task-uri",
+            "pendingTasks": "Task-uri În Așteptare",
+            "completed": "Completate"
+        },
+        "actions": {
+            "manageUsers": "Gestionare Utilizatori",
+            "manageUsersDesc": "Adaugă, editează sau șterge șoferi",
+            "manageTasks": "Gestionare Task-uri",
+            "manageTasksDesc": "Creează și atribuie task-uri șoferilor",
+            "weeklyReports": "Rapoarte Săptămânale",
+            "weeklyReportsDesc": "Vezi performanța șoferilor pe săptămână"
+        }
+    },
+    "users": {
+        "title": "Gestionare Utilizatori",
+        "addUser": "+ Adaugă Utilizator",
+        "createNew": "Creează Utilizator Nou",
+        "personalId": "ID Personal",
+        "name": "Nume",
+        "email": "Email",
+        "phone": "Telefon",
+        "password": "Parolă",
+        "role": "Rol",
+        "status": "Status",
+        "contact": "Contact",
+        "actions": "Acțiuni",
+        "edit": "Editează",
+        "delete": "Șterge",
+        "confirmDelete": "Ești sigur că vrei să ștergi acest utilizator?",
+        "editUser": "Editează Utilizator",
+        "rating": "Rating",
+        "userUpdated": "Utilizator actualizat cu succes!",
+        "errorUpdating": "Eroare la actualizarea utilizatorului"
+    },
+    "tasks": {
+        "title": "Gestionare Task-uri",
+        "createTask": "+ Creează Task",
+        "createNew": "Creează Task Nou",
+        "title_label": "Titlu",
+        "description": "Descriere",
+        "taskType": "Tip Task",
+        "singleDay": "O Singură Zi",
+        "multipleDays": "Multiple Zile (Recurent)",
+        "date": "Dată",
+        "dateRange": "Interval Date",
+        "from": "De la",
+        "to": "Până la",
+        "repeatOn": "Repetă în:",
+        "willCreate": "Va crea",
+        "task": "task",
+        "tasks_plural": "task-uri",
+        "time": "Oră",
+        "price": "Preț (RON)",
+        "location": "Locație",
+        "assignTo": "Atribuie Către",
+        "optional": "Opțional",
+        "createTask_button": "Creează Task",
+        "createTasks_button": "Creează Task-uri",
+        "markComplete": "Marchează Complet",
+        "taskCompleted": "Task marcat ca îndeplinit!",
+        "errorCompleting": "Eroare la marcarea taskului."
+    },
+    "reports": {
+        "title": "Rapoarte Săptămânale",
+        "driver": "Șofer",
+        "completed": "Completate",
+        "accepted": "Acceptate",
+        "pending": "În Așteptare",
+        "earnings": "Câștiguri",
+        "rating": "Rating",
+        "total": "TOTAL",
+        "loadingReport": "Se încarcă raportul..."
+    }
+}

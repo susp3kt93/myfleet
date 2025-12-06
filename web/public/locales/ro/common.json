@@ -1,0 +1,47 @@
+{
+    "buttons": {
+        "save": "Salvează",
+        "cancel": "Anulează",
+        "edit": "Editează",
+        "delete": "Șterge",
+        "add": "Adaugă",
+        "create": "Creează",
+        "update": "Actualizează",
+        "back": "Înapoi",
+        "close": "Închide",
+        "confirm": "Confirmă",
+        "yes": "Da",
+        "no": "Nu",
+        "accept": "Acceptă",
+        "reject": "Respinge",
+        "complete": "Completează",
+        "submit": "Trimite"
+    },
+    "navigation": {
+        "overview": "Prezentare Generală",
+        "tasks": "Task-uri",
+        "available": "Disponibile",
+        "profile": "Profil",
+        "earnings": "Câștiguri",
+        "settings": "Setări",
+        "logout": "Deconectare"
+    },
+    "status": {
+        "pending": "În Așteptare",
+        "accepted": "Acceptat",
+        "rejected": "Respins",
+        "completed": "Completat",
+        "cancelled": "Anulat",
+        "active": "Activ",
+        "inactive": "Inactiv"
+    },
+    "time": {
+        "today": "Azi",
+        "week": "Săptămână",
+        "month": "Lună",
+        "year": "An",
+        "previous": "Anterior",
+        "next": "Următor",
+        "current": "Curent"
+    }
+}

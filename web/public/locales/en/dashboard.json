@@ -1,0 +1,101 @@
+{
+    "header": {
+        "title": "Driver Dashboard",
+        "welcome": "Welcome"
+    },
+    "tabs": {
+        "overview": "Overview",
+        "tasks": "My Tasks",
+        "calendar": "Available",
+        "earnings": "Earnings",
+        "profile": "Profile"
+    },
+    "stats": {
+        "totalEarnings": "Total Earnings",
+        "thisMonth": "This Month",
+        "completedTasks": "Completed Tasks",
+        "rating": "Rating"
+    },
+    "weeklyTasks": {
+        "title": "Weekly Completed Tasks",
+        "scheduled": "Scheduled",
+        "completed": "Completed",
+        "weeklyTotal": "Weekly Total",
+        "earnings": "Earnings",
+        "tasksCompleted": "tasks completed",
+        "noTasks": "No tasks completed this week",
+        "previousWeek": "← Previous Week",
+        "currentWeek": "Current Week",
+        "nextWeek": "Next Week →"
+    },
+    "upcomingTasks": {
+        "title": "Upcoming Tasks (Accepted)"
+    },
+    "taskCard": {
+        "location": "Location",
+        "price": "Price"
+    },
+    "marketplace": {
+        "title": "Marketplace",
+        "description": "Available tasks for acceptance"
+    },
+    "messages": {
+        "taskCompleted": "Task marked as complete!",
+        "taskCancelled": "Task has been cancelled",
+        "taskAccepted": "Task accepted successfully!",
+        "taskRejected": "Task rejected"
+    },
+    "profile": {
+        "title": "Personal Profile",
+        "name": "Name",
+        "email": "Email",
+        "phone": "Phone",
+        "personalId": "Personal ID",
+        "vehicleInfo": "Vehicle Information",
+        "comingSoon": "Functionality coming soon...",
+        "driver": "Driver",
+        "changePhoto": "Change photo",
+        "photoUpdated": "Profile photo updated successfully!",
+        "photoError": "Error uploading photo."
+    },
+    "tasks": {
+        "acceptedTasks": "Accepted Tasks",
+        "accept": "Accept",
+        "reject": "Reject",
+        "complete": "Complete",
+        "cancel": "Cancel Task"
+    },
+    "earnings": {
+        "monthTitle": "Earnings This Month",
+        "tasksCompleted": "tasks completed",
+        "historyTitle": "Earnings History",
+        "task": "Task",
+        "date": "Date",
+        "amount": "Amount"
+    },
+    "modals": {
+        "confirmation": "Confirmation",
+        "confirmComplete": "Confirm that you have completed this task?",
+        "cancel": "Cancel",
+        "confirm": "Confirm",
+        "warning": "Warning",
+        "confirmCancelTask": "Are you sure you want to cancel this accepted task?",
+        "ratingPenalty": "Your rating will decrease by 0.1 points!",
+        "back": "Back",
+        "confirmCancel": "Confirm Cancellation"
+    },
+    "calendar": {
+        "previous": "← Previous",
+        "today": "Today",
+        "next": "Next →",
+        "monday": "Mon",
+        "tuesday": "Tue",
+        "wednesday": "Wed",
+        "thursday": "Thu",
+        "friday": "Fri",
+        "saturday": "Sat",
+        "sunday": "Sun",
+        "moreTasksSingular": "more",
+        "moreTasksPlural": "more"
+    }
+}

@@ -1,0 +1,122 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id          String   @id @default(cuid())
+  personalId  String   @unique
+  password    String
+  name        String
+  email       String?  @unique
+  phone       String?
+  role        String   @default("DRIVER")
+  photoUrl    String?
+  isActive    Boolean  @default(true)
+  
+  // Vehicle Information
+  vehicleType        String?
+  vehiclePlate       String?
+  vehicleModel       String?
+  
+  // Documents
+  licenseNumber      String?
+  licenseExpiry      DateTime?
+  insuranceExpiry    DateTime?
+  
+  // Preferences
+  preferredZones     String?  // JSON string of preferred zones
+  notificationsEnabled Boolean @default(true)
+  language           String   @default("ro")
+  darkMode           Boolean  @default(false)
+  pushToken          String?  // Expo push notification token
+  emailNotifications Boolean  @default(true)
+  pushNotifications  Boolean  @default(true)
+  
+  // Statistics (calculated fields)
+  totalEarnings      Float    @default(0)
+  totalTasks         Int      @default(0)
+  completedTasks     Int      @default(0)
+  rating             Float?
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  assignedTasks Task[]         @relation("AssignedTasks")
+  createdTasks  Task[]         @relation("CreatedTasks")
+  messages      Message[]
+  notifications Notification[]
+
+  @@map("users")
+}
+
+model Task {
+  id            String     @id @default(cuid())
+  title         String
+  description   String?
+  scheduledDate DateTime
+  scheduledTime String?
+  status        String     @default("PENDING")
+  price         Float
+  location      String?
+  latitude      Float?     // Task location latitude
+  longitude     Float?     // Task location longitude
+  notes         String?
+  
+  // Completion tracking
+  completedAt   DateTime?
+  actualEarnings Float?
+  driverNotes   String?
+  rating        Float?
+  
+  // Relations
+  assignedToId  String?
+  assignedTo    User?      @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
+  
+  createdById   String
+  createdBy     User       @relation("CreatedTasks", fields: [createdById], references: [id])
+  
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@map("tasks")
+}
+
+model Message {
+  id        String   @id @default(cuid())
+  content   String
+  isRead    Boolean  @default(false)
+  fromAdmin Boolean  @default(false)
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("messages")
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  title     String
+  message   String
+  data      String?  // JSON string for additional data
+  
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+  
+  createdAt DateTime @default(now())
+  
+  @@map("notifications")
+}
