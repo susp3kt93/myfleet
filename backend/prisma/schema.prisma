@@ -10,6 +10,74 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+// ============================================
+// COMPANY MODEL - Multi-tenant support
+// ============================================
+model Company {
+  id          String   @id @default(cuid())
+  name        String
+  email       String   @unique
+  phone       String?
+  address     String?
+  taxId       String?  // CUI/CIF for Romanian companies
+  logo        String?
+  isActive    Boolean  @default(true)
+  
+  // Subscription settings
+  plan        String   @default("FREE") // FREE, BASIC, PREMIUM
+  maxDrivers  Int      @default(5)
+  maxVehicles Int      @default(5)
+  
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  users         User[]
+  tasks         Task[]
+  vehicles      Vehicle[]
+  messages      Message[]
+  notifications Notification[]
+
+  @@map("companies")
+}
+
+// ============================================
+// VEHICLE MODEL - Fleet management
+// ============================================
+model Vehicle {
+  id            String    @id @default(cuid())
+  
+  // Vehicle info
+  type          String    // Truck, Van, Car
+  plate         String    @unique
+  model         String
+  year          Int?
+  capacity      String?   // e.g., "3.5t", "20m3"
+  
+  // Maintenance
+  lastService   DateTime?
+  nextService   DateTime?
+  insuranceExpiry DateTime?
+  
+  // Status
+  isActive      Boolean   @default(true)
+  
+  // Relations
+  companyId     String
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  assignedToId  String?   @unique
+  assignedTo    User?     @relation(fields: [assignedToId], references: [id], onDelete: SetNull)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("vehicles")
+}
+
+// ============================================
+// USER MODEL - Updated for multi-tenant
+// ============================================
 model User {
   id          String   @id @default(cuid())
   personalId  String   @unique
@@ -17,19 +85,17 @@ model User {
   name        String
   email       String?  @unique
   phone       String?
-  role        String   @default("DRIVER")
+  role        String   @default("DRIVER") // SUPER_ADMIN, COMPANY_ADMIN, DRIVER
   photoUrl    String?
   isActive    Boolean  @default(true)
   
-  // Vehicle Information
-  vehicleType        String?
-  vehiclePlate       String?
-  vehicleModel       String?
+  // Company association (NULL for SUPER_ADMIN)
+  companyId   String?
+  company     Company? @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
   // Documents
   licenseNumber      String?
   licenseExpiry      DateTime?
-  insuranceExpiry    DateTime?
   
   // Preferences
   preferredZones     String?  // JSON string of preferred zones
@@ -50,14 +116,18 @@ model User {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  assignedTasks Task[]         @relation("AssignedTasks")
-  createdTasks  Task[]         @relation("CreatedTasks")
-  messages      Message[]
-  notifications Notification[]
+  assignedVehicle Vehicle?
+  assignedTasks   Task[]         @relation("AssignedTasks")
+  createdTasks    Task[]         @relation("CreatedTasks")
+  messages        Message[]
+  notifications   Notification[]
 
   @@map("users")
 }
 
+// ============================================
+// TASK MODEL - Updated for multi-tenant
+// ============================================
 model Task {
   id            String     @id @default(cuid())
   title         String
@@ -77,6 +147,10 @@ model Task {
   driverNotes   String?
   rating        Float?
   
+  // Company association
+  companyId     String
+  company       Company    @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
   // Relations
   assignedToId  String?
   assignedTo    User?      @relation("AssignedTasks", fields: [assignedToId], references: [id], onDelete: SetNull)
@@ -90,11 +164,18 @@ model Task {
   @@map("tasks")
 }
 
+// ============================================
+// MESSAGE MODEL - Updated for multi-tenant
+// ============================================
 model Message {
   id        String   @id @default(cuid())
   content   String
   isRead    Boolean  @default(false)
   fromAdmin Boolean  @default(false)
+  
+  // Company association
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
   
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
@@ -104,8 +185,16 @@ model Message {
   @@map("messages")
 }
 
+// ============================================
+// NOTIFICATION MODEL - Updated for multi-tenant
+// ============================================
 model Notification {
   id        String   @id @default(cuid())
+  
+  // Company association
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   

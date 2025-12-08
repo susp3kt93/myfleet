@@ -42,7 +42,7 @@ export default function UsersPage() {
     useEffect(() => {
         if (!isAuthenticated) {
             router.push('/');
-        } else if (user?.role !== 'ADMIN') {
+        } else if (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN') {
             router.push('/dashboard');
         } else {
             dispatch(fetchUsers());
@@ -94,7 +94,7 @@ export default function UsersPage() {
         }
     };
 
-    if (!isAuthenticated || user?.role !== 'ADMIN') {
+    if (!isAuthenticated || (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN')) {
         return null;
     }
 
@@ -192,7 +192,8 @@ export default function UsersPage() {
                                     className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 outline-none"
                                 >
                                     <option value="DRIVER">Driver</option>
-                                    <option value="ADMIN">Admin</option>
+                                    {user?.role === 'SUPER_ADMIN' && <option value="COMPANY_ADMIN">Company Admin</option>}
+                                    {user?.role === 'SUPER_ADMIN' && <option value="SUPER_ADMIN">Super Admin</option>}
                                 </select>
                             </div>
 
@@ -254,9 +255,13 @@ export default function UsersPage() {
                                         <div className="text-sm text-gray-500">{u.phone || '-'}</div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${u.role === 'ADMIN' ? 'bg-purple-100 text-purple-800' : 'bg-blue-100 text-blue-800'
+                                        <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${u.role === 'SUPER_ADMIN' ? 'bg-red-100 text-red-800' :
+                                                u.role === 'COMPANY_ADMIN' ? 'bg-purple-100 text-purple-800' :
+                                                    'bg-blue-100 text-blue-800'
                                             }`}>
-                                            {u.role}
+                                            {u.role === 'SUPER_ADMIN' ? 'Super Admin' :
+                                                u.role === 'COMPANY_ADMIN' ? 'Company Admin' :
+                                                    u.role}
                                         </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">

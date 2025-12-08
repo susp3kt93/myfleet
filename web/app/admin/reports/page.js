@@ -27,13 +27,13 @@ export default function ReportsPage() {
     useEffect(() => {
         if (!isAuthenticated) {
             router.push('/');
-        } else if (user?.role !== 'ADMIN') {
+        } else if (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN') {
             router.push('/dashboard');
         }
     }, [isAuthenticated, user]);
 
     useEffect(() => {
-        if (isAuthenticated && user?.role === 'ADMIN') {
+        if (isAuthenticated && (user?.role === 'COMPANY_ADMIN' || user?.role === 'SUPER_ADMIN')) {
             loadWeeklyReport();
         }
     }, [currentDate, isAuthenticated, user]);
@@ -41,8 +41,8 @@ export default function ReportsPage() {
     const loadWeeklyReport = async () => {
         try {
             setLoading(true);
-            const weekStart = startOfWeek(currentDate, { weekStartsOn: 1 });
-            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 1 });
+            const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday
+            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 }); // Saturday
 
             const response = await api.get('/reports/weekly', {
                 params: {
@@ -60,7 +60,37 @@ export default function ReportsPage() {
         }
     };
 
-    if (!isAuthenticated || user?.role !== 'ADMIN') {
+    const handleExportCSV = async () => {
+        try {
+            setLoading(true);
+            const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 }); // Sunday
+            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 }); // Saturday
+
+            const response = await api.get('/reports/export/csv', {
+                params: {
+                    startDate: weekStart.toISOString().split('T')[0],
+                    endDate: weekEnd.toISOString().split('T')[0]
+                },
+                responseType: 'blob'
+            });
+
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `weekly-report-${weekStart.toISOString().split('T')[0]}.csv`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Error exporting CSV:', error);
+            alert('Failed to export CSV');
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    if (!isAuthenticated || (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN')) {
         return null;
     }
 
@@ -76,6 +106,13 @@ export default function ReportsPage() {
                             </Link>
                             <h1 className="text-2xl font-bold text-gray-900">{t('reports.title')}</h1>
                         </div>
+                        <button
+                            onClick={handleExportCSV}
+                            disabled={loading}
+                            className="px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white rounded-lg transition flex items-center gap-2"
+                        >
+                            {loading ? '⏳' : '📊'} Export CSV
+                        </button>
                     </div>
                 </div>
             </header>

@@ -2,6 +2,7 @@ import express from 'express';
 import bcrypt from 'bcryptjs';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { addCompanyFilter, checkDriverLimit } from '../middleware/permissions.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -9,11 +10,13 @@ const prisma = new PrismaClient();
 // All user routes require authentication and admin role
 router.use(authenticate);
 router.use(requireAdmin);
+router.use(addCompanyFilter);
 
-// Get all users
+// Get all users (filtered by company for non-SUPER_ADMIN)
 router.get('/', async (req, res) => {
     try {
         const users = await prisma.user.findMany({
+            where: req.companyFilter, // Filters by company for COMPANY_ADMIN
             select: {
                 id: true,
                 personalId: true,
@@ -23,6 +26,7 @@ router.get('/', async (req, res) => {
                 role: true,
                 photoUrl: true,
                 isActive: true,
+                companyId: true,
                 createdAt: true,
                 _count: {
                     select: {
@@ -74,7 +78,7 @@ router.get('/:id', async (req, res) => {
 });
 
 // Create new user
-router.post('/', async (req, res) => {
+router.post('/', checkDriverLimit, async (req, res) => {
     try {
         const { personalId, password, name, email, phone, role, photoUrl } = req.body;
 
@@ -93,6 +97,9 @@ router.post('/', async (req, res) => {
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
+        // Automatically assign companyId for COMPANY_ADMIN, SUPER_ADMIN can specify
+        const companyId = req.user.role === 'SUPER_ADMIN' ? req.body.companyId : req.user.companyId;
+
         const user = await prisma.user.create({
             data: {
                 personalId,
@@ -101,6 +108,7 @@ router.post('/', async (req, res) => {
                 email,
                 phone,
                 role: role || 'DRIVER',
+                companyId,
                 photoUrl
             },
             select: {

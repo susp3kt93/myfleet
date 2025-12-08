@@ -21,7 +21,10 @@ export default function LoginPage() {
         e.preventDefault();
         const result = await dispatch(login({ personalId, password }));
         if (!result.error) {
-            if (result.payload.user.role === 'ADMIN') {
+            const userRole = result.payload.user.role;
+            if (userRole === 'SUPER_ADMIN') {
+                router.push('/super-admin');
+            } else if (userRole === 'COMPANY_ADMIN' || userRole === 'ADMIN') {
                 router.push('/admin');
             } else {
                 router.push('/dashboard');

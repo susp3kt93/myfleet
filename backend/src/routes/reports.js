@@ -1,6 +1,8 @@
 import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
+import { addCompanyFilter, requireFeature } from '../middleware/permissions.js';
+import * as exportController from '../controllers/exportController.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -17,22 +19,30 @@ router.get('/weekly', requireAdmin, async (req, res) => {
         }
 
         console.log(`[GET /reports/weekly] Fetching report for ${startDate} to ${endDate}`);
+        console.log(`[GET /reports/weekly] User role: ${req.user.role}, companyId: ${req.user.companyId}`);
 
         const start = new Date(startDate);
         start.setHours(0, 0, 0, 0);
         const end = new Date(endDate);
         end.setHours(23, 59, 59, 999);
 
-        // Get all drivers
+        // Build where clause for drivers - filter by company for COMPANY_ADMIN
+        const whereClause = { role: 'DRIVER' };
+        if (req.user.role === 'COMPANY_ADMIN') {
+            whereClause.companyId = req.user.companyId;
+        }
+
+        // Get drivers (filtered by company for COMPANY_ADMIN, all for SUPER_ADMIN)
         const drivers = await prisma.user.findMany({
-            where: { role: 'DRIVER' },
+            where: whereClause,
             select: {
                 id: true,
                 personalId: true,
                 name: true,
                 email: true,
                 phone: true,
-                rating: true
+                rating: true,
+                companyId: true
             },
             orderBy: { name: 'asc' }
         });
@@ -116,7 +126,7 @@ router.get('/weekly', requireAdmin, async (req, res) => {
             { completed: 0, pending: 0, accepted: 0, earnings: 0 }
         );
 
-        console.log(`[GET /reports/weekly] Found ${driversWithStats.length} drivers, total earnings: ${totals.earnings}`);
+        console.log(`[GET / reports / weekly] Found ${driversWithStats.length} drivers, total earnings: ${totals.earnings} `);
 
         res.json({
             drivers: driversWithStats,
@@ -134,5 +144,11 @@ router.get('/weekly', requireAdmin, async (req, res) => {
         res.status(500).json({ error: 'Failed to fetch weekly report', details: error.message });
     }
 });
+
+// CSV Export for Company Admins - requires csvExport feature
+router.get('/export/csv', requireAdmin, addCompanyFilter, requireFeature('csvExport'), exportController.generateWeeklyCSV);
+
+// PDF Invoice for Drivers - requires pdfExport feature
+router.get('/export/pdf', requireFeature('pdfExport'), exportController.generateDriverInvoice);
 
 export default router;

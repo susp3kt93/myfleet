@@ -25,7 +25,8 @@ export const authenticate = async (req, res, next) => {
                 phone: true,
                 role: true,
                 photoUrl: true,
-                isActive: true
+                isActive: true,
+                companyId: true  // Add company context for multi-tenant
             }
         });
 
@@ -47,7 +48,8 @@ export const authenticate = async (req, res, next) => {
 };
 
 export const requireAdmin = (req, res, next) => {
-    if (req.user.role !== 'ADMIN') {
+    // Accept both SUPER_ADMIN and COMPANY_ADMIN
+    if (req.user.role !== 'SUPER_ADMIN' && req.user.role !== 'COMPANY_ADMIN') {
         return res.status(403).json({ error: 'Admin access required' });
     }
     next();

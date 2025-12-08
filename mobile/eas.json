@@ -1,0 +1,31 @@
+{
+    "cli": {
+        "version": ">= 5.2.0"
+    },
+    "build": {
+        "development": {
+            "developmentClient": true,
+            "distribution": "internal",
+            "ios": {
+                "simulator": false,
+                "bundleIdentifier": "com.myfleet.app"
+            }
+        },
+        "preview": {
+            "distribution": "internal",
+            "ios": {
+                "simulator": false,
+                "bundleIdentifier": "com.myfleet.app"
+            }
+        },
+        "production": {
+            "ios": {
+                "simulator": false,
+                "bundleIdentifier": "com.myfleet.app"
+            }
+        }
+    },
+    "submit": {
+        "production": {}
+    }
+}

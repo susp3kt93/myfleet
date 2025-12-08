@@ -241,8 +241,8 @@ export default function EnhancedDashboardPage() {
         .slice(0, 10); // Last 10 completed tasks
 
     // Filter completed tasks for current week
-    const weekStart = startOfWeek(currentWeekDate, { weekStartsOn: 1 });
-    const weekEnd = endOfWeek(currentWeekDate, { weekStartsOn: 1 });
+    const weekStart = startOfWeek(currentWeekDate, { weekStartsOn: 0 }); // Sunday
+    const weekEnd = endOfWeek(currentWeekDate, { weekStartsOn: 0 }); // Saturday
     const weeklyCompletedTasks = allTasks.filter(t => {
         if (t.status !== 'COMPLETED' || t.assignedToId !== user?.id || !t.completedAt) return false;
         const completedDate = new Date(t.completedAt);
@@ -250,6 +250,31 @@ export default function EnhancedDashboardPage() {
     }).sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
 
     const weeklyEarnings = weeklyCompletedTasks.reduce((sum, t) => sum + Number(t.price), 0);
+
+    const handleDownloadInvoice = async () => {
+        try {
+            const response = await api.get('/reports/export/pdf', {
+                params: {
+                    startDate: weekStart.toISOString().split('T')[0],
+                    endDate: weekEnd.toISOString().split('T')[0]
+                },
+                responseType: 'blob'
+            });
+
+            // Create download link
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            const weekNumber = Math.ceil((weekStart - new Date(weekStart.getFullYear(), 0, 1)) / (7 * 24 * 60 * 60 * 1000));
+            link.setAttribute('download', `invoice-${user.personalId}-week-${weekNumber}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Error downloading invoice:', error);
+            alert('Failed to download invoice');
+        }
+    };
 
     if (!isAuthenticated || !user) {
         return null;
@@ -404,6 +429,12 @@ export default function EnhancedDashboardPage() {
                                                 </p>
                                             </div>
                                         </div>
+                                        <button
+                                            onClick={handleDownloadInvoice}
+                                            className="mt-4 w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition flex items-center justify-center gap-2"
+                                        >
+                                            📄 Download Weekly Invoice
+                                        </button>
                                     </div>
                                 </div>
                             ) : (

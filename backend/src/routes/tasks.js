@@ -9,24 +9,30 @@ const prisma = new PrismaClient();
 
 router.use(authenticate);
 
-// Get tasks (filtered by role)
+// Get tasks (filtered by role and company)
 router.get('/', async (req, res) => {
     try {
         const { startDate, endDate, status } = req.query;
 
         const where = {};
 
+        // Company filtering for non-SUPER_ADMIN
+        if (req.user.role !== 'SUPER_ADMIN' && req.user.companyId) {
+            where.companyId = req.user.companyId;
+        }
+
         // Drivers see:
         // 1. All tasks assigned to them (any status)
-        // 2. All PENDING tasks with no assignment (marketplace)
+        // 2. All PENDING tasks with no assignment (marketplace) from their company
         if (req.user.role === 'DRIVER') {
-            console.log(`[GET / tasks] Driver ${req.user.personalId} requesting tasks`);
+            console.log(`[GET /tasks] Driver ${req.user.personalId} requesting tasks`);
             where.OR = [
                 { assignedToId: req.user.id }, // My tasks
                 {
                     AND: [
                         { status: 'PENDING' },
-                        { assignedToId: null } // Available tasks
+                        { assignedToId: null }, // Available tasks
+                        { companyId: req.user.companyId } // From my company only
                     ]
                 }
             ];
@@ -164,6 +170,7 @@ router.post('/', requireAdmin, async (req, res) => {
                 latitude,
                 longitude,
                 notes,
+                companyId: req.user.companyId, // Assign to user's company
                 createdById: req.user.id
             },
             include: {

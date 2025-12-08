@@ -44,7 +44,7 @@ export default function TasksPage() {
     useEffect(() => {
         if (!isAuthenticated) {
             router.push('/');
-        } else if (user?.role !== 'ADMIN') {
+        } else if (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN') {
             router.push('/dashboard');
         } else {
             dispatch(fetchTasks());
@@ -172,7 +172,7 @@ export default function TasksPage() {
 
     const drivers = users.filter(u => u.role === 'DRIVER');
 
-    if (!isAuthenticated || user?.role !== 'ADMIN') {
+    if (!isAuthenticated || (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN')) {
         return null;
     }
 

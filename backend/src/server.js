@@ -8,6 +8,8 @@ import driverRoutes from './routes/driver.js';
 import messageRoutes from './routes/messages.js';
 import reportsRoutes from './routes/reports.js';
 import notificationRoutes from './routes/notifications.js';
+import companyRoutes from './routes/companies.js';
+import plansRoutes from './routes/plans.js';
 
 dotenv.config();
 
@@ -37,6 +39,8 @@ app.use('/api/driver', driverRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/reports', reportsRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/companies', companyRoutes);
+app.use('/api/plans', plansRoutes);
 
 // Health check
 app.get('/health', (req, res) => {

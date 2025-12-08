@@ -26,7 +26,7 @@ export default function AdminPage() {
     useEffect(() => {
         if (!isAuthenticated) {
             router.push('/');
-        } else if (user?.role !== 'ADMIN') {
+        } else if (user?.role !== 'ADMIN' && user?.role !== 'COMPANY_ADMIN') {
             router.push('/dashboard');
         } else {
             dispatch(fetchTasks());
@@ -39,7 +39,7 @@ export default function AdminPage() {
         router.push('/');
     };
 
-    if (!isAuthenticated || user?.role !== 'ADMIN') {
+    if (!isAuthenticated || (user?.role !== 'ADMIN' && user?.role !== 'COMPANY_ADMIN')) {
         return null;
     }
 
@@ -61,8 +61,8 @@ export default function AdminPage() {
                                 <span className="text-2xl">👨‍💼</span>
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900">{t('dashboard.title')}</h1>
-                                <p className="text-sm text-gray-600">{user.name}</p>
+                                <h1 className="text-xl font-bold text-gray-900">{user.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Company Admin'} Dashboard</h1>
+                                <p className="text-sm text-gray-600">{user.name} {user.companyId ? '| Company ID: ' + user.companyId.slice(0, 8) : ''}</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-3">
