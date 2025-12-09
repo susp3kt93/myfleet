@@ -1,59 +1,65 @@
 {
-    "expo": {
-        "name": "MyFleet",
-        "slug": "myfleet",
-        "version": "1.0.0",
-        "orientation": "portrait",
-        "icon": "./assets/icon.png",
-        "userInterfaceStyle": "light",
-        "splash": {
-            "image": "./assets/splash.png",
-            "resizeMode": "contain",
-            "backgroundColor": "#4F46E5"
-        },
-        "assetBundlePatterns": [
-            "**/*"
-        ],
-        "ios": {
-            "supportsTablet": true,
-            "bundleIdentifier": "com.myfleet.app",
-            "infoPlist": {
-                "NSLocationWhenInUseUsageDescription": "MyFleet needs your location to show nearby tasks and calculate distances.",
-                "NSLocationAlwaysAndWhenInUseUsageDescription": "MyFleet needs your location to track task completion and provide accurate navigation."
-            }
-        },
-        "android": {
-            "adaptiveIcon": {
-                "foregroundImage": "./assets/adaptive-icon.png",
-                "backgroundColor": "#4F46E5"
-            },
-            "package": "com.myfleet.app",
-            "permissions": [
-                "ACCESS_COARSE_LOCATION",
-                "ACCESS_FINE_LOCATION",
-                "FOREGROUND_SERVICE"
-            ]
-        },
-        "web": {
-            "favicon": "./assets/favicon.png"
-        },
-        "plugins": [
-            [
-                "expo-notifications",
-                {
-                    "icon": "./assets/notification-icon.png",
-                    "color": "#4F46E5",
-                    "sounds": [
-                        "./assets/notification-sound.wav"
-                    ]
-                }
-            ]
-        ],
-        "notification": {
-            "icon": "./assets/notification-icon.png",
-            "color": "#4F46E5",
-            "androidMode": "default",
-            "androidCollapsedTitle": "MyFleet"
+  "expo": {
+    "name": "MyFleet",
+    "slug": "myfleet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#4F46E5"
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "com.myfleet.app",
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "MyFleet needs your location to show nearby tasks and calculate distances.",
+        "NSLocationAlwaysAndWhenInUseUsageDescription": "MyFleet needs your location to track task completion and provide accurate navigation.",
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#4F46E5"
+      },
+      "package": "com.myfleet.app",
+      "permissions": [
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
+        "FOREGROUND_SERVICE"
+      ]
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-notifications",
+        {
+          "icon": "./assets/notification-icon.png",
+          "color": "#4F46E5",
+          "sounds": [
+            "./assets/notification-sound.wav"
+          ]
         }
+      ]
+    ],
+    "notification": {
+      "icon": "./assets/notification-icon.png",
+      "color": "#4F46E5",
+      "androidMode": "default",
+      "androidCollapsedTitle": "MyFleet"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "8edda9a1-4af4-4718-a977-bcdbc426f9a0"
+      }
     }
+  }
 }

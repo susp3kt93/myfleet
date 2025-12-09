@@ -12,3 +12,4 @@ coverage/
 .idea/
 *.db
 *.db-journal
+simulator_screen_debug.png

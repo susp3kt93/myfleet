@@ -2,10 +2,15 @@ import axios from 'axios';
 import storage from '../utils/storage';
 import { Platform } from 'react-native';
 
-// Use localhost for web, network IP for mobile devices
-const API_URL = Platform.OS === 'web'
+// Use environment variable if available (for production build), otherwise default to localhost logic
+const ENV_API_URL = process.env.EXPO_PUBLIC_API_URL;
+
+// Use localhost for web and iOS simulator
+// For Android emulator use 10.0.2.2
+// For physical devices use your machine's LAN IP
+const API_URL = ENV_API_URL || (Platform.OS === 'web'
     ? 'http://localhost:3002/api'
-    : 'http://192.168.1.243:3002/api';
+    : 'http://192.168.1.237:3002/api');
 
 console.log('[API] Using API URL:', API_URL);
 
@@ -92,6 +97,17 @@ export const usersAPI = {
 
     deleteUser: (id) =>
         api.delete(`/users/${id}`),
+};
+
+export const adminAPI = {
+    getCompanyStats: (companyId) =>
+        api.get(`/companies/${companyId}/stats`),
+
+    getCompanies: () =>
+        api.get('/companies'),
+
+    getWeeklyReport: (startDate, endDate) =>
+        api.get('/reports/weekly', { params: { startDate, endDate } }),
 };
 
 export default api;

@@ -137,7 +137,7 @@ export default function LoginScreen({ navigation }) {
                             </View>
 
                             <View style={styles.footer}>
-                                <Text style={styles.footerText}>Demo: DRV-001 / driver123</Text>
+                                <Text style={styles.footerText}>Demo: DRV-TE-001 / password123</Text>
                             </View>
                         </Surface>
                     </Animated.View>

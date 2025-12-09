@@ -11,7 +11,20 @@
         "completedTasks": "Taskuri Completate",
         "rating": "Rating",
         "thisWeek": "Săptămâna Aceasta",
-        "thisMonth": "Câștiguri Luna Aceasta"
+        "thisMonth": "Câștiguri Luna Aceasta",
+        "activeDrivers": "Șoferi Activi",
+        "tasksToday": "Task-uri Azi",
+        "totalRevenue": "Încasări Totale"
+    },
+    "admin": {
+        "presentation": "Prezentare",
+        "drivers": "Șoferi",
+        "tasks": "Task-uri",
+        "companies": "Companii",
+        "superAdmin": "Super Administrator",
+        "companyAdmin": "Administrator Companie",
+        "active": "Activ",
+        "inactive": "Inactiv"
     },
     "tasks": {
         "available": "Disponibile",
