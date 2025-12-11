@@ -2,15 +2,14 @@ import axios from 'axios';
 import storage from '../utils/storage';
 import { Platform } from 'react-native';
 
-// Use environment variable if available (for production build), otherwise default to localhost logic
+// Use environment variable if available (for production build), otherwise default to production URL
 const ENV_API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-// Use localhost for web and iOS simulator
-// For Android emulator use 10.0.2.2
-// For physical devices use your machine's LAN IP
-const API_URL = ENV_API_URL || (Platform.OS === 'web'
-    ? 'http://localhost:3002/api'
-    : 'http://192.168.1.237:3002/api');
+// Production API URL - Render Backend
+const PRODUCTION_API_URL = 'https://myfleet-29a4.onrender.com/api';
+
+// Use localhost for development, production URL for builds
+const API_URL = ENV_API_URL || PRODUCTION_API_URL;
 
 console.log('[API] Using API URL:', API_URL);
 
