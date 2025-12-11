@@ -1,6 +1,13 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import { authAPI } from '../lib/api';
 
+// SSR-safe localStorage access
+const safeLocalStorage = {
+    getItem: (key) => typeof window !== 'undefined' ? localStorage.getItem(key) : null,
+    setItem: (key, value) => typeof window !== 'undefined' && localStorage.setItem(key, value),
+    removeItem: (key) => typeof window !== 'undefined' && localStorage.removeItem(key),
+};
+
 export const login = createAsyncThunk(
     'auth/login',
     async ({ personalId, password }, { rejectWithValue }) => {
@@ -8,8 +15,8 @@ export const login = createAsyncThunk(
             const response = await authAPI.login(personalId, password);
             const { token, user } = response.data;
 
-            localStorage.setItem('authToken', token);
-            localStorage.setItem('user', JSON.stringify(user));
+            safeLocalStorage.setItem('authToken', token);
+            safeLocalStorage.setItem('user', JSON.stringify(user));
 
             return { token, user };
         } catch (error) {
@@ -24,8 +31,8 @@ export const logout = createAsyncThunk(
         try {
             await authAPI.logout();
         } finally {
-            localStorage.removeItem('authToken');
-            localStorage.removeItem('user');
+            safeLocalStorage.removeItem('authToken');
+            safeLocalStorage.removeItem('user');
         }
     }
 );
@@ -34,8 +41,8 @@ export const loadStoredAuth = createAsyncThunk(
     'auth/loadStored',
     async (_, { rejectWithValue }) => {
         try {
-            const token = localStorage.getItem('authToken');
-            const userStr = localStorage.getItem('user');
+            const token = safeLocalStorage.getItem('authToken');
+            const userStr = safeLocalStorage.getItem('user');
 
             if (token && userStr) {
                 const user = JSON.parse(userStr);

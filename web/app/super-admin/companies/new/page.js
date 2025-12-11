@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
@@ -10,6 +10,7 @@ export default function NewCompanyPage() {
     const { user, token } = useSelector((state) => state.auth);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState('');
+    const [isReady, setIsReady] = useState(false);
 
     const [formData, setFormData] = useState({
         name: '',
@@ -22,9 +23,22 @@ export default function NewCompanyPage() {
         maxVehicles: 5
     });
 
-    if (!user || user.role !== 'SUPER_ADMIN') {
-        router.push('/');
-        return null;
+    // SSR-safe auth check - only runs on client
+    useEffect(() => {
+        if (!user || user.role !== 'SUPER_ADMIN') {
+            router.push('/');
+        } else {
+            setIsReady(true);
+        }
+    }, [user, router]);
+
+    // Show loading state until auth check completes
+    if (!isReady) {
+        return (
+            <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+                <div className="text-gray-500">Loading...</div>
+            </div>
+        );
     }
 
     const handleSubmit = async (e) => {
