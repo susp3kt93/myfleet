@@ -11,8 +11,10 @@ const prisma = new PrismaClient();
 router.post('/login', async (req, res) => {
     try {
         const { personalId, password } = req.body;
+        console.log('[Auth] Login attempt for:', personalId);
 
         if (!personalId || !password) {
+            console.log('[Auth] Missing credentials');
             return res.status(400).json({ error: 'Personal ID and password are required' });
         }
 
@@ -20,11 +22,15 @@ router.post('/login', async (req, res) => {
             where: { personalId }
         });
 
+        console.log('[Auth] User found:', user ? 'yes' : 'no');
+
         if (!user || !user.isActive) {
+            console.log('[Auth] User not found or inactive');
             return res.status(401).json({ error: 'Invalid credentials' });
         }
 
         const isValidPassword = await bcrypt.compare(password, user.password);
+        console.log('[Auth] Password valid:', isValidPassword);
 
         if (!isValidPassword) {
             return res.status(401).json({ error: 'Invalid credentials' });
@@ -45,7 +51,8 @@ router.post('/login', async (req, res) => {
                 email: user.email,
                 phone: user.phone,
                 role: user.role,
-                photoUrl: user.photoUrl
+                photoUrl: user.photoUrl,
+                companyId: user.companyId
             }
         });
     } catch (error) {
