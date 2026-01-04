@@ -3,6 +3,8 @@ import { PrismaClient } from '@prisma/client';
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { sendCompleteNotification } from '../services/notificationService.js';
 import * as mapsService from '../services/mapsService.js';
+import { sendTaskAssignedEmail } from '../services/emailService.js';
+import { sendTaskAssignedNotification } from '../services/pushNotificationService.js';
 
 const router = express.Router();
 const prisma = new PrismaClient();
@@ -179,9 +181,12 @@ router.post('/', requireAdmin, async (req, res) => {
                         id: true,
                         personalId: true,
                         name: true,
+                        email: true,
                         photoUrl: true,
                         pushToken: true,
-                        notificationsEnabled: true
+                        notificationsEnabled: true,
+                        emailNotifications: true,
+                        pushNotifications: true
                     }
                 }
             }
@@ -191,6 +196,8 @@ router.post('/', requireAdmin, async (req, res) => {
         if (task.assignedTo) {
             try {
                 const date = new Date(task.scheduledDate).toLocaleDateString('ro-RO');
+
+                // In-app notification
                 await sendCompleteNotification(
                     task.assignedTo.id,
                     '🎯 Task Nou Atribuit',
@@ -208,7 +215,30 @@ router.post('/', requireAdmin, async (req, res) => {
                     `,
                     { taskId: task.id, type: 'TASK_ASSIGNED' }
                 );
-                console.log(`Notification sent to driver ${task.assignedTo.name}`);
+                console.log(`In-app notification sent to driver ${task.assignedTo.name}`);
+
+                // Email notification (if enabled)
+                if (task.assignedTo.emailNotifications && task.assignedTo.email) {
+                    await sendTaskAssignedEmail(
+                        task.assignedTo.email,
+                        task.assignedTo.name,
+                        task.title,
+                        date,
+                        task.location
+                    );
+                    console.log(`Email notification sent to ${task.assignedTo.email}`);
+                }
+
+                // Push notification (if enabled and token exists)
+                if (task.assignedTo.pushNotifications && task.assignedTo.pushToken) {
+                    await sendTaskAssignedNotification(
+                        task.assignedTo.pushToken,
+                        task.title,
+                        date
+                    );
+                    console.log(`Push notification sent to ${task.assignedTo.name}`);
+                }
+
             } catch (error) {
                 console.error('Failed to send notification:', error);
             }
@@ -430,12 +460,12 @@ router.post('/:id/reject', async (req, res) => {
             return res.status(403).json({ error: 'Cannot reject another driver\'s task' });
         }
 
-        console.log('[POST /tasks/:id/reject] Updating task to REJECTED and returning to marketplace');
+        console.log('[POST /tasks/:id/reject] Updating task to PENDING and returning to marketplace');
         const updatedTask = await prisma.task.update({
             where: { id: req.params.id },
             data: {
-                status: 'REJECTED',
-                assignedToId: null // Return to marketplace (unassign)
+                status: 'PENDING', // Return to marketplace so other drivers can accept
+                assignedToId: null // Unassign from current driver
             },
             include: {
                 assignedTo: {
@@ -466,10 +496,10 @@ router.post('/:id/reject', async (req, res) => {
                 data: { rating: newRating }
             });
 
-            console.log(`[POST / tasks /: id / reject] Driver rating updated: ${currentUser.rating} → ${newRating} (-0.05 for rejecting accepted task)`);
+            console.log(`[POST /tasks/:id/reject] Driver rating updated: ${currentUser.rating} → ${newRating} (-0.05 for rejecting accepted task)`);
         }
 
-        console.log(`[POST / tasks /: id / reject] Task rejected successfully by ${req.user.personalId} `);
+        console.log(`[POST /tasks/:id/reject] Task rejected successfully by ${req.user.personalId}`);
 
         // Notify admin that task was rejected
         try {
@@ -636,7 +666,8 @@ router.post('/:id/complete', async (req, res) => {
             where: { id: req.params.id },
             data: {
                 status: 'COMPLETED',
-                completedAt: completionDate
+                completedAt: completionDate,
+                actualEarnings: task.price // Default actual earnings to agreed price
             },
             include: {
                 assignedTo: {

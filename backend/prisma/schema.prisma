@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
+  provider = "sqlite"
   url      = env("DATABASE_URL")
 }
 
@@ -32,11 +32,12 @@ model Company {
   updatedAt   DateTime @updatedAt
   
   // Relations
-  users         User[]
-  tasks         Task[]
-  vehicles      Vehicle[]
-  messages      Message[]
-  notifications Notification[]
+  users           User[]
+  tasks           Task[]
+  vehicles        Vehicle[]
+  messages        Message[]
+  notifications   Notification[]
+  timeOffRequests TimeOffRequest[]
 
   @@map("companies")
 }
@@ -50,17 +51,30 @@ model Vehicle {
   // Vehicle info
   type          String    // Truck, Van, Car
   plate         String    @unique
+  make          String?   // Brand (Ford, Mercedes, etc.)
   model         String
   year          Int?
   capacity      String?   // e.g., "3.5t", "20m3"
+  color         String?
   
-  // Maintenance
-  lastService   DateTime?
-  nextService   DateTime?
-  insuranceExpiry DateTime?
+  // Mileage tracking
+  currentMileage      Int       @default(0)    // Current odometer reading
+  mileageUnit         String    @default("miles") // "miles" or "km"
   
-  // Status
-  isActive      Boolean   @default(true)
+  // Service intervals (mileage-based)
+  lastServiceMileage  Int?      // Mileage at last service
+  nextServiceMileage  Int?      // Mileage when next service is due
+  serviceIntervalMiles Int      @default(5000) // Service every X miles
+  lastServiceDate     DateTime?
+  
+  // Date-based maintenance
+  insuranceExpiry     DateTime?
+  motExpiry           DateTime? // MOT test expiry (UK)
+  taxExpiry           DateTime?
+  
+  // Status: ACTIVE, IN_SERVICE, NEEDS_SERVICE, INACTIVE
+  status              String    @default("ACTIVE")
+  serviceNotes        String?   // Notes about current service/repair
   
   // Relations
   companyId     String
@@ -116,11 +130,12 @@ model User {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  assignedVehicle Vehicle?
-  assignedTasks   Task[]         @relation("AssignedTasks")
-  createdTasks    Task[]         @relation("CreatedTasks")
-  messages        Message[]
-  notifications   Notification[]
+  assignedVehicle  Vehicle?
+  assignedTasks    Task[]          @relation("AssignedTasks")
+  createdTasks     Task[]          @relation("CreatedTasks")
+  messages         Message[]
+  notifications    Notification[]
+  timeOffRequests  TimeOffRequest[]
 
   @@map("users")
 }
@@ -208,4 +223,34 @@ model Notification {
   createdAt DateTime @default(now())
   
   @@map("notifications")
+}
+
+// ============================================
+// TIME-OFF REQUEST MODEL
+// ============================================
+model TimeOffRequest {
+  id            String    @id @default(cuid())
+  
+  // Request details - supports single day or date range
+  requestDate   DateTime  // Start date (or the single date if no endDate)
+  endDate       DateTime? // End date for vacation periods (null for single day)
+  reason        String?   // Optional reason
+  status        String    @default("PENDING") // PENDING, APPROVED, REJECTED
+  
+  // Admin response
+  adminNotes    String?   // Notes from admin when approving/rejecting
+  respondedAt   DateTime?
+  respondedById String?
+  
+  // Relations
+  userId        String
+  user          User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  companyId     String
+  company       Company   @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  @@map("time_off_requests")
 }

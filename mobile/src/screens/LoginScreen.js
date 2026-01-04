@@ -57,7 +57,7 @@ export default function LoginScreen({ navigation }) {
             resizeMode="cover"
         >
             <LinearGradient
-                colors={['rgba(30, 58, 138, 0.8)', 'rgba(30, 58, 138, 0.6)']}
+                colors={['rgba(22, 163, 74, 0.9)', 'rgba(5, 150, 105, 0.8)']}
                 style={styles.overlay}
             >
                 <KeyboardAvoidingView
@@ -92,7 +92,7 @@ export default function LoginScreen({ navigation }) {
                                     left={<TextInput.Icon icon="account" color="#6B7280" />}
                                     autoCapitalize="characters"
                                     outlineColor="#E5E7EB"
-                                    activeOutlineColor="#4F46E5"
+                                    activeOutlineColor="#22c55e"
                                 />
 
                                 <TextInput
@@ -114,7 +114,7 @@ export default function LoginScreen({ navigation }) {
                                         />
                                     }
                                     outlineColor="#E5E7EB"
-                                    activeOutlineColor="#4F46E5"
+                                    activeOutlineColor="#22c55e"
                                 />
 
                                 {error && (
@@ -186,7 +186,7 @@ const styles = StyleSheet.create({
     iconContainer: {
         width: 64,
         height: 64,
-        backgroundColor: '#EEF2FF',
+        backgroundColor: '#dcfce7',
         borderRadius: 32,
         justifyContent: 'center',
         alignItems: 'center',
@@ -215,7 +215,7 @@ const styles = StyleSheet.create({
     button: {
         marginTop: 8,
         borderRadius: 12,
-        backgroundColor: '#4F46E5',
+        backgroundColor: '#22c55e',
         elevation: 4,
     },
     buttonContent: {

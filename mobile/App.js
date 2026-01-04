@@ -14,6 +14,9 @@ import LoginScreen from './src/screens/LoginScreen';
 import MainScreen from './src/screens/MainScreen';
 import AdminMainScreen from './src/screens/AdminMainScreen';
 import TaskDetailsScreen from './src/screens/TaskDetailsScreen';
+import TimeOffScreen from './src/screens/TimeOffScreen';
+import VehicleScreen from './src/screens/VehicleScreen';
+import CreateTaskScreen from './src/screens/CreateTaskScreen';
 
 const Stack = createNativeStackNavigator();
 
@@ -84,6 +87,27 @@ function AppNavigator() {
                         headerShown: true,
                         title: 'Detalii Task',
                         headerBackTitle: 'Înapoi',
+                    }}
+                />
+                <Stack.Screen
+                    name="TimeOff"
+                    component={TimeOffScreen}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="Vehicle"
+                    component={VehicleScreen}
+                    options={{
+                        headerShown: false,
+                    }}
+                />
+                <Stack.Screen
+                    name="CreateTask"
+                    component={CreateTaskScreen}
+                    options={{
+                        headerShown: false,
                     }}
                 />
             </Stack.Navigator>

@@ -48,185 +48,185 @@ async function main() {
     console.log('   ✓ Super Admin created:', superAdmin.personalId);
 
     // ============================================
-    // 2. CREATE COMPANIES
+    // 2. CREATE COMPANIES (UK)
     // ============================================
     console.log('\n🏢 Creating Companies...');
 
-    // Transport Express SRL (PREMIUM)
-    const transportExpress = await prisma.company.create({
+    // Swift Logistics Ltd (PREMIUM)
+    const swiftLogistics = await prisma.company.create({
         data: {
-            name: 'Transport Express SRL',
-            email: 'contact@transport-express.ro',
-            phone: '+40212345678',
-            address: 'Str. Transportului 15, Sector 1, București',
-            taxId: 'RO12345678',
+            name: 'Swift Logistics Ltd',
+            email: 'contact@swiftlogistics.co.uk',
+            phone: '+44 20 7946 0958',
+            address: '45 Commercial Road, London E1 1LA',
+            taxId: 'GB123456789',
             plan: 'PREMIUM',
             maxDrivers: 100,
             maxVehicles: 100,
             isActive: true,
         },
     });
-    console.log('   ✓ Company created:', transportExpress.name, '(PREMIUM)');
+    console.log('   ✓ Company created:', swiftLogistics.name, '(PREMIUM)');
 
-    // Logistics Pro SRL (BASIC)
-    const logisticsPro = await prisma.company.create({
+    // Express Couriers Ltd (BASIC)
+    const expressCouriers = await prisma.company.create({
         data: {
-            name: 'Logistics Pro SRL',
-            email: 'office@logistics-pro.ro',
-            phone: '+40213456789',
-            address: 'Bd. Logisticii 42, Sector 2, București',
-            taxId: 'RO87654321',
+            name: 'Express Couriers Ltd',
+            email: 'office@expresscouriers.co.uk',
+            phone: '+44 121 496 0123',
+            address: '78 Broad Street, Birmingham B1 2HF',
+            taxId: 'GB987654321',
             plan: 'BASIC',
             maxDrivers: 20,
             maxVehicles: 20,
             isActive: true,
         },
     });
-    console.log('   ✓ Company created:', logisticsPro.name, '(BASIC)');
+    console.log('   ✓ Company created:', expressCouriers.name, '(BASIC)');
 
     // ============================================
     // 3. CREATE COMPANY ADMINS
     // ============================================
     console.log('\n👔 Creating Company Admins...');
 
-    const adminTE = await prisma.user.create({
+    const adminSL = await prisma.user.create({
         data: {
-            personalId: 'ADMIN-TE-001',
-            name: 'Alexandru Popescu',
-            email: 'admin@transport-express.ro',
+            personalId: 'ADMIN-SL-001',
+            name: 'James Wilson',
+            email: 'admin@swiftlogistics.co.uk',
             password: hashedPassword,
             role: 'COMPANY_ADMIN',
             isActive: true,
-            companyId: transportExpress.id,
+            companyId: swiftLogistics.id,
         },
     });
-    console.log('   ✓ Admin created:', adminTE.personalId, 'for', transportExpress.name);
+    console.log('   ✓ Admin created:', adminSL.personalId, 'for', swiftLogistics.name);
 
-    const adminLP = await prisma.user.create({
+    const adminEC = await prisma.user.create({
         data: {
-            personalId: 'ADMIN-LP-001',
-            name: 'Maria Ionescu',
-            email: 'admin@logistics-pro.ro',
+            personalId: 'ADMIN-EC-001',
+            name: 'Sarah Thompson',
+            email: 'admin@expresscouriers.co.uk',
             password: hashedPassword,
             role: 'COMPANY_ADMIN',
             isActive: true,
-            companyId: logisticsPro.id,
+            companyId: expressCouriers.id,
         },
     });
-    console.log('   ✓ Admin created:', adminLP.personalId, 'for', logisticsPro.name);
+    console.log('   ✓ Admin created:', adminEC.personalId, 'for', expressCouriers.name);
 
     // ============================================
     // 4. CREATE DRIVERS
     // ============================================
     console.log('\n🚗 Creating Drivers...');
 
-    // Transport Express Drivers
-    const driversTE = [
-        { personalId: 'DRV-TE-001', name: 'Ion Popescu', email: 'ion@transport-express.ro', phone: '+40721111001', rating: 4.8 },
-        { personalId: 'DRV-TE-002', name: 'Maria Dumitrescu', email: 'maria@transport-express.ro', phone: '+40721111002', rating: 4.9 },
-        { personalId: 'DRV-TE-003', name: 'Andrei Vasile', email: 'andrei@transport-express.ro', phone: '+40721111003', rating: 4.7 },
+    // Swift Logistics Drivers
+    const driversSL = [
+        { personalId: 'DRV-SL-001', name: 'Oliver Brown', email: 'oliver@swiftlogistics.co.uk', phone: '+44 7700 900001', rating: 4.8 },
+        { personalId: 'DRV-SL-002', name: 'Emily Davies', email: 'emily@swiftlogistics.co.uk', phone: '+44 7700 900002', rating: 4.9 },
+        { personalId: 'DRV-SL-003', name: 'William Taylor', email: 'william@swiftlogistics.co.uk', phone: '+44 7700 900003', rating: 4.7 },
     ];
 
-    const driversLP = [
-        { personalId: 'DRV-LP-001', name: 'Elena Marinescu', email: 'elena@logistics-pro.ro', phone: '+40722222001', rating: 4.6 },
-        { personalId: 'DRV-LP-002', name: 'Cristian Radu', email: 'cristian@logistics-pro.ro', phone: '+40722222002', rating: 4.8 },
-        { personalId: 'DRV-LP-003', name: 'Alina Stoica', email: 'alina@logistics-pro.ro', phone: '+40722222003', rating: 4.9 },
+    const driversEC = [
+        { personalId: 'DRV-EC-001', name: 'Charlotte Evans', email: 'charlotte@expresscouriers.co.uk', phone: '+44 7700 900011', rating: 4.6 },
+        { personalId: 'DRV-EC-002', name: 'Harry Roberts', email: 'harry@expresscouriers.co.uk', phone: '+44 7700 900012', rating: 4.8 },
+        { personalId: 'DRV-EC-003', name: 'Amelia Johnson', email: 'amelia@expresscouriers.co.uk', phone: '+44 7700 900013', rating: 4.9 },
     ];
 
     const allDrivers = [];
 
-    for (const driverData of driversTE) {
+    for (const driverData of driversSL) {
         const driver = await prisma.user.create({
             data: {
                 ...driverData,
                 password: hashedPassword,
                 role: 'DRIVER',
                 isActive: true,
-                companyId: transportExpress.id,
+                companyId: swiftLogistics.id,
             },
         });
         allDrivers.push(driver);
-        console.log('   ✓ Driver created:', driver.personalId, '-', driver.name, '(Transport Express)');
+        console.log('   ✓ Driver created:', driver.personalId, '-', driver.name, '(Swift Logistics)');
     }
 
-    for (const driverData of driversLP) {
+    for (const driverData of driversEC) {
         const driver = await prisma.user.create({
             data: {
                 ...driverData,
                 password: hashedPassword,
                 role: 'DRIVER',
                 isActive: true,
-                companyId: logisticsPro.id,
+                companyId: expressCouriers.id,
             },
         });
         allDrivers.push(driver);
-        console.log('   ✓ Driver created:', driver.personalId, '-', driver.name, '(Logistics Pro)');
+        console.log('   ✓ Driver created:', driver.personalId, '-', driver.name, '(Express Couriers)');
     }
 
     // ============================================
-    // 5. CREATE VEHICLES
+    // 5. CREATE VEHICLES (UK plates)
     // ============================================
     console.log('\n🚚 Creating Vehicles...');
 
-    const vehiclesTE = [
-        { plate: 'B-123-ABC', model: 'Mercedes Sprinter', year: 2022, type: 'VAN' },
-        { plate: 'B-456-DEF', model: 'Volkswagen Crafter', year: 2021, type: 'VAN' },
-        { plate: 'B-789-GHI', model: 'Ford Transit', year: 2023, type: 'VAN' },
+    const vehiclesSL = [
+        { plate: 'AB21 XYZ', model: 'Mercedes Sprinter', year: 2022, type: 'VAN' },
+        { plate: 'CD22 ABC', model: 'Volkswagen Crafter', year: 2021, type: 'VAN' },
+        { plate: 'EF23 DEF', model: 'Ford Transit', year: 2023, type: 'VAN' },
     ];
 
-    const vehiclesLP = [
-        { plate: 'B-111-XYZ', model: 'Renault Master', year: 2022, type: 'VAN' },
-        { plate: 'B-222-UVW', model: 'Iveco Daily', year: 2021, type: 'VAN' },
-        { plate: 'B-333-RST', model: 'Peugeot Boxer', year: 2023, type: 'VAN' },
+    const vehiclesEC = [
+        { plate: 'GH21 GHI', model: 'Renault Master', year: 2022, type: 'VAN' },
+        { plate: 'JK22 JKL', model: 'Iveco Daily', year: 2021, type: 'VAN' },
+        { plate: 'LM23 MNO', model: 'Peugeot Boxer', year: 2023, type: 'VAN' },
     ];
 
-    for (const vehicleData of vehiclesTE) {
+    for (const vehicleData of vehiclesSL) {
         await prisma.vehicle.create({
             data: {
                 ...vehicleData,
                 isActive: true,
-                companyId: transportExpress.id,
+                companyId: swiftLogistics.id,
             },
         });
-        console.log('   ✓ Vehicle created:', vehicleData.plate, 'for', transportExpress.name);
+        console.log('   ✓ Vehicle created:', vehicleData.plate, 'for', swiftLogistics.name);
     }
 
-    for (const vehicleData of vehiclesLP) {
+    for (const vehicleData of vehiclesEC) {
         await prisma.vehicle.create({
             data: {
                 ...vehicleData,
                 isActive: true,
-                companyId: logisticsPro.id,
+                companyId: expressCouriers.id,
             },
         });
-        console.log('   ✓ Vehicle created:', vehicleData.plate, 'for', logisticsPro.name);
+        console.log('   ✓ Vehicle created:', vehicleData.plate, 'for', expressCouriers.name);
     }
 
     // ============================================
-    // 6. CREATE TASKS
+    // 6. CREATE TASKS (UK locations)
     // ============================================
     console.log('\n📦 Creating Tasks...');
 
     const taskTemplates = [
-        { title: 'Livrare Colete Sector 1', description: 'Livrare pachete în zona Piața Victoriei', location: 'Sector 1, București' },
-        { title: 'Transport Marfă Pipera', description: 'Ridicare și livrare marfă la depozit Pipera', location: 'Pipera, București' },
-        { title: 'Livrare Documente Otopeni', description: 'Livrare pachet urgent la Aeroport Otopeni', location: 'Otopeni, Ilfov' },
-        { title: 'Transport Echipamente IT', description: 'Mutare echipamente IT între birouri', location: 'Sector 2, București' },
-        { title: 'Livrare Mobilier Berceni', description: 'Transport și livrare mobilier rezidențial', location: 'Berceni, București' },
-        { title: 'Ridicare Colete Militari', description: 'Ridicare comenzi de la depozit Militari', location: 'Militari, București' },
-        { title: 'Livrare Electrocasnice', description: 'Transport și instalare electrocasnice', location: 'Sector 3, București' },
-        { title: 'Transport Produse Alimentare', description: 'Livrare produse proaspete la supermarket', location: 'Titan, București' },
+        { title: 'Parcel Delivery Westminster', description: 'Deliver packages to Westminster area offices', location: 'Westminster, London SW1' },
+        { title: 'Warehouse Pickup Canary Wharf', description: 'Collect goods from Canary Wharf warehouse', location: 'Canary Wharf, London E14' },
+        { title: 'Express Delivery Heathrow', description: 'Urgent package delivery to Heathrow Airport', location: 'Heathrow Airport, TW6' },
+        { title: 'IT Equipment Transport', description: 'Move IT equipment between office locations', location: 'Shoreditch, London EC2A' },
+        { title: 'Furniture Delivery Croydon', description: 'Residential furniture delivery and setup', location: 'Croydon, Surrey CR0' },
+        { title: 'Package Collection Stratford', description: 'Collect orders from Stratford distribution centre', location: 'Stratford, London E15' },
+        { title: 'Appliance Delivery', description: 'Deliver and install home appliances', location: 'Camden, London NW1' },
+        { title: 'Grocery Delivery', description: 'Fresh produce delivery to supermarket', location: 'Greenwich, London SE10' },
     ];
 
     const allTasks = [];
 
-    // Create tasks for Transport Express
-    const driversForTE = allDrivers.filter(d => d.companyId === transportExpress.id);
+    // Create tasks for Swift Logistics
+    const driversForSL = allDrivers.filter(d => d.companyId === swiftLogistics.id);
     for (let i = 0; i < 15; i++) {
         const template = taskTemplates[Math.floor(Math.random() * taskTemplates.length)];
         const status = i < 8 ? 'COMPLETED' : i < 12 ? 'ACCEPTED' : 'PENDING';
         const scheduledDate = randomDate(status === 'COMPLETED' ? 30 : 7);
-        const price = 50 + Math.floor(Math.random() * 200);
+        const price = 30 + Math.floor(Math.random() * 120);  // £30-£150
 
         const taskData = {
             title: template.title,
@@ -235,12 +235,12 @@ async function main() {
             scheduledDate: setRandomTime(scheduledDate),
             price: price,
             status: status,
-            createdById: adminTE.id,
-            companyId: transportExpress.id,
+            createdById: adminSL.id,
+            companyId: swiftLogistics.id,
         };
 
         if (status !== 'PENDING') {
-            const driver = driversForTE[Math.floor(Math.random() * driversForTE.length)];
+            const driver = driversForSL[Math.floor(Math.random() * driversForSL.length)];
             taskData.assignedToId = driver.id;
         }
 
@@ -252,15 +252,15 @@ async function main() {
         const task = await prisma.task.create({ data: taskData });
         allTasks.push(task);
     }
-    console.log('   ✓ Created 15 tasks for', transportExpress.name);
+    console.log('   ✓ Created 15 tasks for', swiftLogistics.name);
 
-    // Create tasks for Logistics Pro
-    const driversForLP = allDrivers.filter(d => d.companyId === logisticsPro.id);
+    // Create tasks for Express Couriers
+    const driversForEC = allDrivers.filter(d => d.companyId === expressCouriers.id);
     for (let i = 0; i < 12; i++) {
         const template = taskTemplates[Math.floor(Math.random() * taskTemplates.length)];
         const status = i < 6 ? 'COMPLETED' : i < 9 ? 'ACCEPTED' : 'PENDING';
         const scheduledDate = randomDate(status === 'COMPLETED' ? 30 : 7);
-        const price = 50 + Math.floor(Math.random() * 200);
+        const price = 30 + Math.floor(Math.random() * 120);  // £30-£150
 
         const taskData = {
             title: template.title,
@@ -269,12 +269,12 @@ async function main() {
             scheduledDate: setRandomTime(scheduledDate),
             price: price,
             status: status,
-            createdById: adminLP.id,
-            companyId: logisticsPro.id,
+            createdById: adminEC.id,
+            companyId: expressCouriers.id,
         };
 
         if (status !== 'PENDING') {
-            const driver = driversForLP[Math.floor(Math.random() * driversForLP.length)];
+            const driver = driversForEC[Math.floor(Math.random() * driversForEC.length)];
             taskData.assignedToId = driver.id;
         }
 
@@ -286,7 +286,7 @@ async function main() {
         const task = await prisma.task.create({ data: taskData });
         allTasks.push(task);
     }
-    console.log('   ✓ Created 12 tasks for', logisticsPro.name);
+    console.log('   ✓ Created 12 tasks for', expressCouriers.name);
 
     // ============================================
     // 7. UPDATE DRIVER STATISTICS
@@ -306,7 +306,7 @@ async function main() {
             },
         });
 
-        console.log(`   ✓ ${driver.personalId}: ${completedTasks.length} completed, ${totalEarnings.toFixed(2)} RON`);
+        console.log(`   ✓ ${driver.personalId}: ${completedTasks.length} completed, £${totalEarnings.toFixed(2)}`);
     }
 
     // ============================================
@@ -328,16 +328,16 @@ async function main() {
     console.log('\n   Super Admin:');
     console.log('   - SA001 / password123');
     console.log('\n   Company Admins:');
-    console.log('   - ADMIN-TE-001 / password123 (Transport Express)');
-    console.log('   - ADMIN-LP-001 / password123 (Logistics Pro)');
-    console.log('\n   Drivers (Transport Express):');
-    console.log('   - DRV-TE-001 / password123 (Ion Popescu)');
-    console.log('   - DRV-TE-002 / password123 (Maria Dumitrescu)');
-    console.log('   - DRV-TE-003 / password123 (Andrei Vasile)');
-    console.log('\n   Drivers (Logistics Pro):');
-    console.log('   - DRV-LP-001 / password123 (Elena Marinescu)');
-    console.log('   - DRV-LP-002 / password123 (Cristian Radu)');
-    console.log('   - DRV-LP-003 / password123 (Alina Stoica)');
+    console.log('   - ADMIN-SL-001 / password123 (Swift Logistics)');
+    console.log('   - ADMIN-EC-001 / password123 (Express Couriers)');
+    console.log('\n   Drivers (Swift Logistics):');
+    console.log('   - DRV-SL-001 / password123 (Oliver Brown)');
+    console.log('   - DRV-SL-002 / password123 (Emily Davies)');
+    console.log('   - DRV-SL-003 / password123 (William Taylor)');
+    console.log('\n   Drivers (Express Couriers):');
+    console.log('   - DRV-EC-001 / password123 (Charlotte Evans)');
+    console.log('   - DRV-EC-002 / password123 (Harry Roberts)');
+    console.log('   - DRV-EC-003 / password123 (Amelia Johnson)');
 }
 
 main()

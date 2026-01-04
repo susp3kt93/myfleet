@@ -95,21 +95,21 @@ export default function ReportsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="min-h-screen bg-gray-100">
+            {/* Header with Green Gradient */}
+            <header className="bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <Link href="/admin" className="text-primary-500 hover:text-primary-600">
-                                {tCommon('buttons.back')}
+                            <Link href="/admin" className="text-white/70 hover:text-white transition">
+                                ← {tCommon('buttons.back')}
                             </Link>
-                            <h1 className="text-2xl font-bold text-gray-900">{t('reports.title')}</h1>
+                            <h1 className="text-2xl font-bold text-white">📊 {t('reports.title')}</h1>
                         </div>
                         <button
                             onClick={handleExportCSV}
                             disabled={loading}
-                            className="px-4 py-2 bg-green-500 hover:bg-green-600 disabled:bg-gray-400 text-white rounded-lg transition flex items-center gap-2"
+                            className="px-4 py-2 bg-white text-green-600 hover:bg-gray-100 disabled:bg-gray-300 rounded-lg transition flex items-center gap-2 font-medium shadow-lg"
                         >
                             {loading ? '⏳' : '📊'} Export CSV
                         </button>
@@ -188,7 +188,7 @@ export default function ReportsPage() {
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="text-sm font-bold text-green-600">
-                                                {driver.weeklyStats.earnings.toFixed(2)} RON
+                                                {driver.weeklyStats.earnings.toFixed(2)} £
                                             </div>
                                         </td>
                                         <td className="px-6 py-4 whitespace-nowrap">
@@ -213,7 +213,7 @@ export default function ReportsPage() {
                                         <span className="text-yellow-800">⏳ {reportData.totals.pending}</span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="text-green-600">{reportData.totals.earnings.toFixed(2)} RON</span>
+                                        <span className="text-green-600">{reportData.totals.earnings.toFixed(2)} £</span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         -

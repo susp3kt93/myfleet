@@ -245,10 +245,51 @@ router.get('/:id/stats', requireCompanyAdmin, canManageCompany, async (req, res)
         ]);
 
         // Get total earnings
+        // Get total earnings
         const earningsResult = await prisma.task.aggregate({
             where: { companyId, status: 'COMPLETED' },
             _sum: { actualEarnings: true }
         });
+
+        // Get monthly history for chart (Last 6 months)
+        const now = new Date();
+        const monthlyHistory = [];
+        const monthNames = [
+            'Ianuarie', 'Februarie', 'Martie', 'Aprilie', 'Mai', 'Iunie',
+            'Iulie', 'August', 'Septembrie', 'Octombrie', 'Noiembrie', 'Decembrie'
+        ];
+
+        for (let i = 0; i < 6; i++) {
+            const targetDate = new Date(now.getFullYear(), now.getMonth() - i, 1);
+            const year = targetDate.getFullYear();
+            const month = targetDate.getMonth();
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 1);
+
+            const monthStats = await prisma.task.aggregate({
+                where: {
+                    companyId: companyId,
+                    status: 'COMPLETED',
+                    scheduledDate: {
+                        gte: firstDay,
+                        lt: lastDay
+                    }
+                },
+                _sum: { actualEarnings: true },
+                _count: { id: true }
+            });
+
+            const monthEarnings = monthStats._sum.actualEarnings || 0;
+            const monthStr = `${year}-${String(month + 1).padStart(2, '0')}`;
+
+            monthlyHistory.push({
+                month: monthStr,
+                year: year,
+                monthName: monthNames[month],
+                earnings: monthEarnings,
+                taskCount: monthStats._count.id
+            });
+        }
 
         const stats = {
             users,
@@ -258,7 +299,11 @@ router.get('/:id/stats', requireCompanyAdmin, canManageCompany, async (req, res)
             pendingTasks,
             completedTasks,
             vehicles,
-            totalEarnings: earningsResult._sum.actualEarnings || 0
+            pendingTasks,
+            completedTasks,
+            vehicles,
+            totalEarnings: earningsResult._sum.actualEarnings || 0,
+            monthlyHistory // Add history to response
         };
 
         res.json(stats);

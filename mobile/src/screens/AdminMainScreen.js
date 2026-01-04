@@ -1,11 +1,15 @@
-import React, { useEffect, useState } from 'react';
+
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect } from '@react-navigation/native';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
-import { Text, Avatar, FAB, Card, Button, List, Divider, Badge } from 'react-native-paper';
+import { Text, Avatar, FAB, Card, Button, Divider, Badge, ActivityIndicator } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
-import { logout } from '../store/authSlice';
 import { adminAPI, usersAPI, tasksAPI } from '../services/api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import EarningsChart from '../components/EarningsChart';
+import AdminTasksView from '../components/AdminTasksView';
+import AdminDriversView from '../components/AdminDriversView';
 
 export default function AdminMainScreen({ navigation }) {
     const dispatch = useDispatch();
@@ -16,184 +20,197 @@ export default function AdminMainScreen({ navigation }) {
     const [stats, setStats] = useState(null);
     const [drivers, setDrivers] = useState([]);
     const [recentTasks, setRecentTasks] = useState([]);
+    const [loading, setLoading] = useState(true);
 
-    const isSuperAdmin = user?.role === 'SUPER_ADMIN';
-
-    useEffect(() => {
-        loadData();
-    }, []);
-
-    const loadData = async () => {
+    const loadData = useCallback(async () => {
         try {
-            // First fetch users to count drivers
-            const usersRes = await usersAPI.getUsers();
-            // The API returns { users: [...] } so we need usersRes.data.users
-            const usersList = usersRes.data.users || [];
-            const allDrivers = usersList.filter(u => u.role === 'DRIVER');
-            setDrivers(allDrivers);
+            console.log('Loading admin data...');
 
-            // Fetch tasks
-            const tasksRes = await tasksAPI.getTasks({ limit: 20 });
-            // The API returns { tasks: [...] }
-            const tasksList = tasksRes.data.tasks || [];
-            setRecentTasks(tasksList);
-
-            if (isSuperAdmin) {
-                // Calculate stats for Super Admin from the pulled lists
-                const pendingTasks = tasksList.filter(t => {
-                    const tDate = new Date(t.scheduledDate);
-                    const today = new Date();
-                    return tDate.getDate() === today.getDate() &&
-                        tDate.getMonth() === today.getMonth() &&
-                        tDate.getFullYear() === today.getFullYear();
-                }).length;
-
-                const completedTasks = tasksList.filter(t => t.status === 'COMPLETED').length;
-                const totalEarnings = tasksList
-                    .filter(t => t.status === 'COMPLETED')
-                    .reduce((acc, t) => acc + Number(t.price), 0);
-
-                setStats({
-                    activeDrivers: allDrivers.length,
-                    pendingTasks, // Using "Tasks Today" label effectively
-                    completedTasks,
-                    totalEarnings
-                });
-            } else if (user?.companyId) {
+            // 1. Fetch Company Stats
+            if (user?.companyId) {
                 const statsRes = await adminAPI.getCompanyStats(user.companyId);
                 setStats(statsRes.data);
             }
 
+            // 2. Fetch Drivers (Users filtered)
+            const usersRes = await usersAPI.getUsers();
+            const allUsers = usersRes.data.users || [];
+            // Filter: If company admin, only show own company drivers? 
+            // API usually handles permission filtering. Assuming retrieval is correct.
+            const driverList = allUsers.filter(u => u.role === 'DRIVER');
+            setDrivers(driverList);
+
+            // 3. Fetch Tasks
+            const tasksRes = await tasksAPI.getTasks({ companyId: user.companyId });
+            const allTasks = tasksRes.data.tasks || [];
+            console.log(`Fetched ${allTasks.length} tasks`);
+
+            // Sort by date desc
+            allTasks.sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate));
+            setRecentTasks(allTasks);
+
         } catch (error) {
-            console.error('Error loading admin data:', error);
+            console.error('Admin load error:', error);
+        } finally {
+            setLoading(false);
+            setRefreshing(false);
         }
-    };
+    }, [user?.companyId]);
 
-    const onRefresh = async () => {
+    useFocusEffect(
+        useCallback(() => {
+            loadData();
+        }, [loadData])
+    );
+
+    const onRefresh = React.useCallback(() => {
         setRefreshing(true);
-        await loadData();
-        setRefreshing(false);
-    };
+        loadData();
+    }, [loadData]);
 
-    const handleLogout = () => {
-        dispatch(logout());
-        navigation.replace('Login');
-    };
+    const renderTabs = () => (
+        <View style={styles.tabContainer}>
+            <Button
+                mode={activeTab === 'overview' ? 'contained' : 'text'}
+                onPress={() => setActiveTab('overview')}
+                style={styles.tab}
+                buttonColor={activeTab === 'overview' ? '#22c55e' : undefined}
+                textColor={activeTab === 'overview' ? 'white' : '#666'}
+            >
+                {t('admin.presentation') || 'Overview'}
+            </Button>
+            <Button
+                mode={activeTab === 'drivers' ? 'contained' : 'text'}
+                onPress={() => setActiveTab('drivers')}
+                style={styles.tab}
+                buttonColor={activeTab === 'drivers' ? '#22c55e' : undefined}
+                textColor={activeTab === 'drivers' ? 'white' : '#666'}
+            >
+                {t('admin.drivers') || 'Drivers'}
+            </Button>
+            <Button
+                mode={activeTab === 'tasks' ? 'contained' : 'text'}
+                onPress={() => setActiveTab('tasks')}
+                style={styles.tab}
+                buttonColor={activeTab === 'tasks' ? '#22c55e' : undefined}
+                textColor={activeTab === 'tasks' ? 'white' : '#666'}
+            >
+                {t('admin.tasks') || 'Tasks'}
+            </Button>
+        </View>
+    );
 
     return (
         <View style={styles.container}>
+            {/* Header */}
             <View style={styles.header}>
-                <View style={styles.userInfo}>
-                    <Avatar.Text
-                        size={56}
-                        label={user?.name?.substring(0, 2).toUpperCase() || 'AD'}
-                        style={styles.avatar}
-                    />
-                    <View style={styles.userDetails}>
-                        <Text style={styles.userName}>{user?.name}</Text>
-                        <Text style={styles.userRole}>
-                            {isSuperAdmin ? t('admin.superAdmin') : t('admin.companyAdmin')}
-                        </Text>
-                    </View>
+                <View style={{ flex: 1 }}>
+                    <Text variant="headlineMedium" style={styles.title}>
+                        {user?.company?.name || 'Company Dashboard'}
+                    </Text>
+                    <Text variant="bodyLarge" style={styles.subtitle}>
+                        {user?.name}
+                    </Text>
                 </View>
-                <View style={styles.headerActions}>
+                <View>
                     <LanguageSwitcher />
-                    <FAB
-                        icon="logout"
-                        size="small"
-                        onPress={handleLogout}
-                        style={styles.logoutButton}
-                    />
                 </View>
             </View>
 
-            <View style={styles.tabs}>
-                <Text
-                    style={[styles.tab, activeTab === 'overview' && styles.activeTab]}
-                    onPress={() => setActiveTab('overview')}
-                >
-                    {t('admin.presentation')}
-                </Text>
-                <Text
-                    style={[styles.tab, activeTab === 'drivers' && styles.activeTab]}
-                    onPress={() => setActiveTab('drivers')}
-                >
-                    {t('admin.drivers')}
-                </Text>
-                <Text
-                    style={[styles.tab, activeTab === 'tasks' && styles.activeTab]}
-                    onPress={() => setActiveTab('tasks')}
-                >
-                    {t('admin.tasks')}
-                </Text>
-            </View>
+            {/* Tabs */}
+            {renderTabs()}
 
-            <ScrollView
-                style={styles.content}
-                refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
-            >
-                {activeTab === 'overview' && (
-                    <View style={styles.section}>
-                        <View style={styles.statsGrid}>
-                            <Card style={styles.statCard}>
-                                <Card.Content>
-                                    <Text style={styles.statLabel}>{t('stats.activeDrivers')}</Text>
-                                    <Text style={styles.statValue}>{stats?.activeDrivers || drivers.length || 0}</Text>
-                                </Card.Content>
-                            </Card>
-                            <Card style={styles.statCard}>
-                                <Card.Content>
-                                    <Text style={styles.statLabel}>{t('stats.tasksToday')}</Text>
-                                    <Text style={styles.statValue}>{stats?.pendingTasks || 0}</Text>
-                                </Card.Content>
-                            </Card>
-                            <Card style={styles.statCard}>
-                                <Card.Content>
-                                    <Text style={styles.statLabel}>{t('stats.completedTasks')}</Text>
-                                    <Text style={[styles.statValue, { color: '#10B981' }]}>{stats?.completedTasks || 0}</Text>
-                                </Card.Content>
-                            </Card>
-                            <Card style={styles.statCard}>
-                                <Card.Content>
-                                    <Text style={styles.statLabel}>{t('stats.totalRevenue')}</Text>
-                                    <Text style={[styles.statValue, { color: '#10B981', fontSize: 20 }]}>
-                                        {stats?.totalEarnings?.toFixed(2) || '0.00'} RON
-                                    </Text>
-                                </Card.Content>
-                            </Card>
-                        </View>
-                    </View>
-                )}
+            {/* Content Area */}
+            {loading ? (
+                <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+                    <ActivityIndicator size="large" color="#22c55e" />
+                </View>
+            ) : (
+                <View style={{ flex: 1 }}>
+                    {activeTab === 'overview' && (
+                        <ScrollView
+                            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}
+                            contentContainerStyle={styles.content}
+                        >
+                            {/* Stats Grid */}
+                            <View style={styles.statsGrid}>
+                                <Card style={styles.statCard}>
+                                    <Card.Content>
+                                        <Text style={styles.statLabel}>{t('stats.activeDrivers')}</Text>
+                                        <Text style={styles.statValue}>{drivers.length}</Text>
+                                    </Card.Content>
+                                </Card>
+                                <Card style={styles.statCard}>
+                                    <Card.Content>
+                                        <Text style={styles.statLabel}>{t('stats.tasksToday') || 'Tasks Pending'}</Text>
+                                        <Text style={styles.statValue}>{stats?.pendingTasks || 0}</Text>
+                                    </Card.Content>
+                                </Card>
+                                <Card style={styles.statCard}>
+                                    <Card.Content>
+                                        <Text style={styles.statLabel}>{t('stats.completedTasks')}</Text>
+                                        <Text style={[styles.statValue, { color: '#10B981' }]}>{stats?.completedTasks || 0}</Text>
+                                    </Card.Content>
+                                </Card>
+                                <Card style={styles.statCard}>
+                                    <Card.Content>
+                                        <Text style={styles.statLabel}>{t('stats.totalRevenue')}</Text>
+                                        <Text style={[styles.statValue, { color: '#10B981', fontSize: 20 }]}>
+                                            {stats?.totalEarnings?.toFixed(2) || '0.00'} £
+                                        </Text>
+                                    </Card.Content>
+                                </Card>
+                            </View>
 
-                {activeTab === 'drivers' && (
-                    <View style={styles.section}>
-                        {drivers.map(driver => (
-                            <Card key={driver.id} style={styles.card}>
-                                <Card.Title
-                                    title={driver.name}
-                                    subtitle={driver.phone || driver.email}
-                                    left={(props) => <Avatar.Text {...props} label={driver.name.substring(0, 2)} />}
-                                    right={(props) => <Badge style={{ backgroundColor: '#10B981', marginRight: 10 }}>{t('admin.active')}</Badge>}
-                                />
-                            </Card>
-                        ))}
-                    </View>
-                )}
+                            {/* Monthly Earnings */}
+                            <Text style={[styles.sectionTitle, { marginTop: 16 }]}>
+                                {t('earnings.monthly') || 'Monthly Earnings'}
+                            </Text>
+                            <EarningsChart data={stats?.monthlyHistory || []} />
 
-                {activeTab === 'tasks' && (
-                    <View style={styles.section}>
-                        {recentTasks.map(task => (
-                            <Card key={task.id} style={styles.card}>
-                                <Card.Content>
-                                    <Text style={styles.taskTitle}>{task.title}</Text>
-                                    <Text style={styles.taskDate}>📅 {new Date(task.scheduledDate).toLocaleDateString()}</Text>
-                                    <Text style={styles.taskStatus}>{task.status}</Text>
-                                </Card.Content>
-                            </Card>
-                        ))}
-                    </View>
-                )}
-            </ScrollView>
+                            {/* Short Recent Activity */}
+                            <Text style={[styles.sectionTitle, { marginTop: 16 }]}>
+                                {t('admin.recentActivity') || 'Recent Activity'}
+                            </Text>
+                            {recentTasks.slice(0, 3).map(task => (
+                                <Card key={task.id} style={styles.card}>
+                                    <Card.Content>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <View style={{ flex: 1 }}>
+                                                <Text style={styles.taskTitle} numberOfLines={1}>{task.title}</Text>
+                                                <Text style={styles.taskDate}>
+                                                    {new Date(task.scheduledDate).toLocaleDateString()}
+                                                </Text>
+                                            </View>
+                                            <Badge style={{ backgroundColor: task.status === 'COMPLETED' ? '#22c55e' : '#f59e0b', alignSelf: 'flex-start' }}>
+                                                {task.status}
+                                            </Badge>
+                                        </View>
+                                    </Card.Content>
+                                </Card>
+                            ))}
+                        </ScrollView>
+                    )}
+
+                    {activeTab === 'drivers' && (
+                        <AdminDriversView drivers={drivers} onRefresh={onRefresh} />
+                    )}
+
+                    {activeTab === 'tasks' && (
+                        <AdminTasksView tasks={recentTasks} drivers={drivers} onRefresh={onRefresh} />
+                    )}
+                </View>
+            )}
+
+            {/* Global FAB for Creating Tasks - Visible on Overview and Tasks tab */}
+            {activeTab !== 'drivers' && (
+                <FAB
+                    style={styles.fab}
+                    icon="plus"
+                    color="white"
+                    onPress={() => navigation.navigate('CreateTask')}
+                />
+            )}
         </View>
     );
 }
@@ -201,58 +218,51 @@ export default function AdminMainScreen({ navigation }) {
 const styles = StyleSheet.create({
     container: { flex: 1, backgroundColor: '#F9FAFB' },
     header: {
-        backgroundColor: '#FFFFFF',
+        backgroundColor: '#22c55e',
         paddingTop: 60,
         paddingHorizontal: 20,
         paddingBottom: 20,
         flexDirection: 'row',
-        justifyContent: 'space-between',
         alignItems: 'center',
-        borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
+        justifyContent: 'space-between',
+        borderBottomLeftRadius: 20,
+        borderBottomRightRadius: 20,
+        elevation: 4
     },
-    userInfo: { flexDirection: 'row', alignItems: 'center', flex: 1 },
-    avatar: { backgroundColor: '#4F46E5' },
-    userDetails: { marginLeft: 16 },
-    userName: { fontSize: 20, fontWeight: 'bold', color: '#111827' },
-    userRole: { fontSize: 14, color: '#6B7280' },
-    headerActions: { flexDirection: 'row', alignItems: 'center', gap: 8 },
-    logoutButton: { backgroundColor: '#EF4444' },
-    tabs: {
+    title: { color: 'white', fontWeight: 'bold', fontSize: 22 },
+    subtitle: { color: 'rgba(255,255,255,0.9)', fontSize: 14 },
+    tabContainer: {
         flexDirection: 'row',
-        backgroundColor: '#FFFFFF',
-        paddingHorizontal: 20,
-        paddingVertical: 12,
-        borderBottomWidth: 1,
-        borderBottomColor: '#E5E7EB',
+        justifyContent: 'space-around',
+        backgroundColor: 'white',
+        paddingVertical: 8,
+        elevation: 2,
+        marginBottom: 1
     },
-    tab: {
-        marginRight: 24,
-        fontSize: 14,
-        color: '#6B7280',
-        paddingBottom: 8,
-    },
-    activeTab: {
-        color: '#4F46E5',
-        fontWeight: '600',
-        borderBottomWidth: 2,
-        borderBottomColor: '#4F46E5',
-    },
-    content: { flex: 1 },
-    section: { padding: 20 },
+    tab: { borderRadius: 20 },
+    content: { padding: 16, paddingBottom: 80 },
     statsGrid: {
         flexDirection: 'row',
         flexWrap: 'wrap',
         justifyContent: 'space-between',
+        gap: 12
     },
     statCard: {
         width: '48%',
         marginBottom: 12,
+        backgroundColor: 'white'
     },
-    statLabel: { fontSize: 12, color: '#6B7280', marginBottom: 4 },
-    statValue: { fontSize: 24, fontWeight: 'bold', color: '#111827' },
-    card: { marginBottom: 12 },
+    statLabel: { fontSize: 12, color: '#666', marginBottom: 4 },
+    statValue: { fontSize: 18, fontWeight: 'bold', color: '#333' },
+    sectionTitle: { fontSize: 18, fontWeight: 'bold', marginBottom: 12, color: '#333' },
+    card: { marginBottom: 12, backgroundColor: 'white' },
     taskTitle: { fontSize: 16, fontWeight: '600' },
     taskDate: { fontSize: 14, color: '#6B7280' },
-    taskStatus: { fontSize: 12, marginTop: 4, fontWeight: 'bold', color: '#4F46E5' }
+    fab: {
+        position: 'absolute',
+        margin: 16,
+        right: 0,
+        bottom: 0,
+        backgroundColor: '#22c55e',
+    },
 });

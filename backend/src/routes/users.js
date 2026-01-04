@@ -87,12 +87,23 @@ router.post('/', checkDriverLimit, async (req, res) => {
         }
 
         // Check if personalId already exists
-        const existing = await prisma.user.findUnique({
+        const existingById = await prisma.user.findUnique({
             where: { personalId }
         });
 
-        if (existing) {
+        if (existingById) {
             return res.status(400).json({ error: 'Personal ID already exists' });
+        }
+
+        // Check if email already exists (if provided)
+        if (email) {
+            const existingByEmail = await prisma.user.findUnique({
+                where: { email }
+            });
+
+            if (existingByEmail) {
+                return res.status(400).json({ error: 'Email already exists. Please use a different email address.' });
+            }
         }
 
         const hashedPassword = await bcrypt.hash(password, 10);
@@ -105,7 +116,7 @@ router.post('/', checkDriverLimit, async (req, res) => {
                 personalId,
                 password: hashedPassword,
                 name,
-                email,
+                email: email || null,
                 phone,
                 role: role || 'DRIVER',
                 companyId,
@@ -127,6 +138,11 @@ router.post('/', checkDriverLimit, async (req, res) => {
         res.status(201).json({ user });
     } catch (error) {
         console.error('Create user error:', error);
+        // Handle unique constraint violations
+        if (error.code === 'P2002') {
+            const field = error.meta?.target?.[0] || 'field';
+            return res.status(400).json({ error: `${field} already exists` });
+        }
         res.status(500).json({ error: 'Failed to create user' });
     }
 });

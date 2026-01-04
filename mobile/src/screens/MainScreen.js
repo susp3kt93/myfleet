@@ -7,6 +7,7 @@ import { fetchTasks } from '../store/tasksSlice';
 import { logout } from '../store/authSlice';
 import api from '../services/api';
 import LanguageSwitcher from '../components/LanguageSwitcher';
+import EarningsChart from '../components/EarningsChart';
 
 export default function EnhancedMainScreen({ navigation }) {
     const dispatch = useDispatch();
@@ -26,12 +27,15 @@ export default function EnhancedMainScreen({ navigation }) {
     const loadData = async () => {
         console.log('[MainScreen] Loading data...');
         const today = new Date();
-        const nextWeek = new Date(today);
-        nextWeek.setDate(today.getDate() + 7);
+        const startWindow = new Date(today);
+        startWindow.setDate(today.getDate() - 30); // 30 days history
 
-        console.log('[MainScreen] Fetching tasks from', today.toISOString().split('T')[0], 'to', nextWeek.toISOString().split('T')[0]);
+        const nextWeek = new Date(today);
+        nextWeek.setDate(today.getDate() + 14); // 2 weeks future
+
+        console.log('[MainScreen] Fetching tasks from', startWindow.toISOString().split('T')[0], 'to', nextWeek.toISOString().split('T')[0]);
         await dispatch(fetchTasks({
-            startDate: today.toISOString().split('T')[0],
+            startDate: startWindow.toISOString().split('T')[0],
             endDate: nextWeek.toISOString().split('T')[0],
         }));
 
@@ -86,9 +90,9 @@ export default function EnhancedMainScreen({ navigation }) {
 
     const getStatusLabel = (status) => {
         switch (status) {
-            case 'PENDING': return 'DISPONIBIL';
-            case 'ACCEPTED': return 'ÎN LUCRU';
-            case 'COMPLETED': return 'FINALIZAT';
+            case 'PENDING': return t('taskDetails.statusPending');
+            case 'ACCEPTED': return t('taskDetails.statusAccepted');
+            case 'COMPLETED': return t('taskDetails.statusCompleted');
             default: return status;
         }
     };
@@ -138,7 +142,13 @@ export default function EnhancedMainScreen({ navigation }) {
                     style={[styles.tab, activeTab === 'earnings' && styles.activeTab]}
                     onPress={() => setActiveTab('earnings')}
                 >
-                    {t('tabs.earnings')}
+                    {t('earnings.title') || 'Câștiguri'}
+                </Text>
+                <Text
+                    style={[styles.tab, activeTab === 'profile' && styles.activeTab]}
+                    onPress={() => setActiveTab('profile')}
+                >
+                    {t('tabs.profile')}
                 </Text>
             </View>
 
@@ -155,7 +165,7 @@ export default function EnhancedMainScreen({ navigation }) {
                             <Card style={styles.statCard}>
                                 <Card.Content>
                                     <Text style={styles.statLabel}>{t('stats.totalEarnings')}</Text>
-                                    <Text style={styles.statValue}>{stats.totalEarnings?.toFixed(2)} RON</Text>
+                                    <Text style={styles.statValue}>{stats.totalEarnings?.toFixed(2)} £</Text>
                                 </Card.Content>
                             </Card>
 
@@ -163,7 +173,7 @@ export default function EnhancedMainScreen({ navigation }) {
                                 <Card.Content>
                                     <Text style={styles.statLabel}>{t('stats.monthlyEarnings')}</Text>
                                     <Text style={[styles.statValue, { color: '#10B981' }]}>
-                                        {stats.monthlyEarnings?.toFixed(2)} RON
+                                        {stats.monthlyEarnings?.toFixed(2)} £
                                     </Text>
                                 </Card.Content>
                             </Card>
@@ -187,16 +197,44 @@ export default function EnhancedMainScreen({ navigation }) {
                             </Card>
                         </View>
 
+                        {/* Earnings Chart */}
+                        <Text style={styles.sectionTitle}>{t('earnings.title')}</Text>
+                        <EarningsChart data={monthlyEarnings} />
+
+                        {/* Recent Activity */}
+                        <Text style={styles.sectionTitle}>{t('tasks.recentActivity') || 'Activitate Recentă'}</Text>
+                        {(tasks || []).filter(t => t.status === 'COMPLETED').length > 0 ? (
+                            (tasks || []).filter(t => t.status === 'COMPLETED').slice(0, 3).map((task) => (
+                                <Card key={task.id} style={styles.taskCard}>
+                                    <Card.Content>
+                                        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
+                                            <View>
+                                                <Text style={styles.taskTitle}>{task.title}</Text>
+                                                <Text style={styles.taskDate}>
+                                                    ✅ {new Date(task.scheduledDate).toLocaleDateString('en-GB')}
+                                                </Text>
+                                            </View>
+                                            <Text style={styles.taskPrice}>
+                                                +{Number(task.actualEarnings || task.price).toFixed(2)} £
+                                            </Text>
+                                        </View>
+                                    </Card.Content>
+                                </Card>
+                            ))) : (
+                            <Text style={{ color: '#6B7280', marginBottom: 20, marginLeft: 4 }}>Nu există activitate recentă.</Text>
+                        )}
+
+                        {/* Recent Tasks */}
                         <Text style={styles.sectionTitle}>{t('tasks.upcomingTasks')}</Text>
-                        {tasks.slice(0, 5).map((task) => (
+                        {tasks.filter(t => t.status !== 'COMPLETED').slice(0, 5).map((task) => (
                             <Card key={task.id} style={styles.taskCard}>
                                 <Card.Content>
                                     <Text style={styles.taskTitle}>{task.title}</Text>
                                     <Text style={styles.taskDate}>
-                                        📅 {new Date(task.scheduledDate).toLocaleDateString('ro-RO')}
+                                        📅 {new Date(task.scheduledDate).toLocaleDateString('en-GB')}
                                     </Text>
                                     <Text style={styles.taskPrice}>
-                                        💰 {Number(task.price).toFixed(2)} RON
+                                        💰 {Number(task.price).toFixed(2)} £
                                     </Text>
                                 </Card.Content>
                             </Card>
@@ -275,14 +313,14 @@ export default function EnhancedMainScreen({ navigation }) {
                                             </Text>
                                         )}
                                         <Text style={styles.taskDate}>
-                                            📅 {new Date(task.scheduledDate).toLocaleDateString('ro-RO')}
+                                            📅 {new Date(task.scheduledDate).toLocaleDateString('en-GB')}
                                         </Text>
                                         {task.location && (
                                             <Text style={styles.taskLocation}>📍 {task.location}</Text>
                                         )}
                                         <View style={styles.taskFooter}>
                                             <Text style={styles.taskPrice}>
-                                                💰 {Number(task.price).toFixed(2)} RON
+                                                💰 {Number(task.price).toFixed(2)} £
                                             </Text>
                                             <Button
                                                 mode="text"
@@ -305,7 +343,7 @@ export default function EnhancedMainScreen({ navigation }) {
                             <Card.Content>
                                 <Text style={styles.earningsTitle}>{t('earnings.monthly')}</Text>
                                 <Text style={styles.earningsTotal}>
-                                    {stats.monthlyEarnings?.toFixed(2)} RON
+                                    {stats.monthlyEarnings?.toFixed(2)} £
                                 </Text>
                                 <Text style={styles.earningsSubtitle}>
                                     {stats.monthlyTasks} {t('earnings.tasksCompleted')}
@@ -317,7 +355,7 @@ export default function EnhancedMainScreen({ navigation }) {
                             <Card.Content>
                                 <Text style={styles.earningsTitle}>{t('earnings.weekly')}</Text>
                                 <Text style={styles.earningsTotal}>
-                                    {stats.weeklyEarnings?.toFixed(2)} RON
+                                    {stats.weeklyEarnings?.toFixed(2)} £
                                 </Text>
                                 <Text style={styles.earningsSubtitle}>
                                     {stats.weeklyTasks} {t('earnings.tasksCompleted')}
@@ -347,13 +385,106 @@ export default function EnhancedMainScreen({ navigation }) {
                                                 </Text>
                                             </View>
                                             <Text style={styles.monthEarnings}>
-                                                {monthData.earnings.toFixed(2)} RON
+                                                {monthData.earnings.toFixed(2)} £
                                             </Text>
                                         </View>
                                     </Card.Content>
                                 </Card>
                             ))
                         )}
+                    </View>
+                )}
+
+                {activeTab === 'profile' && (
+                    <View style={styles.profileContainer}>
+                        {/* User Info Card */}
+                        <Card style={styles.profileCard}>
+                            <Card.Content>
+                                <View style={styles.profileHeader}>
+                                    <Avatar.Text
+                                        size={64}
+                                        label={user?.name?.substring(0, 2).toUpperCase() || 'U'}
+                                        style={styles.profileAvatar}
+                                    />
+                                    <View style={styles.profileInfo}>
+                                        <Text style={styles.profileName}>{user?.name}</Text>
+                                        <Text style={styles.profileId}>{user?.personalId}</Text>
+                                        {user?.email && <Text style={styles.profileEmail}>{user?.email}</Text>}
+                                    </View>
+                                </View>
+                            </Card.Content>
+                        </Card>
+
+                        {/* Quick Actions */}
+                        <Text style={styles.sectionTitle}>{t('profile.quickActions')}</Text>
+
+                        <Card
+                            style={styles.actionCard}
+                            onPress={() => navigation.navigate('TimeOff')}
+                        >
+                            <Card.Content>
+                                <View style={styles.actionRow}>
+                                    <View style={styles.actionIcon}>
+                                        <Text style={{ fontSize: 28 }}>🏖️</Text>
+                                    </View>
+                                    <View style={styles.actionContent}>
+                                        <Text style={styles.actionTitle}>{t('profile.requestTimeOff')}</Text>
+                                        <Text style={styles.actionSubtitle}>{t('profile.requestTimeOffDesc')}</Text>
+                                    </View>
+                                    <Text style={styles.actionArrow}>→</Text>
+                                </View>
+                            </Card.Content>
+                        </Card>
+
+                        <Card
+                            style={styles.actionCard}
+                            onPress={() => navigation.navigate('Vehicle')}
+                        >
+                            <Card.Content>
+                                <View style={styles.actionRow}>
+                                    <View style={styles.actionIcon}>
+                                        <Text style={{ fontSize: 28 }}>🚗</Text>
+                                    </View>
+                                    <View style={styles.actionContent}>
+                                        <Text style={styles.actionTitle}>{t('profile.myVehicle') || 'My Vehicle'}</Text>
+                                        <Text style={styles.actionSubtitle}>{t('profile.myVehicleDesc') || 'View and update mileage'}</Text>
+                                    </View>
+                                    <Text style={styles.actionArrow}>→</Text>
+                                </View>
+                            </Card.Content>
+                        </Card>
+
+                        <Card style={styles.actionCard}>
+                            <Card.Content>
+                                <View style={styles.actionRow}>
+                                    <View style={styles.actionIcon}>
+                                        <Text style={{ fontSize: 28 }}>📊</Text>
+                                    </View>
+                                    <View style={styles.actionContent}>
+                                        <Text style={styles.actionTitle}>{t('profile.statistics')}</Text>
+                                        <Text style={styles.actionSubtitle}>
+                                            {stats?.completedTasks || 0} {t('profile.tasksCompleted')}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </Card.Content>
+                        </Card>
+
+                        <Card style={styles.actionCard}>
+                            <Card.Content>
+                                <View style={styles.actionRow}>
+                                    <View style={styles.actionIcon}>
+                                        <Text style={{ fontSize: 28 }}>⭐</Text>
+                                    </View>
+                                    <View style={styles.actionContent}>
+                                        <Text style={styles.actionTitle}>Rating</Text>
+                                        <Text style={styles.actionSubtitle}>
+                                            {stats?.rating?.toFixed(1) || 'N/A'} {t('profile.stars')}
+                                        </Text>
+                                    </View>
+                                </View>
+                            </Card.Content>
+                        </Card>
                     </View>
                 )}
             </ScrollView>
@@ -383,7 +514,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     avatar: {
-        backgroundColor: '#4F46E5',
+        backgroundColor: '#22c55e',
     },
     userDetails: {
         marginLeft: 16,
@@ -420,10 +551,10 @@ const styles = StyleSheet.create({
         paddingBottom: 8,
     },
     activeTab: {
-        color: '#4F46E5',
+        color: '#22c55e',
         fontWeight: '600',
         borderBottomWidth: 2,
-        borderBottomColor: '#4F46E5',
+        borderBottomColor: '#22c55e',
     },
     content: {
         flex: 1,
@@ -440,6 +571,9 @@ const styles = StyleSheet.create({
     statCard: {
         width: '48%',
         marginBottom: 12,
+        borderRadius: 16,
+        borderLeftWidth: 4,
+        borderLeftColor: '#22c55e',
     },
     statLabel: {
         fontSize: 12,
@@ -463,6 +597,9 @@ const styles = StyleSheet.create({
     },
     taskCard: {
         marginBottom: 12,
+        borderRadius: 16,
+        borderLeftWidth: 4,
+        borderLeftColor: '#22c55e',
     },
     taskTitle: {
         fontSize: 16,
@@ -557,6 +694,10 @@ const styles = StyleSheet.create({
     monthCard: {
         marginBottom: 12,
         backgroundColor: '#FFFFFF',
+        borderRadius: 16,
+        borderLeftWidth: 4,
+        borderLeftColor: '#22c55e',
+        elevation: 2,
     },
     monthHeader: {
         flexDirection: 'row',
@@ -577,5 +718,70 @@ const styles = StyleSheet.create({
         fontSize: 20,
         fontWeight: 'bold',
         color: '#10B981',
+    },
+    profileContainer: {
+        padding: 20,
+    },
+    profileCard: {
+        marginBottom: 16,
+    },
+    profileHeader: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    profileAvatar: {
+        backgroundColor: '#22c55e',
+    },
+    profileInfo: {
+        marginLeft: 16,
+        flex: 1,
+    },
+    profileName: {
+        fontSize: 20,
+        fontWeight: 'bold',
+        color: '#111827',
+    },
+    profileId: {
+        fontSize: 14,
+        color: '#6B7280',
+        marginTop: 2,
+    },
+    profileEmail: {
+        fontSize: 14,
+        color: '#6B7280',
+        marginTop: 2,
+    },
+    actionCard: {
+        marginBottom: 12,
+    },
+    actionRow: {
+        flexDirection: 'row',
+        alignItems: 'center',
+    },
+    actionIcon: {
+        width: 48,
+        height: 48,
+        borderRadius: 12,
+        backgroundColor: '#dcfce7',
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    actionContent: {
+        flex: 1,
+        marginLeft: 12,
+    },
+    actionTitle: {
+        fontSize: 16,
+        fontWeight: '600',
+        color: '#111827',
+    },
+    actionSubtitle: {
+        fontSize: 14,
+        color: '#6B7280',
+        marginTop: 2,
+    },
+    actionArrow: {
+        fontSize: 20,
+        color: '#9CA3AF',
     },
 });

@@ -51,25 +51,25 @@ export default function AdminPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="min-h-screen bg-gray-100">
+            {/* Header with Green Gradient */}
+            <header className="bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center">
-                                <span className="text-2xl">👨‍💼</span>
+                            <div className="w-14 h-14 bg-white/20 backdrop-blur rounded-xl flex items-center justify-center">
+                                <span className="text-3xl">👨‍💼</span>
                             </div>
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900">{user.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Company Admin'} Dashboard</h1>
-                                <p className="text-sm text-gray-600">{user.name} {user.companyId ? '| Company ID: ' + user.companyId.slice(0, 8) : ''}</p>
+                                <h1 className="text-2xl font-bold text-white">{user.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Company Admin'}</h1>
+                                <p className="text-sm text-white/70">{user.name} {user.companyId ? '| Company ID: ' + user.companyId.slice(0, 8) : ''}</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-3">
                             <LanguageSwitcher />
                             <button
                                 onClick={handleLogout}
-                                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition"
+                                className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-lg transition font-medium"
                             >
                                 {tCommon('navigation.logout')}
                             </button>
@@ -82,80 +82,116 @@ export default function AdminPage() {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-blue-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600">{t('dashboard.stats.totalDrivers')}</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.totalDrivers}</p>
+                                <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.totalDrivers')}</p>
+                                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalDrivers}</p>
                             </div>
-                            <div className="text-4xl">👥</div>
+                            <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-3xl">👥</div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-purple-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600">{t('dashboard.stats.totalTasks')}</p>
-                                <p className="text-3xl font-bold text-gray-900">{stats.totalTasks}</p>
+                                <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.totalTasks')}</p>
+                                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalTasks}</p>
                             </div>
-                            <div className="text-4xl">📋</div>
+                            <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-3xl">📋</div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-amber-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600">{t('dashboard.stats.pendingTasks')}</p>
-                                <p className="text-3xl font-bold text-yellow-600">{stats.pendingTasks}</p>
+                                <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.pendingTasks')}</p>
+                                <p className="text-3xl font-bold text-amber-600 mt-1">{stats.pendingTasks}</p>
                             </div>
-                            <div className="text-4xl">⏳</div>
+                            <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-3xl">⏳</div>
                         </div>
                     </div>
 
-                    <div className="bg-white rounded-lg shadow p-6">
+                    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-green-500">
                         <div className="flex items-center justify-between">
                             <div>
-                                <p className="text-sm text-gray-600">{t('dashboard.stats.completed')}</p>
-                                <p className="text-3xl font-bold text-green-600">{stats.completedTasks}</p>
+                                <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.completed')}</p>
+                                <p className="text-3xl font-bold text-green-600 mt-1">{stats.completedTasks}</p>
                             </div>
-                            <div className="text-4xl">✅</div>
+                            <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center text-3xl">✅</div>
                         </div>
                     </div>
                 </div>
 
                 {/* Quick Actions */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <Link href="/admin/users" className="block">
-                        <div className="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition cursor-pointer border-2 border-transparent hover:border-primary-500">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                    <Link href="/admin/users" className="block group">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-blue-500 group-hover:scale-[1.02]">
                             <div className="flex items-center space-x-4">
-                                <div className="text-5xl">👥</div>
+                                <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-blue-200 transition">👥</div>
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.manageUsers')}</h3>
-                                    <p className="text-gray-600">{t('dashboard.actions.manageUsersDesc')}</p>
+                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.manageUsersDesc')}</p>
                                 </div>
                             </div>
                         </div>
                     </Link>
 
-                    <Link href="/admin/tasks" className="block">
-                        <div className="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition cursor-pointer border-2 border-transparent hover:border-primary-500">
+                    <Link href="/admin/tasks" className="block group">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-purple-500 group-hover:scale-[1.02]">
                             <div className="flex items-center space-x-4">
-                                <div className="text-5xl">📋</div>
+                                <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-purple-200 transition">📋</div>
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.manageTasks')}</h3>
-                                    <p className="text-gray-600">{t('dashboard.actions.manageTasksDesc')}</p>
+                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.manageTasksDesc')}</p>
                                 </div>
                             </div>
                         </div>
                     </Link>
 
-                    <Link href="/admin/reports" className="block">
-                        <div className="bg-white rounded-lg shadow-md p-8 hover:shadow-lg transition cursor-pointer border-2 border-transparent hover:border-primary-500">
+                    <Link href="/admin/reports" className="block group">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-amber-500 group-hover:scale-[1.02]">
                             <div className="flex items-center space-x-4">
-                                <div className="text-5xl">📊</div>
+                                <div className="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-amber-200 transition">📊</div>
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.weeklyReports')}</h3>
-                                    <p className="text-gray-600">{t('dashboard.actions.weeklyReportsDesc')}</p>
+                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.weeklyReportsDesc')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+
+                    <Link href="/admin/activity" className="block group">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-green-500 group-hover:scale-[1.02]">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-green-200 transition">📆</div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.driverActivity')}</h3>
+                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.driverActivityDesc')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+
+                    <Link href="/admin/timeoff" className="block group">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-orange-500 group-hover:scale-[1.02]">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-orange-200 transition">🏖️</div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.timeOffRequests')}</h3>
+                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.timeOffRequestsDesc')}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+
+                    <Link href="/admin/vehicles" className="block group">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-cyan-500 group-hover:scale-[1.02]">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-16 h-16 bg-cyan-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-cyan-200 transition">🚗</div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.fleetVehicles') || 'Fleet Vehicles'}</h3>
+                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.fleetVehiclesDesc') || 'Manage vehicles, mileage, and service'}</p>
                                 </div>
                             </div>
                         </div>

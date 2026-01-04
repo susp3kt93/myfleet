@@ -1,6 +1,7 @@
+
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
-import { IconButton, Menu } from 'react-native-paper';
+import { IconButton, Menu, Button } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 
 export default function LanguageSwitcher() {
@@ -15,21 +16,20 @@ export default function LanguageSwitcher() {
         closeMenu();
     };
 
-    const getCurrentLanguageLabel = () => {
-        return i18n.language === 'ro' ? 'RO' : 'EN';
-    };
-
     return (
         <Menu
             visible={visible}
             onDismiss={closeMenu}
             anchor={
-                <IconButton
-                    icon="translate"
-                    size={24}
+                <Button
                     onPress={openMenu}
-                    iconColor="#4F46E5"
-                />
+                    mode="text"
+                    compact
+                    labelStyle={{ fontSize: 24 }}
+                    textColor="#000"
+                >
+                    {i18n.language === 'ro' ? '🇷🇴' : '🇬🇧'}
+                </Button>
             }
         >
             <Menu.Item
@@ -45,3 +45,5 @@ export default function LanguageSwitcher() {
         </Menu>
     );
 }
+
+const styles = StyleSheet.create({});

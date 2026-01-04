@@ -2,22 +2,24 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Text, Button, Card, Chip, ActivityIndicator } from 'react-native-paper';
 import { useDispatch } from 'react-redux';
+import { useTranslation } from 'react-i18next';
 import { acceptTask, rejectTask, completeTask, cancelTask, fetchTasks } from '../store/tasksSlice';
 
 export default function TaskDetailsScreen({ route, navigation }) {
     const { task } = route.params;
     const dispatch = useDispatch();
+    const { t } = useTranslation();
     const [loading, setLoading] = useState(false);
 
     const handleAccept = async () => {
         try {
             setLoading(true);
             await dispatch(acceptTask(task.id)).unwrap();
-            Alert.alert('Success', 'Task acceptat cu succes!');
+            Alert.alert('Success', t('taskDetails.successAccepted'));
             dispatch(fetchTasks({})); // Refresh task list
             navigation.goBack();
         } catch (error) {
-            Alert.alert('Eroare', error || 'Nu s-a putut accepta task-ul');
+            Alert.alert(t('common.error'), error || t('taskDetails.errorAccept'));
         } finally {
             setLoading(false);
         }
@@ -25,22 +27,22 @@ export default function TaskDetailsScreen({ route, navigation }) {
 
     const handleReject = async () => {
         Alert.alert(
-            'Confirmare',
-            'Sigur vrei să refuzi acest task?',
+            t('common.confirm'),
+            t('taskDetails.confirmReject'),
             [
-                { text: 'Anulează', style: 'cancel' },
+                { text: t('actions.cancel'), style: 'cancel' },
                 {
-                    text: 'Refuză',
+                    text: t('actions.reject'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
                             setLoading(true);
                             await dispatch(rejectTask(task.id)).unwrap();
-                            Alert.alert('Success', 'Task refuzat');
+                            Alert.alert('Success', t('taskDetails.successRejected'));
                             dispatch(fetchTasks({}));
                             navigation.goBack();
                         } catch (error) {
-                            Alert.alert('Eroare', error || 'Nu s-a putut refuza task-ul');
+                            Alert.alert(t('common.error'), error || t('taskDetails.errorReject'));
                         } finally {
                             setLoading(false);
                         }
@@ -52,21 +54,21 @@ export default function TaskDetailsScreen({ route, navigation }) {
 
     const handleComplete = async () => {
         Alert.alert(
-            'Confirmare',
-            'Marchează task-ul ca finalizat?',
+            t('common.confirm'),
+            t('taskDetails.confirmComplete'),
             [
-                { text: 'Anulează', style: 'cancel' },
+                { text: t('actions.cancel'), style: 'cancel' },
                 {
-                    text: 'Finalizează',
+                    text: t('actions.complete'),
                     onPress: async () => {
                         try {
                             setLoading(true);
                             await dispatch(completeTask(task.id)).unwrap();
-                            Alert.alert('Success', 'Task finalizat cu succes!');
+                            Alert.alert('Success', t('taskDetails.successCompleted'));
                             dispatch(fetchTasks({}));
                             navigation.goBack();
                         } catch (error) {
-                            Alert.alert('Eroare', error || 'Nu s-a putut finaliza task-ul');
+                            Alert.alert(t('common.error'), error || t('taskDetails.errorComplete'));
                         } finally {
                             setLoading(false);
                         }
@@ -78,22 +80,22 @@ export default function TaskDetailsScreen({ route, navigation }) {
 
     const handleCancel = async () => {
         Alert.alert(
-            'Confirmare',
-            'Sigur vrei să anulezi acest task?',
+            t('common.confirm'),
+            t('taskDetails.confirmCancel'),
             [
-                { text: 'Nu', style: 'cancel' },
+                { text: t('common.back'), style: 'cancel' },
                 {
-                    text: 'Da, anulează',
+                    text: t('actions.cancel'),
                     style: 'destructive',
                     onPress: async () => {
                         try {
                             setLoading(true);
                             await dispatch(cancelTask(task.id)).unwrap();
-                            Alert.alert('Success', 'Task anulat');
+                            Alert.alert('Success', t('taskDetails.successCancelled'));
                             dispatch(fetchTasks({}));
                             navigation.goBack();
                         } catch (error) {
-                            Alert.alert('Eroare', error || 'Nu s-a putut anula task-ul');
+                            Alert.alert(t('common.error'), error || t('taskDetails.errorCancel'));
                         } finally {
                             setLoading(false);
                         }
@@ -121,13 +123,13 @@ export default function TaskDetailsScreen({ route, navigation }) {
     const getStatusLabel = (status) => {
         switch (status) {
             case 'PENDING':
-                return 'DISPONIBIL';
+                return t('taskDetails.statusPending');
             case 'ACCEPTED':
-                return 'ÎN LUCRU';
+                return t('taskDetails.statusAccepted');
             case 'COMPLETED':
-                return 'FINALIZAT';
+                return t('taskDetails.statusCompleted');
             case 'REJECTED':
-                return 'REFUZAT';
+                return t('taskDetails.statusRejected');
             default:
                 return status;
         }
@@ -150,15 +152,15 @@ export default function TaskDetailsScreen({ route, navigation }) {
 
                         {task.description && (
                             <View style={styles.section}>
-                                <Text style={styles.sectionTitle}>📋 Descriere</Text>
+                                <Text style={styles.sectionTitle}>📋 {t('taskDetails.description')}</Text>
                                 <Text style={styles.description}>{task.description}</Text>
                             </View>
                         )}
 
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>📅 Data Programată</Text>
+                            <Text style={styles.sectionTitle}>📅 {t('taskDetails.scheduledDate')}</Text>
                             <Text style={styles.infoText}>
-                                {new Date(task.scheduledDate).toLocaleDateString('ro-RO', {
+                                {new Date(task.scheduledDate).toLocaleDateString('en-GB', {
                                     weekday: 'long',
                                     year: 'numeric',
                                     month: 'long',
@@ -171,21 +173,21 @@ export default function TaskDetailsScreen({ route, navigation }) {
 
                         {task.location && (
                             <View style={styles.section}>
-                                <Text style={styles.sectionTitle}>📍 Locație</Text>
+                                <Text style={styles.sectionTitle}>📍 {t('taskDetails.location')}</Text>
                                 <Text style={styles.infoText}>{task.location}</Text>
                             </View>
                         )}
 
                         <View style={styles.section}>
-                            <Text style={styles.sectionTitle}>💰 Valoare</Text>
-                            <Text style={styles.priceText}>{Number(task.price).toFixed(2)} RON</Text>
+                            <Text style={styles.sectionTitle}>💰 {t('taskDetails.value')}</Text>
+                            <Text style={styles.priceText}>{Number(task.price).toFixed(2)} £</Text>
                         </View>
 
                         {task.completedAt && (
                             <View style={styles.section}>
-                                <Text style={styles.sectionTitle}>✅ Finalizat La</Text>
+                                <Text style={styles.sectionTitle}>✅ {t('taskDetails.completedAt')}</Text>
                                 <Text style={styles.infoText}>
-                                    {new Date(task.completedAt).toLocaleDateString('ro-RO', {
+                                    {new Date(task.completedAt).toLocaleDateString('en-GB', {
                                         year: 'numeric',
                                         month: 'long',
                                         day: 'numeric',
@@ -201,7 +203,7 @@ export default function TaskDetailsScreen({ route, navigation }) {
 
             {/* Action Buttons */}
             <View style={styles.actionContainer}>
-                {loading && <ActivityIndicator size="large" color="#4F46E5" />}
+                {loading && <ActivityIndicator size="large" color="#22c55e" />}
 
                 {!loading && task.status === 'PENDING' && (
                     <View style={styles.buttonRow}>
@@ -211,7 +213,7 @@ export default function TaskDetailsScreen({ route, navigation }) {
                             style={[styles.button, styles.rejectButton]}
                             labelStyle={styles.rejectButtonText}
                         >
-                            Refuză
+                            {t('actions.reject')}
                         </Button>
                         <Button
                             mode="contained"
@@ -219,7 +221,7 @@ export default function TaskDetailsScreen({ route, navigation }) {
                             style={[styles.button, styles.acceptButton]}
                             labelStyle={styles.acceptButtonText}
                         >
-                            Acceptă
+                            {t('actions.accept')}
                         </Button>
                     </View>
                 )}
@@ -232,7 +234,7 @@ export default function TaskDetailsScreen({ route, navigation }) {
                             style={[styles.button, styles.cancelButton]}
                             labelStyle={styles.cancelButtonText}
                         >
-                            Anulează
+                            {t('actions.cancel')}
                         </Button>
                         <Button
                             mode="contained"
@@ -240,7 +242,7 @@ export default function TaskDetailsScreen({ route, navigation }) {
                             style={[styles.button, styles.completeButton]}
                             labelStyle={styles.completeButtonText}
                         >
-                            Finalizează
+                            {t('actions.complete')}
                         </Button>
                     </View>
                 )}
@@ -251,7 +253,7 @@ export default function TaskDetailsScreen({ route, navigation }) {
                         onPress={() => navigation.goBack()}
                         style={styles.backButton}
                     >
-                        Înapoi
+                        {t('common.back')}
                     </Button>
                 )}
             </View>
@@ -270,6 +272,9 @@ const styles = StyleSheet.create({
     },
     card: {
         marginBottom: 16,
+        borderRadius: 16,
+        borderLeftWidth: 4,
+        borderLeftColor: '#22c55e',
     },
     header: {
         marginBottom: 20,
@@ -326,7 +331,7 @@ const styles = StyleSheet.create({
         borderRadius: 12,
     },
     acceptButton: {
-        backgroundColor: '#10B981',
+        backgroundColor: '#22c55e',
     },
     acceptButtonText: {
         color: '#FFFFFF',
@@ -341,7 +346,7 @@ const styles = StyleSheet.create({
         fontSize: 16,
     },
     completeButton: {
-        backgroundColor: '#3B82F6',
+        backgroundColor: '#16a34a',
     },
     completeButtonText: {
         color: '#FFFFFF',

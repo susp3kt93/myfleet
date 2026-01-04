@@ -9,7 +9,7 @@ export const PLANS = {
         name: 'Free Plan',
         description: 'Perfect for small teams getting started',
         price: 0,
-        currency: 'USD',
+        currency: 'GBP',
         billingPeriod: 'month',
         limits: {
             maxDrivers: 5,
@@ -32,7 +32,7 @@ export const PLANS = {
         name: 'Basic Plan',
         description: 'Ideal for growing businesses',
         price: 29.99,
-        currency: 'USD',
+        currency: 'GBP',
         billingPeriod: 'month',
         limits: {
             maxDrivers: 20,
@@ -55,7 +55,7 @@ export const PLANS = {
         name: 'Premium Plan',
         description: 'For large-scale operations',
         price: 99.99,
-        currency: 'USD',
+        currency: 'GBP',
         billingPeriod: 'month',
         limits: {
             maxDrivers: 100,

@@ -2,14 +2,14 @@ import axios from 'axios';
 import storage from '../utils/storage';
 import { Platform } from 'react-native';
 
-// Use environment variable if available (for production build), otherwise default to production URL
+// Use environment variable if available, otherwise default to local development URL
 const ENV_API_URL = process.env.EXPO_PUBLIC_API_URL;
 
-// Production API URL - Render Backend
-const PRODUCTION_API_URL = 'https://myfleet-29a4.onrender.com/api';
+// Local development URL
+const LOCAL_API_URL = 'http://localhost:3002/api';
 
-// Use localhost for development, production URL for builds
-const API_URL = ENV_API_URL || PRODUCTION_API_URL;
+// Use local URL for development (change to production URL for builds)
+const API_URL = ENV_API_URL || LOCAL_API_URL;
 
 console.log('[API] Using API URL:', API_URL);
 
@@ -62,6 +62,9 @@ export const tasksAPI = {
     getTasks: (params) =>
         api.get('/tasks', { params }),
 
+    createTask: (data) =>
+        api.post('/tasks', data),
+
     getTask: (id) =>
         api.get(`/tasks/${id}`),
 
@@ -79,6 +82,9 @@ export const tasksAPI = {
 
     updateTask: (id, data) =>
         api.put(`/tasks/${id}`, data),
+
+    deleteTask: (id) =>
+        api.delete(`/tasks/${id}`),
 };
 
 export const usersAPI = {
@@ -109,4 +115,16 @@ export const adminAPI = {
         api.get('/reports/weekly', { params: { startDate, endDate } }),
 };
 
+export const timeoffAPI = {
+    getRequests: (params) =>
+        api.get('/timeoff', { params }),
+
+    createRequest: (requestDate, reason) =>
+        api.post('/timeoff', { requestDate, reason }),
+
+    cancelRequest: (id) =>
+        api.delete(`/timeoff/${id}`),
+};
+
 export default api;
+

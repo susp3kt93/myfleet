@@ -78,7 +78,7 @@ export default function TaskCard({ task }) {
 
                     <View style={styles.detailRow}>
                         <Text style={styles.detailLabel}>💰 Price:</Text>
-                        <Text style={styles.priceValue}>{Number(task.price).toFixed(2)} RON</Text>
+                        <Text style={styles.priceValue}>{Number(task.price).toFixed(2)} £</Text>
                     </View>
                 </View>
 

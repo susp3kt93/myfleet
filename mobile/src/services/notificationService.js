@@ -72,9 +72,9 @@ export async function registerPushToken() {
         // Save token locally
         await AsyncStorage.setItem('pushToken', pushToken);
 
-        // Send token to backend
-        const response = await API.post('/notifications/register-token', {
-            pushToken
+        // Send token to backend (uses new /push-token endpoint)
+        const response = await API.post('/push-token', {
+            token: pushToken
         });
 
         console.log('[Notifications] Token registered with backend:', response.data);

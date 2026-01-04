@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout, loadStoredAuth } from '../../lib/authSlice';
 import { fetchTasks } from '../../lib/tasksSlice';
-import { format, parseISO, startOfWeek, endOfWeek, isSameDay } from 'date-fns';
+import { format, parseISO, startOfWeek, endOfWeek, isSameDay, addWeeks, subWeeks, eachDayOfInterval, isWithinInterval } from 'date-fns';
 import api from '../../lib/api';
 import MonthlyCalendar from '../../components/MonthlyCalendar';
 import WeekNavigator from '../../components/WeekNavigator';
@@ -29,6 +29,22 @@ export default function EnhancedDashboardPage() {
     const [showCancelModal, setShowCancelModal] = useState(false);
     const [taskToCancel, setTaskToCancel] = useState(null);
     const [currentWeekDate, setCurrentWeekDate] = useState(new Date());
+    // Time off state
+    const [timeOffRequests, setTimeOffRequests] = useState([]);
+    const [timeOffLoading, setTimeOffLoading] = useState(false);
+    const [timeOffType, setTimeOffType] = useState('single'); // 'single' or 'range'
+    const [newTimeOffDate, setNewTimeOffDate] = useState('');
+    const [newTimeOffStartDate, setNewTimeOffStartDate] = useState('');
+    const [newTimeOffEndDate, setNewTimeOffEndDate] = useState('');
+    const [newTimeOffReason, setNewTimeOffReason] = useState('');
+    const [timeOffSubmitting, setTimeOffSubmitting] = useState(false);
+    // Vehicle state
+    const [myVehicle, setMyVehicle] = useState(null);
+    const [vehicleLoading, setVehicleLoading] = useState(false);
+    const [newMileage, setNewMileage] = useState('');
+    const [mileageUpdating, setMileageUpdating] = useState(false);
+    // Earnings week navigation state
+    const [earningsWeekStart, setEarningsWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 0 }));
 
     useEffect(() => {
         dispatch(loadStoredAuth());
@@ -232,10 +248,12 @@ export default function EnhancedDashboardPage() {
 
     // Filter tasks for different views:
     // - Calendar: Unassigned PENDING tasks (marketplace)
-    // - Overview/Tasks tabs: My ACCEPTED tasks
+    // - Overview/Tasks tabs: My PENDING + ACCEPTED tasks (assigned to me)
     // - Completed: My COMPLETED tasks
     const pendingTasks = allTasks.filter(t => t.status === 'PENDING' && !t.assignedToId);
-    const acceptedTasks = allTasks.filter(t => t.status === 'ACCEPTED' && t.assignedToId === user?.id);
+    const myPendingTasks = allTasks.filter(t => t.status === 'PENDING' && t.assignedToId === user?.id);
+    const myAcceptedTasks = allTasks.filter(t => t.status === 'ACCEPTED' && t.assignedToId === user?.id);
+    const acceptedTasks = [...myPendingTasks, ...myAcceptedTasks]; // All my active tasks (pending + accepted)
     const completedTasks = allTasks.filter(t => t.status === 'COMPLETED' && t.assignedToId === user?.id)
         .sort((a, b) => new Date(b.completedAt || b.updatedAt) - new Date(a.completedAt || a.updatedAt))
         .slice(0, 10); // Last 10 completed tasks
@@ -253,10 +271,21 @@ export default function EnhancedDashboardPage() {
 
     const handleDownloadInvoice = async () => {
         try {
+            // Always use CURRENT date to get this week's invoice (Sunday-Saturday)
+            const today = new Date();
+            const invoiceWeekStart = startOfWeek(today, { weekStartsOn: 0 }); // Sunday
+            const invoiceWeekEnd = endOfWeek(today, { weekStartsOn: 0 }); // Saturday
+
+            // Use format() to get local timezone dates (not UTC)
+            const startDateStr = format(invoiceWeekStart, 'yyyy-MM-dd');
+            const endDateStr = format(invoiceWeekEnd, 'yyyy-MM-dd');
+
+            console.log('Invoice week:', startDateStr, 'to', endDateStr);
+
             const response = await api.get('/reports/export/pdf', {
                 params: {
-                    startDate: weekStart.toISOString().split('T')[0],
-                    endDate: weekEnd.toISOString().split('T')[0]
+                    startDate: startDateStr,
+                    endDate: endDateStr
                 },
                 responseType: 'blob'
             });
@@ -265,7 +294,7 @@ export default function EnhancedDashboardPage() {
             const url = window.URL.createObjectURL(new Blob([response.data]));
             const link = document.createElement('a');
             link.href = url;
-            const weekNumber = Math.ceil((weekStart - new Date(weekStart.getFullYear(), 0, 1)) / (7 * 24 * 60 * 60 * 1000));
+            const weekNumber = Math.ceil((invoiceWeekStart - new Date(invoiceWeekStart.getFullYear(), 0, 1)) / (7 * 24 * 60 * 60 * 1000));
             link.setAttribute('download', `invoice-${user.personalId}-week-${weekNumber}.pdf`);
             document.body.appendChild(link);
             link.click();
@@ -281,33 +310,33 @@ export default function EnhancedDashboardPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <header className="bg-white shadow-sm">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+        <div className="min-h-screen bg-gray-100">
+            {/* Header with Green Gradient */}
+            <header className="bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
                             {user.photoUrl ? (
                                 <img
                                     src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${user.photoUrl}`}
                                     alt={user.name}
-                                    className="w-12 h-12 rounded-full object-cover border-2 border-white shadow-sm"
+                                    className="w-14 h-14 rounded-full object-cover border-3 border-white/30 shadow-lg"
                                 />
                             ) : (
-                                <div className="w-12 h-12 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-sm">
+                                <div className="w-14 h-14 bg-white/20 backdrop-blur rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg">
                                     {user.name?.substring(0, 2).toUpperCase()}
                                 </div>
                             )}
                             <div>
-                                <h1 className="text-xl font-bold text-gray-900">{user.name}</h1>
-                                <p className="text-sm text-gray-600">{user.personalId}</p>
+                                <h1 className="text-2xl font-bold text-white">{user.name}</h1>
+                                <p className="text-sm text-white/70">{user.personalId}</p>
                             </div>
                         </div>
                         <div className="flex items-center space-x-3">
                             <LanguageSwitcher />
                             <button
                                 onClick={handleLogout}
-                                className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition"
+                                className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur text-white rounded-lg transition font-medium"
                             >
                                 {tCommon('navigation.logout')}
                             </button>
@@ -316,19 +345,25 @@ export default function EnhancedDashboardPage() {
                 </div>
             </header>
 
-            {/* Tabs */}
-            <div className="bg-white border-b">
+            {/* Modern Tabs */}
+            <div className="bg-white shadow-sm sticky top-0 z-10">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex space-x-8">
-                        {['overview', 'tasks', 'calendar', 'earnings', 'profile'].map((tab) => (
+                    <div className="flex space-x-2 py-3 overflow-x-auto">
+                        {['overview', 'tasks', 'calendar', 'earnings', 'timeoff', 'profile'].map((tab) => (
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-4 py-4 font-medium capitalize transition ${activeTab === tab
-                                    ? 'text-primary-600 border-b-2 border-primary-600'
-                                    : 'text-gray-600 hover:text-gray-900'
+                                className={`px-5 py-2.5 font-medium capitalize transition rounded-xl whitespace-nowrap ${activeTab === tab
+                                    ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md'
+                                    : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                     }`}
                             >
+                                {tab === 'overview' && '🏠 '}
+                                {tab === 'tasks' && '📋 '}
+                                {tab === 'calendar' && '📅 '}
+                                {tab === 'earnings' && '💰 '}
+                                {tab === 'timeoff' && '🏖️ '}
+                                {tab === 'profile' && '👤 '}
                                 {t(`tabs.${tab}`)}
                             </button>
                         ))}
@@ -342,41 +377,43 @@ export default function EnhancedDashboardPage() {
                     <div>
                         {/* Statistics Cards */}
                         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                            <div className="bg-white rounded-lg shadow p-6">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-green-500">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm text-gray-600">{t('stats.totalEarnings')}</p>
-                                        <p className="text-3xl font-bold text-gray-900">{stats.totalEarnings?.toFixed(2)} RON</p>
+                                        <p className="text-sm text-gray-500 font-medium">{t('stats.totalEarnings')}</p>
+                                        <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalEarnings?.toFixed(2)} £</p>
                                     </div>
-                                    <div className="text-4xl">💰</div>
+                                    <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center text-3xl">💰</div>
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-lg shadow p-6">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-emerald-500">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm text-gray-600">{t('stats.thisMonth')}</p>
-                                        <p className="text-3xl font-bold text-green-600">{stats.monthlyEarnings?.toFixed(2)} RON</p>
+                                        <p className="text-sm text-gray-500 font-medium">{t('stats.thisMonth')}</p>
+                                        <p className="text-3xl font-bold text-emerald-600 mt-1">{stats.monthlyEarnings?.toFixed(2)} £</p>
                                     </div>
-                                    <div className="text-4xl">📊</div>
+                                    <div className="w-14 h-14 bg-emerald-100 rounded-xl flex items-center justify-center text-3xl">📊</div>
                                 </div>
                             </div>
 
-                            <div className="bg-white rounded-lg shadow p-6">
-                                <div className="flex items-center justify-between mb-2">
-                                    <h3 className="text-sm font-medium text-gray-600">{t('stats.completedTasks')}</h3>
-                                    <span className="text-2xl">✅</span>
-                                </div>
-                                <p className="text-3xl font-bold text-blue-600">{completedTasks.length}</p>
-                            </div>
-
-                            <div className="bg-white rounded-lg shadow p-6">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-blue-500">
                                 <div className="flex items-center justify-between">
                                     <div>
-                                        <p className="text-sm text-gray-600">{t('stats.rating')}</p>
-                                        <p className="text-3xl font-bold text-yellow-600">{stats.rating?.toFixed(1) || 'N/A'}</p>
+                                        <p className="text-sm text-gray-500 font-medium">{t('stats.completedTasks')}</p>
+                                        <p className="text-3xl font-bold text-blue-600 mt-1">{completedTasks.length}</p>
                                     </div>
-                                    <div className="text-4xl">⭐</div>
+                                    <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-3xl">✅</div>
+                                </div>
+                            </div>
+
+                            <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-amber-500">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm text-gray-500 font-medium">{t('stats.rating')}</p>
+                                        <p className="text-3xl font-bold text-amber-600 mt-1">{stats.rating?.toFixed(1) || 'N/A'}</p>
+                                    </div>
+                                    <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-3xl">⭐</div>
                                 </div>
                             </div>
                         </div>
@@ -406,7 +443,7 @@ export default function EnhancedDashboardPage() {
                                                 </div>
                                                 <div className="text-right">
                                                     <p className="text-lg font-bold text-green-600">
-                                                        {Number(task.price).toFixed(2)} RON
+                                                        {Number(task.price).toFixed(2)} £
                                                     </p>
                                                 </div>
                                             </div>
@@ -425,16 +462,10 @@ export default function EnhancedDashboardPage() {
                                             <div className="text-right">
                                                 <p className="text-sm text-gray-600">{t('weeklyTasks.earnings')}</p>
                                                 <p className="text-2xl font-bold text-green-600">
-                                                    {weeklyEarnings.toFixed(2)} RON
+                                                    {weeklyEarnings.toFixed(2)} £
                                                 </p>
                                             </div>
                                         </div>
-                                        <button
-                                            onClick={handleDownloadInvoice}
-                                            className="mt-4 w-full px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition flex items-center justify-center gap-2"
-                                        >
-                                            📄 Download Weekly Invoice
-                                        </button>
                                     </div>
                                 </div>
                             ) : (
@@ -471,7 +502,7 @@ export default function EnhancedDashboardPage() {
 
                                         <div className="flex items-center text-green-600 font-semibold">
                                             <span className="mr-2">💰</span>
-                                            <span>{Number(task.price).toFixed(2)} RON</span>
+                                            <span>{Number(task.price).toFixed(2)} £</span>
                                         </div>
                                     </div>
 
@@ -550,7 +581,7 @@ export default function EnhancedDashboardPage() {
 
                                         <div className="flex items-center text-green-600 font-semibold">
                                             <span className="mr-2">💰</span>
-                                            <span>{Number(task.price).toFixed(2)} RON</span>
+                                            <span>{Number(task.price).toFixed(2)} £</span>
                                         </div>
                                     </div>
 
@@ -625,41 +656,174 @@ export default function EnhancedDashboardPage() {
                     </div>
                 )}
 
-                {activeTab === 'earnings' && earnings && (
-                    <div>
-                        <div className="bg-white rounded-lg shadow p-6 mb-6">
-                            <h2 className="text-2xl font-bold text-gray-900 mb-4">{t('earnings.monthTitle')}</h2>
-                            <p className="text-4xl font-bold text-green-600">{earnings.total?.toFixed(2)} RON</p>
-                            <p className="text-gray-600 mt-2">{earnings.tasks?.length} {t('earnings.tasksCompleted')}</p>
+                {activeTab === 'earnings' && (
+                    <div className="space-y-6">
+                        {/* Week Navigator & Header */}
+                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
+                            <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
+                                <h2 className="text-2xl font-bold">💰 Weekly Earnings</h2>
+                                <button
+                                    onClick={handleDownloadInvoice}
+                                    className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-lg transition flex items-center gap-2 font-medium"
+                                >
+                                    📄 Download Invoice
+                                </button>
+                            </div>
+
+                            {/* Week Navigation */}
+                            <div className="flex flex-wrap items-center justify-between gap-4">
+                                <div className="flex items-center gap-2">
+                                    <button
+                                        onClick={() => setEarningsWeekStart(subWeeks(earningsWeekStart, 1))}
+                                        className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
+                                    >
+                                        ← Prev
+                                    </button>
+                                    <button
+                                        onClick={() => setEarningsWeekStart(startOfWeek(new Date(), { weekStartsOn: 0 }))}
+                                        className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
+                                    >
+                                        Current Week
+                                    </button>
+                                    <button
+                                        onClick={() => setEarningsWeekStart(addWeeks(earningsWeekStart, 1))}
+                                        className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
+                                    >
+                                        Next →
+                                    </button>
+                                </div>
+
+                                <div className="text-center">
+                                    <div className="text-xl font-bold">
+                                        {format(earningsWeekStart, 'MMM dd')} - {format(endOfWeek(earningsWeekStart, { weekStartsOn: 0 }), 'MMM dd, yyyy')}
+                                    </div>
+                                    <div className="text-white/70 text-sm">Sunday to Saturday</div>
+                                </div>
+                            </div>
                         </div>
 
-                        <h3 className="text-xl font-bold text-gray-900 mb-4">{t('earnings.historyTitle')}</h3>
-                        <div className="bg-white rounded-lg shadow overflow-hidden">
-                            <table className="min-w-full divide-y divide-gray-200">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Task</th>
-                                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Data</th>
-                                        <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Sumă</th>
-                                    </tr>
-                                </thead>
-                                <tbody className="bg-white divide-y divide-gray-200">
-                                    {earnings.tasks?.map((task) => (
-                                        <tr key={task.id}>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                                                {task.title}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                                {format(new Date(task.completedAt), 'dd MMM yyyy')}
-                                            </td>
-                                            <td className="px-6 py-4 whitespace-nowrap text-sm text-right font-semibold text-green-600">
-                                                {task.amount?.toFixed(2)} RON
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
+                        {/* Weekly Summary Cards */}
+                        {(() => {
+                            const weekEnd = endOfWeek(earningsWeekStart, { weekStartsOn: 0 });
+                            const weekDays = eachDayOfInterval({ start: earningsWeekStart, end: weekEnd });
+                            const weekTasks = allTasks.filter(task => {
+                                const taskDate = new Date(task.scheduledDate);
+                                return isWithinInterval(taskDate, { start: earningsWeekStart, end: weekEnd });
+                            });
+                            const completedWeekTasks = weekTasks.filter(t => t.status === 'COMPLETED');
+                            const weekTotal = completedWeekTasks.reduce((sum, t) => sum + Number(t.price || 0), 0);
+                            const daysWorked = weekDays.filter(day =>
+                                completedWeekTasks.some(t => isSameDay(new Date(t.scheduledDate), day))
+                            ).length;
+
+                            return (
+                                <>
+                                    {/* Stats Row */}
+                                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                                        <div className="bg-white rounded-xl shadow p-4 text-center">
+                                            <p className="text-3xl font-bold text-green-600">£{weekTotal.toFixed(2)}</p>
+                                            <p className="text-sm text-gray-500">Week Total</p>
+                                        </div>
+                                        <div className="bg-white rounded-xl shadow p-4 text-center">
+                                            <p className="text-3xl font-bold text-blue-600">{daysWorked}</p>
+                                            <p className="text-sm text-gray-500">Days Worked</p>
+                                        </div>
+                                        <div className="bg-white rounded-xl shadow p-4 text-center">
+                                            <p className="text-3xl font-bold text-purple-600">{completedWeekTasks.length}</p>
+                                            <p className="text-sm text-gray-500">Tasks Completed</p>
+                                        </div>
+                                        <div className="bg-white rounded-xl shadow p-4 text-center">
+                                            <p className="text-3xl font-bold text-amber-600">
+                                                £{daysWorked > 0 ? (weekTotal / daysWorked).toFixed(2) : '0.00'}
+                                            </p>
+                                            <p className="text-sm text-gray-500">Avg per Day</p>
+                                        </div>
+                                    </div>
+
+                                    {/* Weekly Calendar Grid */}
+                                    <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+                                        <div className="bg-gray-50 px-6 py-3 border-b">
+                                            <h3 className="font-bold text-gray-800">📅 Week Activity</h3>
+                                        </div>
+                                        <div className="divide-y divide-gray-100">
+                                            {weekDays.map(day => {
+                                                const dayTasks = allTasks.filter(t =>
+                                                    isSameDay(new Date(t.scheduledDate), day)
+                                                );
+                                                const completedDayTasks = dayTasks.filter(t => t.status === 'COMPLETED');
+                                                const dayEarnings = completedDayTasks.reduce((sum, t) => sum + Number(t.price || 0), 0);
+                                                const isToday = isSameDay(day, new Date());
+                                                const isPast = day < new Date() && !isToday;
+
+                                                return (
+                                                    <div
+                                                        key={day.toISOString()}
+                                                        className={`flex items-center px-6 py-4 ${isToday ? 'bg-blue-50' : ''}`}
+                                                    >
+                                                        {/* Day Info */}
+                                                        <div className="w-32 flex-shrink-0">
+                                                            <p className={`font-bold ${isToday ? 'text-blue-600' : 'text-gray-800'}`}>
+                                                                {format(day, 'EEEE')}
+                                                            </p>
+                                                            <p className="text-sm text-gray-500">
+                                                                {format(day, 'dd MMM')}
+                                                            </p>
+                                                        </div>
+
+                                                        {/* Tasks */}
+                                                        <div className="flex-1 px-4">
+                                                            {dayTasks.length > 0 ? (
+                                                                <div className="flex flex-wrap gap-2">
+                                                                    {dayTasks.map(task => (
+                                                                        <div
+                                                                            key={task.id}
+                                                                            className={`px-3 py-1 rounded-full text-sm font-medium ${task.status === 'COMPLETED'
+                                                                                ? 'bg-green-100 text-green-800'
+                                                                                : task.status === 'ACCEPTED'
+                                                                                    ? 'bg-blue-100 text-blue-800'
+                                                                                    : task.status === 'PENDING'
+                                                                                        ? 'bg-amber-100 text-amber-800'
+                                                                                        : 'bg-gray-100 text-gray-600'
+                                                                                }`}
+                                                                        >
+                                                                            {task.status === 'COMPLETED' && '✅ '}
+                                                                            {task.status === 'ACCEPTED' && '📋 '}
+                                                                            {task.status === 'PENDING' && '⏳ '}
+                                                                            {task.title}
+                                                                        </div>
+                                                                    ))}
+                                                                </div>
+                                                            ) : (
+                                                                <span className="text-gray-400 italic">
+                                                                    {isPast ? '— No tasks' : 'No tasks scheduled'}
+                                                                </span>
+                                                            )}
+                                                        </div>
+
+                                                        {/* Earnings */}
+                                                        <div className="w-24 text-right">
+                                                            {dayEarnings > 0 ? (
+                                                                <span className="text-lg font-bold text-green-600">
+                                                                    £{dayEarnings.toFixed(2)}
+                                                                </span>
+                                                            ) : (
+                                                                <span className="text-gray-400">£0.00</span>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+
+                                        {/* Week Total Footer */}
+                                        <div className="bg-gradient-to-r from-green-500 to-emerald-600 px-6 py-4 flex justify-between items-center text-white">
+                                            <span className="font-bold text-lg">Week Total</span>
+                                            <span className="text-2xl font-bold">£{weekTotal.toFixed(2)}</span>
+                                        </div>
+                                    </div>
+                                </>
+                            );
+                        })()}
                     </div>
                 )}
 
@@ -741,8 +905,346 @@ export default function EnhancedDashboardPage() {
                         </div>
 
                         <div className="mt-8">
-                            <h3 className="text-lg font-semibold text-gray-900 mb-4">{t('profile.vehicleInfo')}</h3>
-                            <p className="text-gray-600">{t('profile.comingSoon')}</p>
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">🚗 {t('profile.vehicleInfo') || 'My Vehicle'}</h3>
+
+                            {vehicleLoading ? (
+                                <div className="animate-pulse bg-gray-100 rounded-lg p-4 h-24"></div>
+                            ) : myVehicle ? (
+                                <div className="bg-gray-50 rounded-lg p-4 border">
+                                    <div className="flex items-center justify-between mb-4">
+                                        <div>
+                                            <h4 className="text-xl font-bold text-gray-900">{myVehicle.plate}</h4>
+                                            <p className="text-gray-600">{myVehicle.make} {myVehicle.model} {myVehicle.year}</p>
+                                            <p className="text-sm text-gray-500">{myVehicle.type} • {myVehicle.color}</p>
+                                        </div>
+                                        <span className={`px-3 py-1 rounded-full text-sm font-medium ${myVehicle.status === 'ACTIVE' ? 'bg-green-100 text-green-800' :
+                                            myVehicle.status === 'NEEDS_SERVICE' ? 'bg-red-100 text-red-800' :
+                                                'bg-yellow-100 text-yellow-800'
+                                            }`}>
+                                            {myVehicle.status === 'ACTIVE' ? '✅ Active' :
+                                                myVehicle.status === 'NEEDS_SERVICE' ? '⚠️ Needs Service' :
+                                                    '🔧 In Service'}
+                                        </span>
+                                    </div>
+
+                                    <div className="grid grid-cols-2 gap-4 mb-4">
+                                        <div>
+                                            <label className="text-sm text-gray-600">Current Mileage</label>
+                                            <p className="font-bold text-lg">{myVehicle.currentMileage?.toLocaleString()} {myVehicle.mileageUnit}</p>
+                                        </div>
+                                        <div>
+                                            <label className="text-sm text-gray-600">Next Service</label>
+                                            <p className="font-medium">{myVehicle.nextServiceMileage?.toLocaleString()} {myVehicle.mileageUnit}</p>
+                                            {myVehicle.nextServiceMileage && (
+                                                <p className={`text-sm ${(myVehicle.nextServiceMileage - myVehicle.currentMileage) <= 300 ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
+                                                    {myVehicle.nextServiceMileage - myVehicle.currentMileage} {myVehicle.mileageUnit} remaining
+                                                </p>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    <div className="border-t pt-4">
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">📝 Update Mileage</label>
+                                        <div className="flex gap-2">
+                                            <input
+                                                type="number"
+                                                value={newMileage}
+                                                onChange={(e) => setNewMileage(e.target.value)}
+                                                placeholder={myVehicle.currentMileage.toString()}
+                                                min={myVehicle.currentMileage}
+                                                className="flex-1 px-3 py-2 border rounded-lg"
+                                            />
+                                            <button
+                                                onClick={async () => {
+                                                    if (!newMileage || parseInt(newMileage) < myVehicle.currentMileage) {
+                                                        alert('Mileage must be greater than current reading');
+                                                        return;
+                                                    }
+                                                    setMileageUpdating(true);
+                                                    try {
+                                                        const res = await api.put(`/vehicles/${myVehicle.id}/mileage`, { mileage: parseInt(newMileage) });
+                                                        setMyVehicle(res.data);
+                                                        setNewMileage('');
+                                                        alert('Mileage updated!');
+                                                    } catch (error) {
+                                                        alert(error.response?.data?.error || 'Failed to update mileage');
+                                                    } finally {
+                                                        setMileageUpdating(false);
+                                                    }
+                                                }}
+                                                disabled={mileageUpdating || !newMileage}
+                                                className="px-4 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg disabled:opacity-50"
+                                            >
+                                                {mileageUpdating ? '...' : 'Update'}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="bg-gray-50 rounded-lg p-6 text-center">
+                                    <p className="text-gray-500">🚗 No vehicle assigned to you yet.</p>
+                                    <p className="text-sm text-gray-400 mt-1">Your admin will assign a vehicle when available.</p>
+                                </div>
+                            )}
+
+                            <button
+                                onClick={async () => {
+                                    setVehicleLoading(true);
+                                    try {
+                                        const res = await api.get('/vehicles/my');
+                                        setMyVehicle(res.data);
+                                    } catch (error) {
+                                        console.error('Error loading vehicle:', error);
+                                    } finally {
+                                        setVehicleLoading(false);
+                                    }
+                                }}
+                                className="mt-4 text-sm text-primary-600 hover:text-primary-800"
+                            >
+                                🔄 Refresh Vehicle Info
+                            </button>
+                        </div>
+                    </div>
+                )}
+
+                {activeTab === 'timeoff' && (
+                    <div>
+                        <h2 className="text-2xl font-bold text-gray-900 mb-6">🏖️ Time Off Requests</h2>
+
+                        {/* Request Form */}
+                        <div className="bg-white rounded-lg shadow p-6 mb-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Request Time Off</h3>
+
+                            {/* Request Type Toggle */}
+                            <div className="flex gap-4 mb-4">
+                                <button
+                                    onClick={() => setTimeOffType('single')}
+                                    className={`px-4 py-2 rounded-lg font-medium transition ${timeOffType === 'single'
+                                        ? 'bg-primary-500 text-white'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                >
+                                    📅 Single Day
+                                </button>
+                                <button
+                                    onClick={() => setTimeOffType('range')}
+                                    className={`px-4 py-2 rounded-lg font-medium transition ${timeOffType === 'range'
+                                        ? 'bg-primary-500 text-white'
+                                        : 'bg-gray-100 text-gray-700 hover:bg-gray-200'}`}
+                                >
+                                    🗓️ Vacation Period
+                                </button>
+                            </div>
+
+                            {timeOffType === 'single' ? (
+                                /* Single Day Form */
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Date</label>
+                                        <input
+                                            type="date"
+                                            value={newTimeOffDate}
+                                            onChange={(e) => setNewTimeOffDate(e.target.value)}
+                                            min={new Date().toISOString().split('T')[0]}
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                        />
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Reason (optional)</label>
+                                        <input
+                                            type="text"
+                                            value={newTimeOffReason}
+                                            onChange={(e) => setNewTimeOffReason(e.target.value)}
+                                            placeholder="e.g., Personal day, Medical appointment..."
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                        />
+                                    </div>
+                                </div>
+                            ) : (
+                                /* Date Range Form */
+                                <div className="space-y-4">
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
+                                            <input
+                                                type="date"
+                                                value={newTimeOffStartDate}
+                                                onChange={(e) => setNewTimeOffStartDate(e.target.value)}
+                                                min={new Date().toISOString().split('T')[0]}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                        <div>
+                                            <label className="block text-sm font-medium text-gray-700 mb-2">End Date</label>
+                                            <input
+                                                type="date"
+                                                value={newTimeOffEndDate}
+                                                onChange={(e) => setNewTimeOffEndDate(e.target.value)}
+                                                min={newTimeOffStartDate || new Date().toISOString().split('T')[0]}
+                                                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>
+                                        <label className="block text-sm font-medium text-gray-700 mb-2">Reason (optional)</label>
+                                        <input
+                                            type="text"
+                                            value={newTimeOffReason}
+                                            onChange={(e) => setNewTimeOffReason(e.target.value)}
+                                            placeholder="e.g., Vacation, Holiday trip..."
+                                            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                                        />
+                                    </div>
+                                    {newTimeOffStartDate && newTimeOffEndDate && (
+                                        <div className="p-3 bg-blue-50 rounded-lg text-sm text-blue-700">
+                                            📊 This will create <strong>{Math.max(1, Math.ceil((new Date(newTimeOffEndDate) - new Date(newTimeOffStartDate)) / (1000 * 60 * 60 * 24)) + 1)}</strong> day(s) of time off requests
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+
+                            <button
+                                onClick={async () => {
+                                    if (timeOffType === 'single' && !newTimeOffDate) {
+                                        alert('Please select a date');
+                                        return;
+                                    }
+                                    if (timeOffType === 'range' && (!newTimeOffStartDate || !newTimeOffEndDate)) {
+                                        alert('Please select start and end dates');
+                                        return;
+                                    }
+                                    setTimeOffSubmitting(true);
+                                    try {
+                                        const payload = timeOffType === 'single'
+                                            ? { requestDate: newTimeOffDate, reason: newTimeOffReason || null }
+                                            : { startDate: newTimeOffStartDate, endDate: newTimeOffEndDate, reason: newTimeOffReason || null };
+
+                                        const response = await api.post('/timeoff', payload);
+
+                                        // Reset form
+                                        setNewTimeOffDate('');
+                                        setNewTimeOffStartDate('');
+                                        setNewTimeOffEndDate('');
+                                        setNewTimeOffReason('');
+
+                                        // Reload requests
+                                        const res = await api.get('/timeoff');
+                                        setTimeOffRequests(res.data);
+
+                                        const count = response.data.count || 1;
+                                        alert(`Time off request${count > 1 ? 's' : ''} submitted! (${count} day${count > 1 ? 's' : ''})`);
+                                    } catch (error) {
+                                        console.error('Error submitting time off:', error);
+                                        alert(error.response?.data?.error || 'Failed to submit request');
+                                    } finally {
+                                        setTimeOffSubmitting(false);
+                                    }
+                                }}
+                                disabled={timeOffSubmitting || (timeOffType === 'single' ? !newTimeOffDate : (!newTimeOffStartDate || !newTimeOffEndDate))}
+                                className="mt-4 px-6 py-2 bg-primary-500 hover:bg-primary-600 text-white rounded-lg transition disabled:opacity-50"
+                            >
+                                {timeOffSubmitting ? 'Submitting...' : (timeOffType === 'single' ? '📅 Request Day Off' : '🏖️ Request Vacation')}
+                            </button>
+                        </div>
+
+                        {/* My Requests */}
+                        <div className="bg-white rounded-lg shadow p-6">
+                            <div className="flex items-center justify-between mb-4">
+                                <h3 className="text-lg font-semibold text-gray-900">My Requests</h3>
+                                <button
+                                    onClick={async () => {
+                                        setTimeOffLoading(true);
+                                        try {
+                                            const res = await api.get('/timeoff');
+                                            setTimeOffRequests(res.data);
+                                        } catch (error) {
+                                            console.error('Error loading time off:', error);
+                                        } finally {
+                                            setTimeOffLoading(false);
+                                        }
+                                    }}
+                                    className="text-sm text-primary-600 hover:text-primary-800"
+                                >
+                                    🔄 Refresh
+                                </button>
+                            </div>
+
+                            {timeOffLoading ? (
+                                <div className="text-center py-8">
+                                    <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary-500 mx-auto"></div>
+                                    <p className="mt-2 text-gray-600">Loading...</p>
+                                </div>
+                            ) : timeOffRequests.length === 0 ? (
+                                <div className="text-center py-8">
+                                    <p className="text-gray-500">No time off requests yet.</p>
+                                    <p className="text-sm text-gray-400 mt-1">Use the form above to request a day off.</p>
+                                </div>
+                            ) : (
+                                <div className="space-y-3">
+                                    {timeOffRequests.map((request) => (
+                                        <div
+                                            key={request.id}
+                                            className={`p-4 rounded-lg border-l-4 ${request.status === 'PENDING' ? 'bg-yellow-50 border-yellow-500' :
+                                                request.status === 'APPROVED' ? 'bg-green-50 border-green-500' :
+                                                    'bg-red-50 border-red-500'
+                                                }`}
+                                        >
+                                            <div className="flex items-start justify-between">
+                                                <div>
+                                                    <div className="flex items-center gap-2 flex-wrap">
+                                                        <span className="font-semibold">
+                                                            {request.endDate ? (
+                                                                <>
+                                                                    🗓️ {format(new Date(request.requestDate), 'dd MMM yyyy')} → {format(new Date(request.endDate), 'dd MMM yyyy')}
+                                                                    <span className="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-xs rounded-full">
+                                                                        {Math.ceil((new Date(request.endDate) - new Date(request.requestDate)) / (1000 * 60 * 60 * 24)) + 1} days
+                                                                    </span>
+                                                                </>
+                                                            ) : (
+                                                                <>📅 {format(new Date(request.requestDate), 'EEEE, dd MMMM yyyy')}</>
+                                                            )}
+                                                        </span>
+                                                        <span className={`px-2 py-1 text-xs font-medium rounded-full ${request.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
+                                                            request.status === 'APPROVED' ? 'bg-green-100 text-green-800' :
+                                                                'bg-red-100 text-red-800'
+                                                            }`}>
+                                                            {request.status === 'PENDING' ? '⏳ Pending' :
+                                                                request.status === 'APPROVED' ? '✅ Approved' :
+                                                                    '❌ Rejected'}
+                                                        </span>
+                                                    </div>
+                                                    {request.reason && (
+                                                        <p className="text-sm text-gray-600 mt-1">Reason: {request.reason}</p>
+                                                    )}
+                                                    {request.adminNotes && (
+                                                        <p className="text-sm text-gray-500 mt-1 italic">Admin notes: {request.adminNotes}</p>
+                                                    )}
+                                                    <p className="text-xs text-gray-400 mt-2">
+                                                        Requested: {format(new Date(request.createdAt), 'dd MMM yyyy HH:mm')}
+                                                    </p>
+                                                </div>
+                                                {request.status === 'PENDING' && (
+                                                    <button
+                                                        onClick={async () => {
+                                                            if (!confirm('Are you sure you want to cancel this request?')) return;
+                                                            try {
+                                                                await api.delete(`/timeoff/${request.id}`);
+                                                                setTimeOffRequests(timeOffRequests.filter(r => r.id !== request.id));
+                                                                alert('Request cancelled');
+                                                            } catch (error) {
+                                                                console.error('Error cancelling:', error);
+                                                                alert('Failed to cancel request');
+                                                            }
+                                                        }}
+                                                        className="text-red-500 hover:text-red-700 text-sm"
+                                                    >
+                                                        ✕ Cancel
+                                                    </button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+                            )}
                         </div>
                     </div>
                 )}

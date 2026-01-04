@@ -32,7 +32,7 @@ router.get('/stats', async (req, res) => {
             where: {
                 assignedToId: userId,
                 status: 'COMPLETED',
-                completedAt: {
+                scheduledDate: {
                     gte: firstDayOfMonth
                 }
             }
@@ -48,7 +48,7 @@ router.get('/stats', async (req, res) => {
             where: {
                 assignedToId: userId,
                 status: 'COMPLETED',
-                completedAt: {
+                scheduledDate: {
                     gte: firstDayOfWeek
                 }
             }
@@ -96,11 +96,11 @@ router.get('/earnings', async (req, res) => {
             where: {
                 assignedToId: userId,
                 status: 'COMPLETED',
-                completedAt: {
+                scheduledDate: {
                     gte: startDate
                 }
             },
-            orderBy: { completedAt: 'desc' }
+            orderBy: { scheduledDate: 'desc' }
         });
 
         const totalEarnings = tasks.reduce((sum, task) => sum + (task.actualEarnings || task.price), 0);
@@ -151,7 +151,7 @@ router.get('/earnings/monthly', async (req, res) => {
                 where: {
                     assignedToId: userId,
                     status: 'COMPLETED',
-                    completedAt: {
+                    scheduledDate: {
                         gte: firstDay,
                         lt: lastDay
                     }

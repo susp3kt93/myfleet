@@ -43,7 +43,7 @@ export default function LoginPage() {
                     backgroundPosition: 'center',
                 }}
             >
-                <div className="absolute inset-0 bg-gradient-to-r from-primary-900/90 to-primary-800/75 backdrop-blur-[2px]"></div>
+                <div className="absolute inset-0 bg-gradient-to-br from-green-900/90 via-emerald-800/80 to-green-700/70 backdrop-blur-[2px]"></div>
             </div>
 
             {/* Language Switcher */}
@@ -63,9 +63,9 @@ export default function LoginPage() {
                         initial={{ scale: 0.8, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
                         transition={{ delay: 0.2, duration: 0.5 }}
-                        className="inline-block p-3 rounded-full bg-primary-100 mb-4"
+                        className="inline-block p-4 rounded-2xl bg-gradient-to-br from-green-100 to-emerald-100 mb-4"
                     >
-                        <span className="text-4xl">🚛</span>
+                        <span className="text-5xl">🚛</span>
                     </motion.div>
                     <h1 className="text-3xl font-bold text-gray-900 mb-2">{t('login.title')}</h1>
                     <p className="text-gray-600">{t('login.subtitle')}</p>
@@ -92,7 +92,7 @@ export default function LoginPage() {
                                 type="text"
                                 value={personalId}
                                 onChange={(e) => setPersonalId(e.target.value.toUpperCase())}
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition bg-gray-50 focus:bg-white"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition bg-gray-50 focus:bg-white"
                                 placeholder="e.g., DRV-001"
                                 required
                             />
@@ -109,7 +109,7 @@ export default function LoginPage() {
                                 type={showPassword ? "text" : "password"}
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
-                                className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-primary-500 focus:border-transparent transition bg-gray-50 focus:bg-white"
+                                className="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-green-500 focus:border-transparent transition bg-gray-50 focus:bg-white"
                                 placeholder="Enter your password"
                                 required
                             />
@@ -128,9 +128,9 @@ export default function LoginPage() {
                         whileTap={{ scale: 0.98 }}
                         type="submit"
                         disabled={loading}
-                        className={`w-full py-3 px-4 rounded-lg text-white font-semibold shadow-lg transition-all ${loading
+                        className={`w-full py-3.5 px-4 rounded-xl text-white font-semibold shadow-lg transition-all ${loading
                             ? 'bg-gray-400 cursor-not-allowed'
-                            : 'bg-gradient-to-r from-primary-600 to-primary-500 hover:from-primary-700 hover:to-primary-600 shadow-primary-500/30'
+                            : 'bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-green-500/30'
                             }`}
                     >
                         {loading ? (
