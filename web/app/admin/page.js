@@ -185,6 +185,7 @@ export default function AdminPage() {
                         </div>
                     </Link>
 
+
                     <Link href="/admin/vehicles" className="block group">
                         <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-cyan-500 group-hover:scale-[1.02]">
                             <div className="flex items-center space-x-4">
@@ -192,6 +193,19 @@ export default function AdminPage() {
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.fleetVehicles') || 'Fleet Vehicles'}</h3>
                                     <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.fleetVehiclesDesc') || 'Manage vehicles, mileage, and service'}</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+
+                    {/* NEW: Settings Card */}
+                    <Link href="/admin/settings" className="block group">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-gray-500 group-hover:scale-[1.02]">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-gray-200 transition">⚙️</div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-900">Company Settings</h3>
+                                    <p className="text-gray-500 text-sm mt-1">Manage branding and company details</p>
                                 </div>
                             </div>
                         </div>

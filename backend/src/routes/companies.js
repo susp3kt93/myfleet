@@ -313,4 +313,35 @@ router.get('/:id/stats', requireCompanyAdmin, canManageCompany, async (req, res)
     }
 });
 
+/**
+ * POST /api/companies/:id/logo
+ * Upload company logo
+ * COMPANY_ADMIN: their own company only
+ */
+import { upload } from '../middleware/upload.js';
+
+router.post('/:id/logo', requireCompanyAdmin, canManageCompany, upload.single('logo'), async (req, res) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No logo file provided' });
+        }
+
+        const logoUrl = `/uploads/profiles/${req.file.filename}`;
+
+        const company = await prisma.company.update({
+            where: { id: req.params.id },
+            data: { logo: logoUrl }
+        });
+
+        res.json({
+            message: 'Logo uploaded successfully',
+            logoUrl: company.logo,
+            company
+        });
+    } catch (error) {
+        console.error('Error uploading logo:', error);
+        res.status(500).json({ error: 'Failed to upload logo' });
+    }
+});
+
 export default router;
