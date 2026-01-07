@@ -136,9 +136,7 @@ export default function LoginScreen({ navigation }) {
                                 </Button>
                             </View>
 
-                            <View style={styles.footer}>
-                                <Text style={styles.footerText}>Demo: DRV-TE-001 / password123</Text>
-                            </View>
+
                         </Surface>
                     </Animated.View>
                 </KeyboardAvoidingView>

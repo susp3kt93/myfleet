@@ -48,7 +48,8 @@
             "./assets/notification-sound.wav"
           ]
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "notification": {
       "icon": "./assets/notification-icon.png",

@@ -147,13 +147,7 @@ export default function LoginPage() {
                     </motion.button>
                 </form>
 
-                <div className="mt-8 pt-6 border-t border-gray-100">
-                    <p className="text-center text-xs text-gray-500">
-                        {t('login.demoAccounts')}:
-                        <br />
-                        <span className="font-mono bg-gray-100 px-1 rounded">DRV-001</span> / <span className="font-mono bg-gray-100 px-1 rounded">driver123</span>
-                    </p>
-                </div>
+
             </motion.div>
         </div>
     );
