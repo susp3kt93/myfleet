@@ -271,10 +271,9 @@ export default function EnhancedDashboardPage() {
 
     const handleDownloadInvoice = async () => {
         try {
-            // Always use CURRENT date to get this week's invoice (Sunday-Saturday)
-            const today = new Date();
-            const invoiceWeekStart = startOfWeek(today, { weekStartsOn: 0 }); // Sunday
-            const invoiceWeekEnd = endOfWeek(today, { weekStartsOn: 0 }); // Saturday
+            // Use the currently selected earnings week
+            const invoiceWeekStart = startOfWeek(earningsWeekStart, { weekStartsOn: 0 }); // Sunday
+            const invoiceWeekEnd = endOfWeek(earningsWeekStart, { weekStartsOn: 0 }); // Saturday
 
             // Use format() to get local timezone dates (not UTC)
             const startDateStr = format(invoiceWeekStart, 'yyyy-MM-dd');
