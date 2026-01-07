@@ -123,12 +123,26 @@ router.post('/', requireAdmin, async (req, res) => {
         const {
             type, plate, make, model, year, capacity, color,
             currentMileage, mileageUnit, serviceIntervalMiles,
-            insuranceExpiry, motExpiry, taxExpiry
+            insuranceExpiry, motExpiry, taxExpiry,
+            companyId  // Allow Super Admin to specify company
         } = req.body;
 
         // Validate required fields
         if (!type || !plate || !model) {
             return res.status(400).json({ error: 'Type, plate, and model are required' });
+        }
+
+        // Determine which company to assign vehicle to
+        let targetCompanyId;
+        if (req.user.role === 'SUPER_ADMIN') {
+            // Super Admin must specify companyId
+            if (!companyId) {
+                return res.status(400).json({ error: 'Super Admin must specify companyId' });
+            }
+            targetCompanyId = companyId;
+        } else {
+            // Company Admin uses their own companyId
+            targetCompanyId = req.user.companyId;
         }
 
         // Check if plate already exists
@@ -160,7 +174,7 @@ router.post('/', requireAdmin, async (req, res) => {
                 insuranceExpiry: insuranceExpiry ? new Date(insuranceExpiry) : null,
                 motExpiry: motExpiry ? new Date(motExpiry) : null,
                 taxExpiry: taxExpiry ? new Date(taxExpiry) : null,
-                companyId: req.user.companyId,
+                companyId: targetCompanyId,
                 status: 'ACTIVE'
             },
             include: {
