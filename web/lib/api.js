@@ -59,6 +59,9 @@ export const tasksAPI = {
     createTask: (data) =>
         api.post('/tasks', data),
 
+    createTasksBatch: (data) =>
+        api.post('/tasks/batch', data),
+
     updateTask: (id, data) =>
         api.put(`/tasks/${id}`, data),
 

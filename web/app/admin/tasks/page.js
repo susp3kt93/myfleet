@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadStoredAuth } from '../../../lib/authSlice';
-import { fetchTasks, createTask, deleteTask } from '../../../lib/tasksSlice';
+import { fetchTasks, createTask, createTasksBatch, deleteTask } from '../../../lib/tasksSlice';
 import { fetchUsers } from '../../../lib/usersSlice';
 import { format, startOfWeek, endOfWeek, addWeeks, subWeeks, isWithinInterval, parseISO } from 'date-fns';
 import api from '../../../lib/api';
@@ -117,24 +117,18 @@ export default function TasksPage() {
                     return;
                 }
 
-                let created = 0;
-                let failed = 0;
+                // Use efficient batch creation endpoint
+                const batchData = {
+                    ...formData,
+                    dates
+                };
 
-                for (const date of dates) {
-                    const taskData = { ...formData, scheduledDate: date };
-                    try {
-                        await dispatch(createTask(taskData)).unwrap();
-                        created++;
-                    } catch (error) {
-                        console.error('Failed to create task for date:', date, error);
-                        failed++;
-                    }
-                }
+                const result = await dispatch(createTasksBatch(batchData)).unwrap();
 
-                // Refresh task list after all tasks are created
-                await dispatch(fetchTasks());
+                // Refresh list not strictly needed if reducer updates state, but good for sync
+                // await dispatch(fetchTasks()); 
 
-                alert(`Created ${created} tasks successfully!${failed > 0 ? ` (${failed} failed)` : ''}`);
+                alert(`Created ${result.length} tasks successfully!`);
             }
 
             setFormData({

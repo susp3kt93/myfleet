@@ -251,6 +251,131 @@ router.post('/', requireAdmin, async (req, res) => {
     }
 });
 
+// Batch create tasks (admin only)
+router.post('/batch', requireAdmin, async (req, res) => {
+    try {
+        console.log('Batch task creation request received:', req.body);
+        const { title, description, dates, scheduledTime, price, assignedToId, location, notes } = req.body;
+
+        if (!title || !dates || !Array.isArray(dates) || dates.length === 0 || price === undefined) {
+            return res.status(400).json({ error: 'Title, valid dates array, and price are required' });
+        }
+
+        // Geocode location if provided (once for all tasks)
+        let latitude = null;
+        let longitude = null;
+        if (location) {
+            try {
+                const coords = await mapsService.geocodeAddress(location);
+                if (coords) {
+                    latitude = coords.lat;
+                    longitude = coords.lng;
+                    console.log(`Geocoded location: ${location} → (${latitude}, ${longitude})`);
+                }
+            } catch (error) {
+                console.warn('Geocoding failed:', error.message);
+            }
+        }
+
+        const createdTasks = [];
+
+        // Create tasks in transaction
+        await prisma.$transaction(async (tx) => {
+            for (const dateStr of dates) {
+                const task = await tx.task.create({
+                    data: {
+                        title,
+                        description,
+                        scheduledDate: new Date(dateStr),
+                        scheduledTime,
+                        price: parseFloat(price),
+                        assignedToId: assignedToId || null,
+                        location,
+                        latitude,
+                        longitude,
+                        notes,
+                        companyId: req.user.companyId,
+                        createdById: req.user.id
+                    },
+                    include: {
+                        assignedTo: {
+                            select: {
+                                id: true,
+                                personalId: true,
+                                name: true,
+                                email: true,
+                                photoUrl: true,
+                                pushToken: true,
+                                notificationsEnabled: true,
+                                emailNotifications: true,
+                                pushNotifications: true
+                            }
+                        }
+                    }
+                });
+                createdTasks.push(task);
+            }
+        });
+
+        // Send notifications asynchronously (non-blocking)
+        createdTasks.forEach(async (task) => {
+            if (task.assignedTo) {
+                try {
+                    const date = new Date(task.scheduledDate).toLocaleDateString('ro-RO');
+
+                    // In-app notification
+                    await sendCompleteNotification(
+                        task.assignedTo.id,
+                        '🎯 Task Nou Atribuit',
+                        `Ai primit un task nou: ${task.title}`,
+                        'Task Nou Atribuit - MyFleet',
+                        `
+                            <h2>Bună ${task.assignedTo.name}!</h2>
+                            <p>Ți-a fost atribuit un task nou:</p>
+                            <h3>${task.title}</h3>
+                            <p><strong>Data:</strong> ${date}</p>
+                            ${task.scheduledTime ? `<p><strong>Ora:</strong> ${task.scheduledTime}</p>` : ''}
+                            ${task.location ? `<p><strong>Locație:</strong> ${task.location}</p>` : ''}
+                            <p><strong>Preț:</strong> ${task.price} RON</p>
+                            <p>Conectează-te la aplicație pentru mai multe detalii.</p>
+                        `,
+                        { taskId: task.id, type: 'TASK_ASSIGNED' }
+                    );
+
+                    // Email notification
+                    if (task.assignedTo.emailNotifications && task.assignedTo.email) {
+                        await sendTaskAssignedEmail(
+                            task.assignedTo.email,
+                            task.assignedTo.name,
+                            task.title,
+                            date,
+                            task.location
+                        );
+                    }
+
+                    // Push notification
+                    if (task.assignedTo.pushNotifications && task.assignedTo.pushToken) {
+                        await sendTaskAssignedNotification(
+                            task.assignedTo.pushToken,
+                            task.title,
+                            date
+                        );
+                    }
+                } catch (error) {
+                    console.error('Failed to send notification for task:', task.id, error);
+                }
+            }
+        });
+
+        console.log(`Successfully created ${createdTasks.length} tasks in batch`);
+        res.status(201).json({ tasks: createdTasks, count: createdTasks.length });
+
+    } catch (error) {
+        console.error('Batch create task error:', error);
+        res.status(500).json({ error: 'Failed to create tasks', details: error.message });
+    }
+});
+
 // Update task
 router.put('/:id', async (req, res) => {
     try {

@@ -25,6 +25,18 @@ export const createTask = createAsyncThunk(
     }
 );
 
+export const createTasksBatch = createAsyncThunk(
+    'tasks/createTasksBatch',
+    async (batchData, { rejectWithValue }) => {
+        try {
+            const response = await tasksAPI.createTasksBatch(batchData);
+            return response.data.tasks;
+        } catch (error) {
+            return rejectWithValue(error.response?.data?.error || 'Failed to create tasks');
+        }
+    }
+);
+
 export const deleteTask = createAsyncThunk(
     'tasks/deleteTask',
     async (taskId, { rejectWithValue }) => {
@@ -65,6 +77,9 @@ const tasksSlice = createSlice({
             })
             .addCase(createTask.fulfilled, (state, action) => {
                 state.tasks.unshift(action.payload);
+            })
+            .addCase(createTasksBatch.fulfilled, (state, action) => {
+                state.tasks.unshift(...action.payload);
             })
             .addCase(deleteTask.fulfilled, (state, action) => {
                 state.tasks = state.tasks.filter(t => t.id !== action.payload);
