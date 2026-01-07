@@ -13,7 +13,7 @@
                 "buildType": "apk"
             },
             "env": {
-                "EXPO_PUBLIC_API_URL": "https://myfleet-29a4.onrender.com/api"
+                "EXPO_PUBLIC_API_URL": "https://myfleet-backend.onrender.com/api"
             }
         },
         "production": {
