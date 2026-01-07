@@ -13,8 +13,8 @@ async function main() {
     await prisma.user.deleteMany({});
     await prisma.company.deleteMany({});
 
-    // Hash password (password123 for all users)
-    const hashedPassword = await bcrypt.hash('password123', 10);
+    // Use same password hash for ALL users (password123)
+    const hashedPassword = '$2a$10$F9zwOPp0pOPbol2tv8bqGu3K4waCwgS288UL3oRekqcLsxKpnXCQ.';
 
     // ============================================
     // 1. CREATE SUPER ADMIN

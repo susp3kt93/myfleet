@@ -11,7 +11,10 @@
         "prisma:generate": "prisma generate",
         "prisma:migrate": "prisma migrate dev",
         "prisma:studio": "prisma studio",
-        "seed": "node src/utils/seed.js"
+        "seed": "node prisma/seed.cjs"
+    },
+    "prisma": {
+        "seed": "node prisma/seed.cjs"
     },
     "keywords": [
         "fleet",
