@@ -1,5 +1,5 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from "../lib/prisma.js";
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { sendCompleteNotification } from '../services/notificationService.js';
 import * as mapsService from '../services/mapsService.js';
@@ -7,7 +7,6 @@ import { sendTaskAssignedEmail } from '../services/emailService.js';
 import { sendTaskAssignedNotification } from '../services/pushNotificationService.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 router.use(authenticate);
 

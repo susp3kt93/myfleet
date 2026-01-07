@@ -1,8 +1,7 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from "../lib/prisma.js";
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 // Debug endpoint - check database connection
 router.get('/db-test', async (req, res) => {

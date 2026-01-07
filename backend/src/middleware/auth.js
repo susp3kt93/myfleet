@@ -1,7 +1,5 @@
 import jwt from 'jsonwebtoken';
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
+import prisma from '../lib/prisma.js';
 
 export const authenticate = async (req, res, next) => {
     try {
@@ -37,12 +35,14 @@ export const authenticate = async (req, res, next) => {
         req.user = user;
         next();
     } catch (error) {
+        console.error('[Auth Middleware] Error:', error.message, error.name);
         if (error.name === 'JsonWebTokenError') {
             return res.status(401).json({ error: 'Invalid token' });
         }
         if (error.name === 'TokenExpiredError') {
             return res.status(401).json({ error: 'Token expired' });
         }
+        console.error('[Auth Middleware] Unexpected error:', error);
         return res.status(500).json({ error: 'Authentication failed' });
     }
 };

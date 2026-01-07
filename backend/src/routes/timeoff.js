@@ -1,11 +1,10 @@
 import express from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from "../lib/prisma.js";
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { sendTimeOffApprovedEmail, sendTimeOffRejectedEmail } from '../services/emailService.js';
 import { sendTimeOffApprovedNotification, sendTimeOffRejectedNotification } from '../services/pushNotificationService.js';
 
 const router = express.Router();
-const prisma = new PrismaClient();
 
 router.use(authenticate);
 
