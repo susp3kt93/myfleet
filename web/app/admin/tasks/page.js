@@ -122,10 +122,17 @@ export default function TasksPage() {
 
                 for (const date of dates) {
                     const taskData = { ...formData, scheduledDate: date };
-                    const result = await dispatch(createTask(taskData));
-                    if (result.error) failed++;
-                    else created++;
+                    try {
+                        await dispatch(createTask(taskData)).unwrap();
+                        created++;
+                    } catch (error) {
+                        console.error('Failed to create task for date:', date, error);
+                        failed++;
+                    }
                 }
+
+                // Refresh task list after all tasks are created
+                await dispatch(fetchTasks());
 
                 alert(`Created ${created} tasks successfully!${failed > 0 ? ` (${failed} failed)` : ''}`);
             }
@@ -366,8 +373,8 @@ export default function TasksPage() {
                         <button
                             onClick={() => setShowForm(!showForm)}
                             className={`px-4 py-2 rounded-lg transition font-medium ${showForm
-                                    ? 'bg-white/20 hover:bg-white/30 text-white'
-                                    : 'bg-white text-green-600 hover:bg-gray-100 shadow-lg'
+                                ? 'bg-white/20 hover:bg-white/30 text-white'
+                                : 'bg-white text-green-600 hover:bg-gray-100 shadow-lg'
                                 }`}
                         >
                             {showForm ? '✕ Cancel' : '+ Create Task'}
