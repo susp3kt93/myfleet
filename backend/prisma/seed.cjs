@@ -184,7 +184,6 @@ async function main() {
         await prisma.vehicle.create({
             data: {
                 ...vehicleData,
-                isActive: true,
                 companyId: swiftLogistics.id,
             },
         });
@@ -195,7 +194,6 @@ async function main() {
         await prisma.vehicle.create({
             data: {
                 ...vehicleData,
-                isActive: true,
                 companyId: expressCouriers.id,
             },
         });
