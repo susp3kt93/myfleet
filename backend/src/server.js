@@ -13,6 +13,7 @@ import plansRoutes from './routes/plans.js';
 import timeoffRoutes from './routes/timeoff.js';
 import vehicleRoutes from './routes/vehicles.js';
 import pushTokenRoutes from './routes/pushToken.js';
+import debugRoutes from './routes/debug.js';
 
 dotenv.config();
 
@@ -50,6 +51,7 @@ app.use('/api/plans', plansRoutes);
 app.use('/api/timeoff', timeoffRoutes);
 app.use('/api/vehicles', vehicleRoutes);
 app.use('/api/push-token', pushTokenRoutes);
+app.use('/api/debug', debugRoutes);
 
 // Health check
 app.get('/health', (req, res) => {
