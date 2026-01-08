@@ -208,7 +208,11 @@ export default function AdminPage() {
                                 <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-orange-200 transition">🏖️</div>
                                 <div>
                                     <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.timeOffRequests')}</h3>
-                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.timeOffRequestsDesc')}</p>
+                                    <p className="text-gray-500 text-sm mt-1">
+                                        {pendingTimeOffCount > 0
+                                            ? <span className="text-red-600 font-bold">{pendingTimeOffCount} {t('timeoff.pending')}</span>
+                                            : t('dashboard.actions.timeOffRequestsDesc')}
+                                    </p>
                                 </div>
                             </div>
                         </div>
