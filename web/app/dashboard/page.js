@@ -485,7 +485,7 @@ export default function EnhancedDashboardPage() {
                                     <div className="flex items-start justify-between mb-4">
                                         <h3 className="text-lg font-semibold text-gray-900 flex-1">{task.title}</h3>
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(task.status)}`}>
-                                            {task.status}
+                                            {t(`status.${task.status.toLowerCase()}`)}
                                         </span>
                                     </div>
 
@@ -553,7 +553,7 @@ export default function EnhancedDashboardPage() {
                                     <div className="flex items-start justify-between mb-4">
                                         <h3 className="text-lg font-semibold text-gray-900 flex-1">{task.title}</h3>
                                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(task.status)}`}>
-                                            {task.status}
+                                            {t(`status.${task.status.toLowerCase()}`)}
                                         </span>
                                     </div>
 
@@ -599,7 +599,7 @@ export default function EnhancedDashboardPage() {
                                                 onClick={() => handleRejectTask(task.id)}
                                                 className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition font-medium"
                                             >
-                                                ✗ Respinge
+                                                ✗ {t('tasks.reject')}
                                             </button>
                                         </div>
                                     )}
@@ -613,7 +613,7 @@ export default function EnhancedDashboardPage() {
                                                 }}
                                                 className="w-full bg-blue-500 hover:bg-blue-600 text-white py-2 px-4 rounded-lg transition font-medium"
                                             >
-                                                ✓ Îndeplinit
+                                                ✓ {t('tasks.complete')}
                                             </button>
                                         </div>
                                     )}
@@ -638,7 +638,7 @@ export default function EnhancedDashboardPage() {
                                                 onClick={() => handleRejectTask(task.id)}
                                                 className="w-full bg-orange-500 hover:bg-orange-600 text-white py-2 px-2 rounded-lg transition font-medium text-sm"
                                             >
-                                                ✗ Respinge
+                                                ✗ {t('tasks.reject')}
                                             </button>
                                         </div>
                                     )}
