@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadStoredAuth } from '../../../lib/authSlice';
@@ -12,6 +13,7 @@ import api from '../../../lib/api';
 
 export default function TasksPage() {
     const router = useRouter();
+    const searchParams = useSearchParams();
     const dispatch = useDispatch();
     const { user, isAuthenticated } = useSelector((state) => state.auth);
     const { tasks, loading } = useSelector((state) => state.tasks);
@@ -39,7 +41,8 @@ export default function TasksPage() {
     });
 
     // New state for improved UI
-    const [activeTab, setActiveTab] = useState('ALL');
+    // Initialize from URL param or default to 'ALL'
+    const [activeTab, setActiveTab] = useState(searchParams.get('status') || 'ALL');
     const [viewMode, setViewMode] = useState('list'); // 'list' or 'byDriver'
     const [expandedDrivers, setExpandedDrivers] = useState({});
 

@@ -82,45 +82,53 @@ export default function AdminPage() {
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-blue-500">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.totalDrivers')}</p>
-                                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalDrivers}</p>
+                    <Link href="/admin/users" className="block transform hover:scale-105 transition-transform duration-200">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-blue-500 cursor-pointer">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.totalDrivers')}</p>
+                                    <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalDrivers}</p>
+                                </div>
+                                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-3xl">👥</div>
                             </div>
-                            <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-3xl">👥</div>
                         </div>
-                    </div>
+                    </Link>
 
-                    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-purple-500">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.totalTasks')}</p>
-                                <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalTasks}</p>
+                    <Link href="/admin/tasks" className="block transform hover:scale-105 transition-transform duration-200">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-purple-500 cursor-pointer">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.totalTasks')}</p>
+                                    <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalTasks}</p>
+                                </div>
+                                <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-3xl">📋</div>
                             </div>
-                            <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-3xl">📋</div>
                         </div>
-                    </div>
+                    </Link>
 
-                    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-amber-500">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.pendingTasks')}</p>
-                                <p className="text-3xl font-bold text-amber-600 mt-1">{stats.pendingTasks}</p>
+                    <Link href="/admin/tasks?status=PENDING" className="block transform hover:scale-105 transition-transform duration-200">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-amber-500 cursor-pointer">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.pendingTasks')}</p>
+                                    <p className="text-3xl font-bold text-amber-600 mt-1">{stats.pendingTasks}</p>
+                                </div>
+                                <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-3xl">⏳</div>
                             </div>
-                            <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-3xl">⏳</div>
                         </div>
-                    </div>
+                    </Link>
 
-                    <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition border-l-4 border-green-500">
-                        <div className="flex items-center justify-between">
-                            <div>
-                                <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.completed')}</p>
-                                <p className="text-3xl font-bold text-green-600 mt-1">{stats.completedTasks}</p>
+                    <Link href="/admin/tasks?status=COMPLETED" className="block transform hover:scale-105 transition-transform duration-200">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-green-500 cursor-pointer">
+                            <div className="flex items-center justify-between">
+                                <div>
+                                    <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.completed')}</p>
+                                    <p className="text-3xl font-bold text-green-600 mt-1">{stats.completedTasks}</p>
+                                </div>
+                                <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center text-3xl">✅</div>
                             </div>
-                            <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center text-3xl">✅</div>
                         </div>
-                    </div>
+                    </Link>
                 </div>
 
                 {/* Quick Actions */}
