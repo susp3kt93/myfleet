@@ -54,7 +54,7 @@ router.get('/weekly', requireAdmin, async (req, res) => {
                     where: {
                         assignedToId: driver.id,
                         status: 'COMPLETED',
-                        completedAt: {
+                        scheduledDate: {
                             gte: start,
                             lte: end
                         }
@@ -90,7 +90,7 @@ router.get('/weekly', requireAdmin, async (req, res) => {
                     where: {
                         assignedToId: driver.id,
                         status: 'COMPLETED',
-                        completedAt: {
+                        scheduledDate: {
                             gte: start,
                             lte: end
                         }
