@@ -43,13 +43,8 @@ export default function AdminPage() {
             const count = response.data.count;
             setPendingTimeOffCount(count);
 
-            // Check if user has seen these requests
-            if (typeof window !== 'undefined') {
-                const viewedCount = parseInt(localStorage.getItem('adminTimeOffViewedCount') || '0');
-                if (count > 0 && count > viewedCount) {
-                    setShowTimeOffBadge(true);
-                }
-            }
+            // Always show badge if there are pending requests
+            setShowTimeOffBadge(count > 0);
         } catch (error) {
             console.error('Error fetching time off count:', error);
         }
