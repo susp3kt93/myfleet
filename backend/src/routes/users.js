@@ -149,7 +149,7 @@ router.post('/', checkDriverLimit, async (req, res) => {
 // Update user
 router.put('/:id', async (req, res) => {
     try {
-        const { name, email, phone, role, photoUrl, isActive, password } = req.body;
+        const { name, email, phone, role, photoUrl, isActive, password, rating } = req.body;
 
         const updateData = {};
         if (name !== undefined) updateData.name = name;
@@ -158,6 +158,7 @@ router.put('/:id', async (req, res) => {
         if (role !== undefined) updateData.role = role;
         if (photoUrl !== undefined) updateData.photoUrl = photoUrl;
         if (isActive !== undefined) updateData.isActive = isActive;
+        if (rating !== undefined) updateData.rating = parseFloat(rating);
         if (password) {
             updateData.password = await bcrypt.hash(password, 10);
         }
