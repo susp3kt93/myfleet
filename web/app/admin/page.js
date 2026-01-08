@@ -39,11 +39,14 @@ export default function AdminPage() {
 
     const fetchTimeOffCount = async () => {
         try {
-            const response = await api.get('/timeoff/pending-count');
-            const count = response.data.count;
+            // FETCH ROBUST: Use list endpoint which definitely exists on prod
+            // Instead of new /pending-count endpoint which might not be deployed yet
+            const response = await api.get('/timeoff?status=PENDING');
+            const count = Array.isArray(response.data) ? response.data.length : 0;
+
             setPendingTimeOffCount(count);
 
-            // Always show badge if there are pending requests (User request)
+            // Always show badge if there are pending requests
             if (count > 0) {
                 setShowTimeOffBadge(true);
             } else {
