@@ -204,8 +204,8 @@ export default function AdminPage() {
                             </div>
                         )}
                         <div className={`rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer group-hover:scale-[1.02] ${pendingTimeOffCount > 0
-                                ? 'bg-gradient-to-br from-orange-50 to-red-50 border-l-4 border-red-500 animate-pulse ring-2 ring-red-400 ring-opacity-50'
-                                : 'bg-white border-l-4 border-orange-500'
+                            ? 'bg-gradient-to-br from-orange-50 to-red-50 border-l-4 border-red-500 animate-pulse ring-2 ring-red-400 ring-opacity-50'
+                            : 'bg-white border-l-4 border-orange-500'
                             }`}>
                             <div className="flex items-center space-x-4">
                                 <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-4xl transition ${pendingTimeOffCount > 0 ? 'bg-white shadow-sm' : 'bg-orange-100 group-hover:bg-orange-200'
