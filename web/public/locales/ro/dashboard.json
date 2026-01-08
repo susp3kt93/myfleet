@@ -68,19 +68,38 @@
         "photoError": "Eroare la încărcarea pozei."
     },
     "tasks": {
+        "title": "Taskuri",
         "acceptedTasks": "Taskuri Acceptate",
         "accept": "Acceptă",
         "reject": "Respinge",
         "complete": "Îndeplinit",
-        "cancel": "Anulează Task"
+        "cancel": "Anulează Task",
+        "successAccepted": "Task acceptat cu succes!",
+        "errorAccept": "Eroare la acceptarea taskului",
+        "successRejected": "Task respins!",
+        "errorReject": "Eroare la respingerea taskului",
+        "successCompleted": "Task marcat ca îndeplinit!",
+        "errorComplete": "Eroare la marcarea taskului",
+        "successCancelledRating": "Task anulat. Ratingul a scăzut cu 0.1 puncte.",
+        "successCancelled": "Task anulat.",
+        "errorCancel": "Eroare la anularea taskului"
     },
     "earnings": {
-        "monthTitle": "Câștiguri Luna Aceasta",
+        "monthlyTitle": "Câștiguri Luna Aceasta",
+        "weeklyTitle": "Câștiguri Săptămânal",
+        "monthly": "Câștiguri Lunare",
+        "weekly": "Câștiguri Săptămânale",
+        "history": "Istoric Câștiguri",
         "tasksCompleted": "taskuri completate",
         "historyTitle": "Istoric Câștiguri",
         "task": "Task",
         "date": "Data",
-        "amount": "Sumă"
+        "amount": "Sumă",
+        "downloadInvoice": "Descarcă Factura",
+        "weekTotal": "Total Săptămână",
+        "daysWorked": "Zile Lucrate",
+        "avgPerDay": "Media pe ZI",
+        "weekActivity": "Activitate Săptămânală"
     },
     "modals": {
         "confirmation": "Confirmare",

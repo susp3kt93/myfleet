@@ -17,6 +17,10 @@
         "complete": "Completează",
         "submit": "Trimite"
     },
+    "errors": {
+        "unknown": "Eroare necunoscută",
+        "load": "Eroare la încărcare"
+    },
     "navigation": {
         "overview": "Prezentare Generală",
         "tasks": "Task-uri",

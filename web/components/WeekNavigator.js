@@ -6,7 +6,8 @@ import { useTranslation } from '../contexts/LanguageContext';
 
 export default function WeekNavigator({ currentDate, onDateChange }) {
     const { t } = useTranslation('dashboard');
-    const { locale } = useTranslation('common');
+    const { t: tCommon, locale } = useTranslation('common');
+
     const handlePreviousWeek = () => {
         const newDate = subWeeks(currentDate, 1);
         onDateChange(newDate);
@@ -40,7 +41,7 @@ export default function WeekNavigator({ currentDate, onDateChange }) {
             </button>
 
             <div className="flex flex-col items-center">
-                <span className="text-sm text-gray-600">{t('time.week', { ns: 'common' })}</span>
+                <span className="text-sm text-gray-600">{tCommon('time.week')}</span>
                 <span className="text-lg font-bold text-gray-900">{formatWeekRange()}</span>
             </div>
 

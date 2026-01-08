@@ -80,7 +80,10 @@
         "earnings": "Câștiguri",
         "rating": "Rating",
         "total": "TOTAL",
-        "loadingReport": "Se încarcă raportul..."
+        "loadingReport": "Se încarcă raportul...",
+        "errorLoad": "Eroare la încărcarea raportului săptămânal",
+        "errorExport": "Eroare la exportul CSV",
+        "errorInvoice": "Eroare la descărcarea facturii"
     },
     "activity": {
         "title": "Activitate Șoferi",

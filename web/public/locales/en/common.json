@@ -17,6 +17,10 @@
         "complete": "Complete",
         "submit": "Submit"
     },
+    "errors": {
+        "unknown": "Unknown error",
+        "load": "Error loading"
+    },
     "navigation": {
         "overview": "Overview",
         "tasks": "Tasks",

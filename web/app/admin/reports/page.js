@@ -54,7 +54,7 @@ export default function ReportsPage() {
             setReportData(response.data);
         } catch (error) {
             console.error('Error loading weekly report:', error);
-            alert('Eroare la încărcarea raportului săptămânal');
+            alert(t('reports.errorLoad'));
         } finally {
             setLoading(false);
         }
@@ -84,7 +84,7 @@ export default function ReportsPage() {
             link.remove();
         } catch (error) {
             console.error('Error exporting CSV:', error);
-            alert('Failed to export CSV');
+            alert(t('reports.errorExport'));
         } finally {
             setLoading(false);
         }
@@ -116,7 +116,7 @@ export default function ReportsPage() {
             link.remove();
         } catch (error) {
             console.error('Error downloading invoice:', error);
-            alert('Failed to download invoice');
+            alert(t('reports.errorInvoice'));
         }
     };
 

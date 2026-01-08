@@ -68,8 +68,8 @@
         "createTask_button": "Create Task",
         "createTasks_button": "Create Tasks",
         "markComplete": "Mark Complete",
-        "taskCompleted": "Task marcat ca îndeplinit!",
-        "errorCompleting": "Eroare la marcarea taskului."
+        "taskCompleted": "Task marked as complete!",
+        "errorCompleting": "Error completing task"
     },
     "reports": {
         "title": "Weekly Reports",
@@ -80,7 +80,10 @@
         "earnings": "Earnings",
         "rating": "Rating",
         "total": "TOTAL",
-        "loadingReport": "Loading report..."
+        "loadingReport": "Loading report...",
+        "errorLoad": "Error loading weekly report",
+        "errorExport": "Failed to export CSV",
+        "errorInvoice": "Failed to download invoice"
     },
     "activity": {
         "title": "Driver Activity",

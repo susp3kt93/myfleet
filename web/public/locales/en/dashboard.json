@@ -68,19 +68,39 @@
         "photoError": "Error uploading photo."
     },
     "tasks": {
+        "title": "Tasks",
         "acceptedTasks": "Accepted Tasks",
         "accept": "Accept",
         "reject": "Reject",
         "complete": "Complete",
-        "cancel": "Cancel Task"
+        "cancel": "Cancel Task",
+        "successAccepted": "Task accepted successfully!",
+        "errorAccept": "Error accepting task",
+        "successRejected": "Task rejected!",
+        "errorReject": "Error rejecting task",
+        "successCompleted": "Task marked as complete!",
+        "errorComplete": "Error completing task",
+        "successCancelledRating": "Task cancelled. Rating decreased by 0.1 points.",
+        "successCancelled": "Task cancelled.",
+        "errorCancel": "Error cancelling task"
     },
     "earnings": {
         "monthTitle": "Earnings This Month",
+        "monthlyTitle": "Earnings This Month",
+        "weeklyTitle": "Weekly Earnings",
+        "monthly": "Monthly Earnings",
+        "weekly": "Weekly Earnings",
+        "history": "Earnings History",
         "tasksCompleted": "tasks completed",
         "historyTitle": "Earnings History",
         "task": "Task",
         "date": "Date",
-        "amount": "Amount"
+        "amount": "Amount",
+        "downloadInvoice": "Download Invoice",
+        "weekTotal": "Week Total",
+        "daysWorked": "Days Worked",
+        "avgPerDay": "Avg per Day",
+        "weekActivity": "Weekly Activity"
     },
     "modals": {
         "confirmation": "Confirmation",

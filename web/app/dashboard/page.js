@@ -141,10 +141,10 @@ export default function EnhancedDashboardPage() {
             await api.post(`/tasks/${taskId}/accept`);
             // Reload tasks
             loadData();
-            alert('Task acceptat cu succes!');
+            alert(t('tasks.successAccepted'));
         } catch (error) {
             console.error('Error accepting task:', error);
-            alert('Eroare la acceptarea taskului.');
+            alert(t('tasks.errorAccept'));
         }
     };
 
@@ -153,10 +153,10 @@ export default function EnhancedDashboardPage() {
             await api.post(`/tasks/${taskId}/reject`);
             // Reload tasks
             loadData();
-            alert('Task respins.');
+            alert(t('tasks.successRejected'));
         } catch (error) {
             console.error('Error rejecting task:', error);
-            alert('Eroare la respingerea taskului.');
+            alert(t('tasks.errorReject'));
         }
     };
 
@@ -169,10 +169,10 @@ export default function EnhancedDashboardPage() {
             setTaskToComplete(null);
             // Reload tasks
             loadData();
-            alert('Task marcat ca îndeplinit!');
+            alert(t('tasks.successCompleted'));
         } catch (error) {
             console.error('Error completing task:', error);
-            alert('Eroare la marcarea taskului.');
+            alert(t('tasks.errorComplete'));
         }
     };
 
@@ -200,10 +200,10 @@ export default function EnhancedDashboardPage() {
             setTaskToCancel(null);
             // Reload tasks
             loadData();
-            alert('Task anulat. Ratingul a scăzut cu 0.1 puncte.');
+            alert(t('tasks.successCancelledRating'));
         } catch (error) {
             console.error('Error cancelling task:', error);
-            alert('Eroare la anularea taskului.');
+            alert(t('tasks.errorCancel'));
         }
     };
 
@@ -214,12 +214,12 @@ export default function EnhancedDashboardPage() {
             console.log('[Dashboard] Task accepted successfully:', response.data);
             // Reload tasks
             loadData();
-            alert('Task acceptat cu succes!');
+            alert(t('tasks.successAccepted'));
         } catch (error) {
             console.error('[Dashboard] Error accepting task:', error);
             console.error('[Dashboard] Error response:', error.response?.data);
-            const errorMsg = error.response?.data?.error || error.message || 'Eroare necunoscută';
-            alert('Eroare la acceptarea taskului: ' + errorMsg);
+            const errorMsg = error.response?.data?.error || error.message || tCommon('errors.unknown');
+            alert(t('tasks.errorAccept') + ': ' + errorMsg);
         }
     };
 
@@ -230,12 +230,12 @@ export default function EnhancedDashboardPage() {
             console.log('[Dashboard] Task rejected successfully:', response.data);
             // Reload tasks
             loadData();
-            alert('Task respins!');
+            alert(t('tasks.successRejected'));
         } catch (error) {
             console.error('[Dashboard] Error rejecting task:', error);
             console.error('[Dashboard] Error response:', error.response?.data);
-            const errorMsg = error.response?.data?.error || error.message || 'Eroare necunoscută';
-            alert('Eroare la respingerea taskului: ' + errorMsg);
+            const errorMsg = error.response?.data?.error || error.message || tCommon('errors.unknown');
+            alert(t('tasks.errorReject') + ': ' + errorMsg);
         }
     };
 
@@ -262,10 +262,13 @@ export default function EnhancedDashboardPage() {
     const weekStart = startOfWeek(currentWeekDate, { weekStartsOn: 0 }); // Sunday
     const weekEnd = endOfWeek(currentWeekDate, { weekStartsOn: 0 }); // Saturday
     const weeklyCompletedTasks = allTasks.filter(t => {
-        if (t.status !== 'COMPLETED' || t.assignedToId !== user?.id || !t.completedAt) return false;
-        const completedDate = new Date(t.completedAt);
-        return completedDate >= weekStart && completedDate <= weekEnd;
-    }).sort((a, b) => new Date(b.completedAt) - new Date(a.completedAt));
+        // Must be completed and assigned to me
+        if (t.status !== 'COMPLETED' || t.assignedToId !== user?.id) return false;
+
+        // Check if SCHEDULED date is in the selected week (accrual basis reporting)
+        const taskDate = new Date(t.scheduledDate);
+        return taskDate >= weekStart && taskDate <= weekEnd;
+    }).sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate));
 
     const weeklyEarnings = weeklyCompletedTasks.reduce((sum, t) => sum + Number(t.price), 0);
 
@@ -660,12 +663,12 @@ export default function EnhancedDashboardPage() {
                         {/* Week Navigator & Header */}
                         <div className="bg-gradient-to-r from-green-500 to-emerald-600 rounded-2xl p-6 text-white shadow-lg">
                             <div className="flex flex-wrap items-center justify-between gap-4 mb-4">
-                                <h2 className="text-2xl font-bold">💰 Weekly Earnings</h2>
+                                <h2 className="text-2xl font-bold">💰 {t('earnings.weeklyTitle')}</h2>
                                 <button
                                     onClick={handleDownloadInvoice}
                                     className="px-4 py-2 bg-white/20 hover:bg-white/30 backdrop-blur rounded-lg transition flex items-center gap-2 font-medium"
                                 >
-                                    📄 Download Invoice
+                                    📄 {t('earnings.downloadInvoice')}
                                 </button>
                             </div>
 
@@ -676,19 +679,19 @@ export default function EnhancedDashboardPage() {
                                         onClick={() => setEarningsWeekStart(subWeeks(earningsWeekStart, 1))}
                                         className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
                                     >
-                                        ← Prev
+                                        ← {tCommon('time.previous')}
                                     </button>
                                     <button
                                         onClick={() => setEarningsWeekStart(startOfWeek(new Date(), { weekStartsOn: 0 }))}
                                         className="px-4 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
                                     >
-                                        Current Week
+                                        {tCommon('time.current')}
                                     </button>
                                     <button
                                         onClick={() => setEarningsWeekStart(addWeeks(earningsWeekStart, 1))}
                                         className="px-3 py-2 bg-white/20 hover:bg-white/30 rounded-lg transition"
                                     >
-                                        Next →
+                                        {tCommon('time.next')} →
                                     </button>
                                 </div>
 
@@ -721,28 +724,28 @@ export default function EnhancedDashboardPage() {
                                     <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                                         <div className="bg-white rounded-xl shadow p-4 text-center">
                                             <p className="text-3xl font-bold text-green-600">£{weekTotal.toFixed(2)}</p>
-                                            <p className="text-sm text-gray-500">Week Total</p>
+                                            <p className="text-sm text-gray-500">{t('earnings.weekTotal')}</p>
                                         </div>
                                         <div className="bg-white rounded-xl shadow p-4 text-center">
                                             <p className="text-3xl font-bold text-blue-600">{daysWorked}</p>
-                                            <p className="text-sm text-gray-500">Days Worked</p>
+                                            <p className="text-sm text-gray-500">{t('earnings.daysWorked')}</p>
                                         </div>
                                         <div className="bg-white rounded-xl shadow p-4 text-center">
                                             <p className="text-3xl font-bold text-purple-600">{completedWeekTasks.length}</p>
-                                            <p className="text-sm text-gray-500">Tasks Completed</p>
+                                            <p className="text-sm text-gray-500">{t('earnings.tasksCompleted')}</p>
                                         </div>
                                         <div className="bg-white rounded-xl shadow p-4 text-center">
                                             <p className="text-3xl font-bold text-amber-600">
                                                 £{daysWorked > 0 ? (weekTotal / daysWorked).toFixed(2) : '0.00'}
                                             </p>
-                                            <p className="text-sm text-gray-500">Avg per Day</p>
+                                            <p className="text-sm text-gray-500">{t('earnings.avgPerDay')}</p>
                                         </div>
                                     </div>
 
                                     {/* Weekly Calendar Grid */}
                                     <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
                                         <div className="bg-gray-50 px-6 py-3 border-b">
-                                            <h3 className="font-bold text-gray-800">📅 Week Activity</h3>
+                                            <h3 className="font-bold text-gray-800">📅 {t('earnings.weekActivity')}</h3>
                                         </div>
                                         <div className="divide-y divide-gray-100">
                                             {weekDays.map(day => {
