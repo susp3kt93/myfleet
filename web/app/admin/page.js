@@ -16,8 +16,8 @@ export default function AdminPage() {
     const router = useRouter();
     const dispatch = useDispatch();
     const { user, isAuthenticated } = useSelector((state) => state.auth);
-    const { tasks } = useSelector((state) => state.tasks);
-    const { users } = useSelector((state) => state.users);
+    const [pendingTimeOffCount, setPendingTimeOffCount] = useState(0);
+    const [showTimeOffBadge, setShowTimeOffBadge] = useState(false);
 
     useEffect(() => {
         dispatch(loadStoredAuth());
@@ -31,8 +31,27 @@ export default function AdminPage() {
         } else {
             dispatch(fetchTasks());
             dispatch(fetchUsers());
+            fetchTimeOffCount();
         }
     }, [isAuthenticated, user]);
+
+    const fetchTimeOffCount = async () => {
+        try {
+            const response = await api.get('/timeoff/pending-count');
+            const count = response.data.count;
+            setPendingTimeOffCount(count);
+
+            // Check if user has seen these requests
+            if (typeof window !== 'undefined') {
+                const viewedCount = parseInt(localStorage.getItem('adminTimeOffViewedCount') || '0');
+                if (count > 0 && count > viewedCount) {
+                    setShowTimeOffBadge(true);
+                }
+            }
+        } catch (error) {
+            console.error('Error fetching time off count:', error);
+        }
+    };
 
     const handleLogout = () => {
         dispatch(logout());
@@ -181,7 +200,12 @@ export default function AdminPage() {
                         </div>
                     </Link>
 
-                    <Link href="/admin/timeoff" className="block group">
+                    <Link href="/admin/timeoff" className="block group relative">
+                        {showTimeOffBadge && (
+                            <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-lg border-2 border-white animate-pulse z-10">
+                                {pendingTimeOffCount}
+                            </div>
+                        )}
                         <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-orange-500 group-hover:scale-[1.02]">
                             <div className="flex items-center space-x-4">
                                 <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-orange-200 transition">🏖️</div>
