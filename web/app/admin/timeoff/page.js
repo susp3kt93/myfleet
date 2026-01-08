@@ -57,12 +57,6 @@ export default function TimeOffManagementPage() {
             const params = filter !== 'all' ? { status: filter } : {};
             const response = await api.get('/timeoff', { params });
             setRequests(response.data);
-
-            // Mark these requests as viewed (for dashboard badge)
-            if (filter === 'PENDING' || filter === 'all') {
-                const pendingCount = response.data.filter(r => r.status === 'PENDING').length;
-                localStorage.setItem('adminTimeOffViewedCount', pendingCount.toString());
-            }
         } catch (error) {
             console.error('Error fetching time-off requests:', error);
         } finally {

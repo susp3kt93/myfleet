@@ -43,8 +43,12 @@ export default function AdminPage() {
             const count = response.data.count;
             setPendingTimeOffCount(count);
 
-            // Always show badge if there are pending requests
-            setShowTimeOffBadge(count > 0);
+            // Always show badge if there are pending requests (User request)
+            if (count > 0) {
+                setShowTimeOffBadge(true);
+            } else {
+                setShowTimeOffBadge(false);
+            }
         } catch (error) {
             console.error('Error fetching time off count:', error);
         }
