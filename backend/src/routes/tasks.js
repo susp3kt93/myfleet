@@ -474,10 +474,36 @@ router.post('/:id/accept', async (req, res) => {
             return res.status(403).json({ error: 'Only drivers can accept tasks' });
         }
 
+        // Idempotency: If task is accepted by the CURRENT driver, return success
+        if (task.status === 'ACCEPTED' && task.assignedToId === req.user.id) {
+            console.log(`[POST /tasks/:id/accept] Task already accepted by ${req.user.personalId}, returning success`);
+            const fullTask = await prisma.task.findUnique({
+                where: { id: req.params.id },
+                include: {
+                    assignedTo: {
+                        select: {
+                            id: true,
+                            personalId: true,
+                            name: true,
+                            photoUrl: true
+                        }
+                    },
+                    createdBy: {
+                        select: {
+                            id: true,
+                            pushToken: true,
+                            notificationsEnabled: true
+                        }
+                    }
+                }
+            });
+            return res.json({ task: fullTask });
+        }
+
         // Can only accept PENDING tasks
         if (task.status !== 'PENDING') {
             console.log('[POST /tasks/:id/accept] Task is not PENDING');
-            return res.status(400).json({ error: 'Can only accept pending tasks' });
+            return res.status(400).json({ error: `Can only accept pending tasks (Current status: ${task.status})` });
         }
 
         // If task is unassigned, anyone can accept
