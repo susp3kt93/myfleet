@@ -130,6 +130,14 @@
         "errorReject": "Error rejecting request",
         "statusPending": "⏳ Pending",
         "statusApproved": "✅ Approved",
-        "statusRejected": "❌ Rejected"
+        "statusRejected": "❌ Rejected",
+        "statsButton": "📊 Annual Stats",
+        "statsTitle": "📊 Time Off Stats - {{year}}",
+        "noStatsData": "No data",
+        "approvedDays": "Approved",
+        "pendingDays": "Pending",
+        "day": "day",
+        "days": "days",
+        "period": "Period: {{count}} consecutive days"
     }
 }

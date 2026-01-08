@@ -130,6 +130,14 @@
         "errorReject": "Eroare la respingerea cererii",
         "statusPending": "⏳ În așteptare",
         "statusApproved": "✅ Aprobat",
-        "statusRejected": "❌ Respins"
+        "statusRejected": "❌ Respins",
+        "statsButton": "📊 Statistici Anuale",
+        "statsTitle": "📊 Statistici Zile Libere - {{year}}",
+        "noStatsData": "Nu există date",
+        "approvedDays": "Aprobate",
+        "pendingDays": "În așteptare",
+        "day": "zi",
+        "days": "zile",
+        "period": "Perioadă: {{count}} zile consecutive"
     }
 }

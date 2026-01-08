@@ -178,7 +178,7 @@ export default function TimeOffManagementPage() {
                                 : 'bg-white/20 text-white hover:bg-white/30'
                                 }`}
                         >
-                            📊 Statistici Anuale
+                            {t('timeoff.statsButton')}
                         </button>
                     </div>
                 </div>
@@ -190,10 +190,10 @@ export default function TimeOffManagementPage() {
                 {showDriverStats && (
                     <div className="bg-white rounded-2xl shadow-lg p-6 mb-6">
                         <h3 className="text-lg font-bold text-gray-900 mb-4">
-                            📊 Statistici Zile Libere - {driverStats.year}
+                            {t('timeoff.statsTitle', { year: driverStats.year })}
                         </h3>
                         {driverStats.drivers.length === 0 ? (
-                            <p className="text-gray-500 text-center py-4">Nu există date</p>
+                            <p className="text-gray-500 text-center py-4">{t('timeoff.noStatsData')}</p>
                         ) : (
                             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                                 {driverStats.drivers.map(driver => (
@@ -212,11 +212,11 @@ export default function TimeOffManagementPage() {
                                         <div className="flex gap-3 mt-3">
                                             <div className="flex-1 text-center p-2 bg-green-100 rounded-lg">
                                                 <p className="text-lg font-bold text-green-700">{driver.approvedDays}</p>
-                                                <p className="text-xs text-green-600">Aprobate</p>
+                                                <p className="text-xs text-green-600">{t('timeoff.approvedDays')}</p>
                                             </div>
                                             <div className="flex-1 text-center p-2 bg-yellow-100 rounded-lg">
                                                 <p className="text-lg font-bold text-yellow-700">{driver.pendingDays}</p>
-                                                <p className="text-xs text-yellow-600">În așteptare</p>
+                                                <p className="text-xs text-yellow-600">{t('timeoff.pendingDays')}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -283,7 +283,7 @@ export default function TimeOffManagementPage() {
                                                         ? 'bg-blue-100 text-blue-700'
                                                         : 'bg-purple-100 text-purple-700'
                                                         }`}>
-                                                        {daysCount} {daysCount === 1 ? 'zi' : 'zile'}
+                                                        {daysCount} {daysCount === 1 ? t('timeoff.day') : t('timeoff.days')}
                                                     </span>
                                                 </div>
                                                 <p className="text-sm text-gray-500">
@@ -300,23 +300,23 @@ export default function TimeOffManagementPage() {
                                                     </div>
                                                     {request.endDate && (
                                                         <p className="text-xs text-gray-500 mt-1">
-                                                            Perioadă: {daysCount} zile consecutive
+                                                            {t('timeoff.period', { count: daysCount })}
                                                         </p>
                                                     )}
                                                 </div>
 
                                                 {request.reason && (
                                                     <p className="text-sm text-gray-600 mt-3">
-                                                        <span className="font-medium">📝 Motiv:</span> {request.reason}
+                                                        <span className="font-medium">📝 {t('timeoff.reason')}</span> {request.reason}
                                                     </p>
                                                 )}
                                                 {request.adminNotes && (
                                                     <p className="text-sm text-gray-600 mt-2 italic bg-yellow-50 p-2 rounded">
-                                                        <span className="font-medium">💬 Notă admin:</span> {request.adminNotes}
+                                                        <span className="font-medium">💬 {t('timeoff.adminNotes')}</span> {request.adminNotes}
                                                     </p>
                                                 )}
                                                 <p className="text-xs text-gray-400 mt-3">
-                                                    Cerere trimisă: {new Date(request.createdAt).toLocaleDateString(locale === 'ro' ? 'ro-RO' : 'en-GB')}
+                                                    {t('timeoff.requestCreated')} {new Date(request.createdAt).toLocaleDateString(locale === 'ro' ? 'ro-RO' : 'en-GB')}
                                                 </p>
                                             </div>
                                         </div>
