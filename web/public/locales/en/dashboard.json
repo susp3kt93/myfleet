@@ -67,6 +67,14 @@
         "photoUpdated": "Profile photo updated successfully!",
         "photoError": "Error uploading photo."
     },
+    "status": {
+        "pending": "Pending",
+        "accepted": "Accepted",
+        "rejected": "Rejected",
+        "in_progress": "In Progress",
+        "completed": "Completed",
+        "cancelled": "Cancelled"
+    },
     "tasks": {
         "title": "Tasks",
         "acceptedTasks": "Accepted Tasks",

@@ -67,6 +67,14 @@
         "photoUpdated": "Poză de profil actualizată cu succes!",
         "photoError": "Eroare la încărcarea pozei."
     },
+    "status": {
+        "pending": "În Așteptare",
+        "accepted": "Acceptat",
+        "rejected": "Respins",
+        "in_progress": "În Desfășurare",
+        "completed": "Completat",
+        "cancelled": "Anulat"
+    },
     "tasks": {
         "title": "Taskuri",
         "acceptedTasks": "Taskuri Acceptate",
