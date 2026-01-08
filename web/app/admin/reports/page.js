@@ -90,6 +90,36 @@ export default function ReportsPage() {
         }
     };
 
+    const handleDownloadInvoice = async (driver) => {
+        try {
+            const weekStart = startOfWeek(currentDate, { weekStartsOn: 0 });
+            const weekEnd = endOfWeek(currentDate, { weekStartsOn: 0 });
+
+            // Show temporary loading state/cursor if needed, or simple alert
+            // For now, we rely on browser's download indicator, but we can wrap in try/catch
+
+            const response = await api.get('/reports/export/pdf', {
+                params: {
+                    startDate: weekStart.toISOString().split('T')[0],
+                    endDate: weekEnd.toISOString().split('T')[0],
+                    driverId: driver.id // Pass the specific driver ID
+                },
+                responseType: 'blob'
+            });
+
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `invoice-${driver.personalId}-${weekStart.toISOString().split('T')[0]}.pdf`);
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+        } catch (error) {
+            console.error('Error downloading invoice:', error);
+            alert('Failed to download invoice');
+        }
+    };
+
     if (!isAuthenticated || (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN')) {
         return null;
     }
@@ -155,6 +185,9 @@ export default function ReportsPage() {
                                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                                         {t('reports.rating')}
                                     </th>
+                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                        Invoice
+                                    </th>
                                 </tr>
                             </thead>
                             <tbody className="bg-white divide-y divide-gray-200">
@@ -196,6 +229,14 @@ export default function ReportsPage() {
                                                 {driver.rating?.toFixed(1) || 'N/A'} ⭐
                                             </div>
                                         </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                            <button
+                                                onClick={() => handleDownloadInvoice(driver)}
+                                                className="text-primary-600 hover:text-primary-900 bg-primary-50 px-3 py-1 rounded-md transition hover:bg-primary-100 flex items-center gap-1 ml-auto"
+                                            >
+                                                📄 PDF
+                                            </button>
+                                        </td>
                                     </tr>
                                 ))}
                                 {/* Totals Row */}
@@ -214,6 +255,9 @@ export default function ReportsPage() {
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         <span className="text-green-600">{reportData.totals.earnings.toFixed(2)} £</span>
+                                    </td>
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        -
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
                                         -

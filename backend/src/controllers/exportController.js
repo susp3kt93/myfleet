@@ -130,10 +130,16 @@ export const generateWeeklyCSV = async (req, res) => {
 };
 
 // PDF Invoice Export for Drivers - UK Format with all days in range
+// PDF Invoice Export for Drivers - UK Format with all days in range
 export const generateDriverInvoice = async (req, res) => {
     try {
         const { startDate, endDate } = req.query;
-        const driverId = req.user.id;
+        let driverId = req.user.id;
+
+        // Allow Admins to generate for other drivers
+        if ((req.user.role === 'COMPANY_ADMIN' || req.user.role === 'SUPER_ADMIN') && req.query.driverId) {
+            driverId = req.query.driverId;
+        }
 
         if (!startDate || !endDate) {
             return res.status(400).json({ error: 'Start date and end date are required' });
@@ -148,6 +154,15 @@ export const generateDriverInvoice = async (req, res) => {
                 company: true
             }
         });
+
+        if (!driver) {
+            return res.status(404).json({ error: 'Driver not found' });
+        }
+
+        // Security check for Company Admin
+        if (req.user.role === 'COMPANY_ADMIN' && driver.companyId !== req.user.companyId) {
+            return res.status(403).json({ error: 'Unauthorized: Driver belongs to another company' });
+        }
 
         if (!driver) {
             return res.status(404).json({ error: 'Driver not found' });
