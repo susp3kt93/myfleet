@@ -16,6 +16,8 @@ export default function AdminPage() {
     const router = useRouter();
     const dispatch = useDispatch();
     const { user, isAuthenticated } = useSelector((state) => state.auth);
+    const { tasks } = useSelector((state) => state.tasks);
+    const { users } = useSelector((state) => state.users);
     const [pendingTimeOffCount, setPendingTimeOffCount] = useState(0);
     const [showTimeOffBadge, setShowTimeOffBadge] = useState(false);
 
