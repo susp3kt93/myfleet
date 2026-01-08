@@ -203,14 +203,21 @@ export default function AdminPage() {
                                 {pendingTimeOffCount}
                             </div>
                         )}
-                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-orange-500 group-hover:scale-[1.02]">
+                        <div className={`rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer group-hover:scale-[1.02] ${pendingTimeOffCount > 0
+                                ? 'bg-gradient-to-br from-orange-50 to-red-50 border-l-4 border-red-500 animate-pulse ring-2 ring-red-400 ring-opacity-50'
+                                : 'bg-white border-l-4 border-orange-500'
+                            }`}>
                             <div className="flex items-center space-x-4">
-                                <div className="w-16 h-16 bg-orange-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-orange-200 transition">🏖️</div>
+                                <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-4xl transition ${pendingTimeOffCount > 0 ? 'bg-white shadow-sm' : 'bg-orange-100 group-hover:bg-orange-200'
+                                    }`}>🏖️</div>
                                 <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.timeOffRequests')}</h3>
-                                    <p className="text-gray-500 text-sm mt-1">
+                                    <h3 className={`text-xl font-bold ${pendingTimeOffCount > 0 ? 'text-red-800' : 'text-gray-900'}`}>{t('dashboard.actions.timeOffRequests')}</h3>
+                                    <p className={`text-sm mt-1 ${pendingTimeOffCount > 0 ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
                                         {pendingTimeOffCount > 0
-                                            ? <span className="text-red-600 font-bold">{pendingTimeOffCount} {t('timeoff.pending')}</span>
+                                            ? <span className="flex items-center gap-2">
+                                                <span className="inline-block w-2 h-2 rounded-full bg-red-600 animate-ping" />
+                                                {pendingTimeOffCount} {t('timeoff.pending')}
+                                            </span>
                                             : t('dashboard.actions.timeOffRequestsDesc')}
                                     </p>
                                 </div>
