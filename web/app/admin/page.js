@@ -9,6 +9,7 @@ import { fetchTasks } from '../../lib/tasksSlice';
 import { fetchUsers } from '../../lib/usersSlice';
 import { useTranslation } from '../../contexts/LanguageContext';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import api from '../../lib/api';
 
 export default function AdminPage() {
     const { t } = useTranslation('admin');
