@@ -75,13 +75,22 @@ router.get('/pending-count', requireAdmin, async (req, res) => {
     try {
         let whereClause = { status: 'PENDING' };
 
+        const currentUserId = req.user.id;
+        const currentUserRole = req.user.role;
+        const currentCompanyId = req.user.companyId;
+
+        console.log(`[GET /timeoff/pending-count] Admin: ${req.user.name} | Role: ${currentUserRole} | CompId: ${currentCompanyId}`);
+
         if (req.user.role === 'COMPANY_ADMIN') {
             whereClause.companyId = req.user.companyId;
+            console.log(`[GET /timeoff/pending-count] Filtering by CompanyId: ${req.user.companyId}`);
         }
 
         const count = await prisma.timeOffRequest.count({
             where: whereClause
         });
+
+        console.log(`[GET /timeoff/pending-count] Found count: ${count}`);
 
         res.json({ count });
     } catch (error) {
