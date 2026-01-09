@@ -160,9 +160,6 @@ export default function EnhancedDashboardPage() {
             }
 
             alert(t('profile.photoUpdated'));
-
-            // Force page reload to show new image
-            window.location.reload();
         } catch (error) {
             console.error('Error uploading photo:', error);
             alert(t('profile.photoError'));
