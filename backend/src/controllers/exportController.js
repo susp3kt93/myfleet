@@ -397,11 +397,95 @@ export const generateDriverInvoice = async (req, res) => {
             .lineTo(560, yPosition)
             .stroke();
 
+        // Fetch active deductions for this period
+        const deductions = await prisma.deduction.findMany({
+            where: {
+                userId: driverId,
+                status: 'ACTIVE',
+                startDate: {
+                    lte: weekEnd
+                },
+                OR: [
+                    { endDate: null },
+                    { endDate: { gte: weekStart } }
+                ]
+            }
+        });
+
+        // Calculate applicable deductions
+        const applicableDeductions = [];
+        let totalDeductions = 0;
+
+        for (const deduction of deductions) {
+            let shouldApply = false;
+
+            if (deduction.frequency === 'WEEKLY') {
+                shouldApply = true;
+            } else if (deduction.frequency === 'MONTHLY') {
+                // Apply if it's the first week of the month
+                const isFirstWeekOfMonth = weekStart.getDate() <= 7;
+                shouldApply = isFirstWeekOfMonth;
+            } else if (deduction.frequency === 'ONE_TIME' && !deduction.applied) {
+                shouldApply = true;
+            }
+
+            if (shouldApply) {
+                applicableDeductions.push(deduction);
+                totalDeductions += deduction.amount;
+            }
+        }
+
+        const netPay = totalAmount - totalDeductions;
+
+        // Display earnings breakdown
         yPosition += 15;
-        doc.fontSize(12).font('Helvetica-Bold');
-        doc.text('TOTAL EARNINGS:', 350, yPosition);
-        doc.fillColor('#059669');
+        doc.fontSize(11).font('Helvetica-Bold');
+        doc.text('GROSS EARNINGS:', 350, yPosition);
+        doc.fillColor('#059669').font('Helvetica');
         doc.text(`£${totalAmount.toFixed(2)}`, 480, yPosition, { width: 80, align: 'right' });
+        doc.fillColor('#000000');
+
+        // Display deductions if any
+        if (applicableDeductions.length > 0) {
+            yPosition += 25;
+            doc.fontSize(10).font('Helvetica-Bold');
+            doc.text('DEDUCTIONS:', 350, yPosition);
+
+            yPosition += 15;
+            doc.fontSize(9).font('Helvetica');
+
+            applicableDeductions.forEach(deduction => {
+                doc.fillColor('#666666');
+                doc.text(`${deduction.description}`, 360, yPosition);
+                doc.fillColor('#DC2626');
+                doc.text(`-£${deduction.amount.toFixed(2)}`, 480, yPosition, { width: 80, align: 'right' });
+                doc.fillColor('#000000');
+                yPosition += 15;
+            });
+
+            yPosition += 5;
+            doc.fontSize(10).font('Helvetica-Bold');
+            doc.text('Total Deductions:', 350, yPosition);
+            doc.fillColor('#DC2626');
+            doc.text(`-£${totalDeductions.toFixed(2)}`, 480, yPosition, { width: 80, align: 'right' });
+            doc.fillColor('#000000');
+
+            // Separator line
+            yPosition += 10;
+            doc.strokeColor('#CCCCCC')
+                .lineWidth(0.5)
+                .moveTo(350, yPosition)
+                .lineTo(560, yPosition)
+                .stroke();
+        }
+
+        // NET PAY (final amount)
+        yPosition += 15;
+        doc.fontSize(14).font('Helvetica-Bold');
+        doc.text('NET PAY:', 350, yPosition);
+        doc.fillColor(netPay >= 0 ? '#059669' : '#DC2626');
+        doc.fontSize(16);
+        doc.text(`£${netPay.toFixed(2)}`, 480, yPosition, { width: 80, align: 'right' });
         doc.fillColor('#000000');
 
         // Summary
