@@ -376,7 +376,14 @@ router.post('/profile/photo', upload.single('photo'), async (req, res) => {
             }
         } else {
             // Fallback to local storage (development)
-            photoUrl = `/uploads/profiles/${req.file.filename}`;
+            const fs = await import('fs');
+            const path = await import('path');
+            const filename = `${userId}-${Date.now()}.${req.file.mimetype.split('/')[1]}`;
+            const filepath = `uploads/profiles/${filename}`;
+
+            // Write buffer to disk
+            await fs.promises.writeFile(filepath, req.file.buffer);
+            photoUrl = `/uploads/profiles/${filename}`;
         }
 
         // Update user in database
