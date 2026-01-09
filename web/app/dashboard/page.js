@@ -307,7 +307,7 @@ export default function EnhancedDashboardPage() {
         // Check if SCHEDULED date is in the selected week (accrual basis reporting)
         const taskDate = new Date(t.scheduledDate);
         return taskDate >= weekStart && taskDate <= weekEnd;
-    }).sort((a, b) => new Date(b.scheduledDate) - new Date(a.scheduledDate));
+    }).sort((a, b) => new Date(a.scheduledDate) - new Date(b.scheduledDate)); // Oldest first (chronological)
 
     const weeklyEarnings = weeklyCompletedTasks.reduce((sum, t) => sum + Number(t.price), 0);
 
