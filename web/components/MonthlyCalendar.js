@@ -133,7 +133,7 @@ export default function MonthlyCalendar({ tasks, onAcceptTask, onRejectTask }) {
                                             </p>
                                         )}
                                         <p className="text-xs text-green-600 font-semibold mb-1">
-                                            💰 {Number(task.price).toFixed(2)} RON
+                                            💰 {Number(task.price).toFixed(2)} £
                                         </p>
                                         <div className="flex gap-1">
                                             <button
