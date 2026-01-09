@@ -36,7 +36,7 @@ export default function DeductionsPage() {
             return;
         }
 
-        if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+        if (user.role !== 'COMPANY_ADMIN' && user.role !== 'SUPER_ADMIN') {
             console.log('[Deductions] User role not authorized:', user.role);
             router.push('/admin');
             return;
