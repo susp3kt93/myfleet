@@ -69,7 +69,14 @@ export default function AdminSettingsPage() {
 
             console.log('Logo uploaded:', res.data);
             alert('Logo updated successfully!');
-            fetchCompanyDetails(); // Refresh to get the real server URL
+
+            // Handle new logo URL immediately
+            if (res.data.logoUrl) {
+                const newLogoUrl = res.data.logoUrl;
+                setLogoPreview(newLogoUrl.startsWith('http') ? newLogoUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${newLogoUrl}`);
+            } else {
+                fetchCompanyDetails(); // Fallback refresh
+            }
         } catch (error) {
             console.error('Error uploading logo:', error);
             alert('Failed to upload logo');
