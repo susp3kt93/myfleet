@@ -27,11 +27,23 @@ export default function DeductionsPage() {
     });
 
     useEffect(() => {
-        if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
+        console.log('[Deductions] User:', user);
+        console.log('[Deductions] User role:', user?.role);
+
+        if (!user) {
+            console.log('[Deductions] No user found, redirecting to login');
             router.push('/');
-        } else {
-            loadData();
+            return;
         }
+
+        if (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN') {
+            console.log('[Deductions] User role not authorized:', user.role);
+            router.push('/admin');
+            return;
+        }
+
+        console.log('[Deductions] User authorized, loading data');
+        loadData();
     }, [user, router]);
 
     const loadData = async () => {
