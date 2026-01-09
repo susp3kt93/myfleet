@@ -126,38 +126,40 @@ export default function UsersListPage() {
 
     return (
         <div className="min-h-screen bg-gray-50">
-            {/* Header */}
-            <div className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-4">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">👥 User Management</h1>
-                            <p className="text-sm text-gray-600">Manage all platform users</p>
+            {/* Header with Deep Space Gradient */}
+            <header className="bg-gradient-to-r from-gray-900 to-indigo-900 shadow-lg text-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-4">
+                            <Link
+                                href="/super-admin"
+                                className="w-10 h-10 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center border border-white/20 hover:bg-white/20 transition text-white"
+                            >
+                                ←
+                            </Link>
+                            <div>
+                                <h1 className="text-2xl font-bold text-white">User Management</h1>
+                                <p className="text-sm text-indigo-200">System-wide user control</p>
+                            </div>
                         </div>
                         <div className="flex items-center gap-4">
                             <Link
-                                href="/super-admin"
-                                className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
-                            >
-                                ← Dashboard
-                            </Link>
-                            <Link
                                 href="/super-admin/users/new"
-                                className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+                                className="px-4 py-2 bg-indigo-500 hover:bg-indigo-600 text-white rounded-lg transition font-medium shadow-lg hover:shadow-indigo-500/25 border border-indigo-400"
                             >
                                 + Add User
                             </Link>
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {/* Filters */}
-                <div className="bg-white rounded-lg shadow-sm border p-4 mb-6">
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 p-6 mb-8">
                     <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                                 Search
                             </label>
                             <input
@@ -165,17 +167,17 @@ export default function UsersListPage() {
                                 placeholder="Name, ID, Email..."
                                 value={filters.search}
                                 onChange={(e) => setFilters({ ...filters, search: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                             />
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                                 Company
                             </label>
                             <select
                                 value={filters.companyId}
                                 onChange={(e) => setFilters({ ...filters, companyId: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                             >
                                 <option value="">All Companies</option>
                                 {companies.map((company) => (
@@ -186,13 +188,13 @@ export default function UsersListPage() {
                             </select>
                         </div>
                         <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                            <label className="block text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">
                                 Role
                             </label>
                             <select
                                 value={filters.role}
                                 onChange={(e) => setFilters({ ...filters, role: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-primary-500"
+                                className="w-full px-4 py-2.5 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition"
                             >
                                 <option value="">All Roles</option>
                                 <option value="SUPER_ADMIN">Super Admin</option>
@@ -203,7 +205,7 @@ export default function UsersListPage() {
                         <div className="flex items-end">
                             <button
                                 onClick={() => setFilters({ companyId: '', role: '', search: '' })}
-                                className="w-full px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition"
+                                className="w-full px-4 py-2.5 bg-gray-100 text-gray-600 rounded-xl hover:bg-gray-200 transition font-medium"
                             >
                                 Clear Filters
                             </button>
@@ -212,93 +214,100 @@ export default function UsersListPage() {
                 </div>
 
                 {/* Stats */}
-                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-white p-4 rounded-lg shadow-sm border">
-                        <div className="text-2xl font-bold text-gray-900">{users.length}</div>
-                        <div className="text-sm text-gray-600">Total Users</div>
-                    </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm border">
-                        <div className="text-2xl font-bold text-gray-900">
-                            {users.filter(u => u.role === 'COMPANY_ADMIN').length}
+                <div className="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <div className="bg-white p-5 rounded-2xl shadow-md border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-gray-500 font-medium">Total Users</p>
+                            <p className="text-2xl font-bold text-gray-900">{users.length}</p>
                         </div>
-                        <div className="text-sm text-gray-600">Company Admins</div>
+                        <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center text-xl">👥</div>
                     </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm border">
-                        <div className="text-2xl font-bold text-gray-900">
-                            {users.filter(u => u.role === 'DRIVER').length}
+                    <div className="bg-white p-5 rounded-2xl shadow-md border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-gray-500 font-medium">Admins</p>
+                            <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role === 'COMPANY_ADMIN').length}</p>
                         </div>
-                        <div className="text-sm text-gray-600">Drivers</div>
+                        <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center text-xl">👔</div>
                     </div>
-                    <div className="bg-white p-4 rounded-lg shadow-sm border">
-                        <div className="text-2xl font-bold text-gray-900">
-                            {users.filter(u => u.isActive).length}
+                    <div className="bg-white p-5 rounded-2xl shadow-md border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-gray-500 font-medium">Drivers</p>
+                            <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.role === 'DRIVER').length}</p>
                         </div>
-                        <div className="text-sm text-gray-600">Active Users</div>
+                        <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center text-xl">🚛</div>
+                    </div>
+                    <div className="bg-white p-5 rounded-2xl shadow-md border border-gray-100 flex items-center justify-between">
+                        <div>
+                            <p className="text-sm text-gray-500 font-medium">Active</p>
+                            <p className="text-2xl font-bold text-gray-900">{users.filter(u => u.isActive).length}</p>
+                        </div>
+                        <div className="w-10 h-10 bg-emerald-100 rounded-lg flex items-center justify-center text-xl">⚡</div>
                     </div>
                 </div>
 
                 {/* Users Table */}
-                <div className="bg-white rounded-lg shadow-sm border overflow-hidden">
+                <div className="bg-white rounded-2xl shadow-lg border border-gray-100 overflow-hidden">
                     <div className="overflow-x-auto">
                         <table className="w-full">
-                            <thead className="bg-gray-50 border-b">
+                            <thead className="bg-gray-50 text-gray-600 text-xs uppercase tracking-wider font-semibold border-b border-gray-200">
                                 <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">User</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Personal ID</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Contact</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Company</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Role</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Tasks</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+                                    <th className="px-6 py-4 text-left">User</th>
+                                    <th className="px-6 py-4 text-left">Personal ID</th>
+                                    <th className="px-6 py-4 text-left">Contact</th>
+                                    <th className="px-6 py-4 text-left">Company</th>
+                                    <th className="px-6 py-4 text-left">Role</th>
+                                    <th className="px-6 py-4 text-left">Tasks</th>
+                                    <th className="px-6 py-4 text-left">Status</th>
+                                    <th className="px-6 py-4 text-right">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-gray-200">
+                            <tbody className="divide-y divide-gray-100">
                                 {filteredUsers.map((u) => (
-                                    <tr key={u.id} className="hover:bg-gray-50">
+                                    <tr key={u.id} className="hover:bg-indigo-50/30 transition duration-150">
                                         <td className="px-6 py-4">
                                             <div className="font-medium text-gray-900">{u.name}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-900 font-mono">{u.personalId}</div>
+                                            <div className="text-sm text-gray-500 font-mono bg-gray-100 px-2 py-0.5 rounded w-fit">{u.personalId}</div>
                                         </td>
                                         <td className="px-6 py-4">
                                             <div className="text-sm text-gray-900">{u.email || '-'}</div>
                                             <div className="text-sm text-gray-500">{u.phone || '-'}</div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="text-sm text-gray-900">
-                                                {u.companyId ? getCompanyName(u.companyId) : 'Platform'}
+                                            <div className="text-sm text-gray-900 font-medium">
+                                                {u.companyId ? getCompanyName(u.companyId) : <span className="text-gray-400 italic">Platform</span>}
                                             </div>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${getRoleBadgeColor(u.role)}`}>
+                                            <span className={`px-2.5 py-0.5 text-xs font-bold rounded-full ${getRoleBadgeColor(u.role)}`}>
                                                 {u.role.replace('_', ' ')}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4 text-sm text-gray-900">
+                                        <td className="px-6 py-4 text-sm text-gray-900 pl-8">
                                             {u._count?.assignedTasks || 0}
                                         </td>
                                         <td className="px-6 py-4">
-                                            <span className={`px-2 py-1 text-xs font-semibold rounded-full ${u.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                                            <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${u.isActive ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
                                                 }`}>
+                                                <span className={`w-1.5 h-1.5 rounded-full mr-1.5 ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
                                                 {u.isActive ? 'Active' : 'Inactive'}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center justify-end gap-3">
                                                 {u.companyId && (
                                                     <Link
                                                         href={`/super-admin/companies/${u.companyId}`}
-                                                        className="text-primary-600 hover:text-primary-800 text-sm"
+                                                        className="text-indigo-600 hover:text-indigo-800 text-sm font-medium hover:underline"
                                                     >
-                                                        View Company
+                                                        Company
                                                     </Link>
                                                 )}
                                                 {u.role !== 'SUPER_ADMIN' && (
                                                     <button
                                                         onClick={() => handleDelete(u.id, u.name)}
-                                                        className="text-red-600 hover:text-red-800 text-sm"
+                                                        className="text-red-500 hover:text-red-700 text-sm font-medium hover:bg-red-50 px-2 py-1 rounded transition"
                                                     >
                                                         Delete
                                                     </button>
@@ -312,15 +321,16 @@ export default function UsersListPage() {
                     </div>
 
                     {filteredUsers.length === 0 && (
-                        <div className="text-center py-12">
-                            <p className="text-gray-500">No users found matching filters.</p>
+                        <div className="text-center py-12 bg-gray-50/50">
+                            <div className="text-4xl mb-3">🔍</div>
+                            <p className="text-gray-500 font-medium">No users found matching filters.</p>
                         </div>
                     )}
                 </div>
 
                 {/* Results count */}
-                <div className="mt-4 text-sm text-gray-600">
-                    Showing {filteredUsers.length} of {users.length} users
+                <div className="mt-4 text-sm text-gray-500 flex justify-between items-center px-2">
+                    <span>Showing {filteredUsers.length} of {users.length} users</span>
                 </div>
             </div>
         </div>
