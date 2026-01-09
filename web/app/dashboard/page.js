@@ -57,11 +57,14 @@ export default function EnhancedDashboardPage() {
     }, [dispatch]);
 
     useEffect(() => {
-        if (!isAuthenticated) {
+        // Prevent premature redirection if auth is still loading
+        const token = localStorage.getItem('token');
+
+        if (!isAuthenticated && !token) {
             router.push('/');
-        } else if (user?.role === 'ADMIN') {
+        } else if (isAuthenticated && user?.role === 'ADMIN') {
             router.push('/admin');
-        } else {
+        } else if (isAuthenticated && user) {
             loadData();
         }
     }, [isAuthenticated, user]);
