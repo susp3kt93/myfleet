@@ -2,23 +2,15 @@ import multer from 'multer';
 import path from 'path';
 import fs from 'fs';
 
-// Ensure uploads directory exists
+// Ensure uploads directory exists (for fallback local storage)
 const uploadDir = 'uploads/profiles';
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir, { recursive: true });
 }
 
-// Configure storage
-const storage = multer.diskStorage({
-    destination: function (req, file, cb) {
-        cb(null, uploadDir);
-    },
-    filename: function (req, file, cb) {
-        // Create unique filename: userId-timestamp.ext
-        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-        cb(null, req.user.id + '-' + uniqueSuffix + path.extname(file.originalname));
-    }
-});
+// Use memory storage for Vercel Blob compatibility
+// Files will be available as req.file.buffer
+const storage = multer.memoryStorage();
 
 // File filter
 const fileFilter = (req, file, cb) => {
