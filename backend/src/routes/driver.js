@@ -80,43 +80,107 @@ router.get('/stats', async (req, res) => {
     }
 });
 
-// Get earnings history
+// Get earnings history with deductions
 router.get('/earnings', async (req, res) => {
     try {
         const userId = req.user.id;
-        const { period = 'month' } = req.query; // month, week, year
+        const { period = 'month', startDate: queryStartDate, endDate: queryEndDate } = req.query;
 
         const now = new Date();
-        let startDate;
+        let startDate, endDate;
 
-        switch (period) {
-            case 'week':
-                startDate = new Date(now);
-                startDate.setDate(now.getDate() - 7);
-                break;
-            case 'year':
-                startDate = new Date(now.getFullYear(), 0, 1);
-                break;
-            default: // month
-                startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+        if (queryStartDate && queryEndDate) {
+            // Custom date range
+            startDate = new Date(queryStartDate);
+            endDate = new Date(queryEndDate);
+        } else {
+            // Predefined period
+            switch (period) {
+                case 'week':
+                    startDate = new Date(now);
+                    startDate.setDate(now.getDate() - 7);
+                    endDate = now;
+                    break;
+                case 'year':
+                    startDate = new Date(now.getFullYear(), 0, 1);
+                    endDate = now;
+                    break;
+                default: // month
+                    startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+                    endDate = now;
+            }
         }
 
+        // Get completed tasks
         const tasks = await prisma.task.findMany({
             where: {
                 assignedToId: userId,
                 status: 'COMPLETED',
                 scheduledDate: {
-                    gte: startDate
+                    gte: startDate,
+                    lte: endDate
                 }
             },
             orderBy: { scheduledDate: 'desc' }
         });
 
-        const totalEarnings = tasks.reduce((sum, task) => sum + (task.actualEarnings || task.price), 0);
+        const grossEarnings = tasks.reduce((sum, task) => sum + (task.actualEarnings || task.price || 0), 0);
+
+        // Get active deductions for this period
+        const deductions = await prisma.deduction.findMany({
+            where: {
+                userId,
+                status: 'ACTIVE',
+                startDate: {
+                    lte: endDate
+                },
+                OR: [
+                    { endDate: null },
+                    { endDate: { gte: startDate } }
+                ]
+            }
+        });
+
+        // Calculate applicable deductions
+        const applicableDeductions = [];
+        let totalDeductions = 0;
+
+        for (const deduction of deductions) {
+            let shouldApply = false;
+
+            if (deduction.frequency === 'WEEKLY') {
+                shouldApply = true;
+            } else if (deduction.frequency === 'MONTHLY') {
+                // Apply if it's the first week of the month or if period is monthly
+                const isFirstWeekOfMonth = startDate.getDate() <= 7;
+                shouldApply = period === 'month' || isFirstWeekOfMonth;
+            } else if (deduction.frequency === 'ONE_TIME' && !deduction.applied) {
+                shouldApply = true;
+            }
+
+            if (shouldApply) {
+                applicableDeductions.push({
+                    id: deduction.id,
+                    type: deduction.type,
+                    description: deduction.description,
+                    amount: deduction.amount
+                });
+                totalDeductions += deduction.amount;
+            }
+        }
+
+        const netPay = grossEarnings - totalDeductions;
 
         res.json({
             earnings: {
-                total: totalEarnings,
+                period: {
+                    start: startDate.toISOString(),
+                    end: endDate.toISOString()
+                },
+                grossEarnings,
+                deductions: applicableDeductions,
+                totalDeductions,
+                netPay,
                 tasks: tasks.map(task => ({
                     id: task.id,
                     title: task.title,

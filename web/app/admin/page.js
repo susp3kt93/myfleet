@@ -205,6 +205,18 @@ export default function AdminPage() {
                         </div>
                     </Link>
 
+                    <Link href="/admin/deductions" className="block group">
+                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-purple-500 group-hover:scale-[1.02]">
+                            <div className="flex items-center space-x-4">
+                                <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-purple-200 transition">💰</div>
+                                <div>
+                                    <h3 className="text-xl font-bold text-gray-900">Deductions</h3>
+                                    <p className="text-gray-500 text-sm mt-1">Manage driver deductions & charges</p>
+                                </div>
+                            </div>
+                        </div>
+                    </Link>
+
                     <Link href="/admin/timeoff" className="block group relative">
                         {showTimeOffBadge && (
                             <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-lg border-2 border-white animate-pulse z-10">
