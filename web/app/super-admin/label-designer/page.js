@@ -99,11 +99,12 @@ export default function LabelDesignerPage() {
             type,
             x: 100,
             y: 100,
-            width: type === 'barcode' ? 300 : 150,
-            height: type === 'barcode' ? 60 : type === 'rectangle' ? 50 : 30,
+            width: type === 'barcode' ? 300 : type === 'line' ? 400 : 150,
+            height: type === 'barcode' ? 60 : type === 'line' ? 2 : type === 'rectangle' ? 50 : 30,
             ...(type === 'text' && { content: 'New Text', fontSize: 14, fontWeight: 'normal', color: '#000000' }),
             ...(type === 'barcode' && { value: 'SAMPLE123', format: 'CODE128', displayValue: true }),
-            ...(type === 'rectangle' && { fill: '#000000' })
+            ...(type === 'rectangle' && { fill: '#000000' }),
+            ...(type === 'line' && { fill: '#000000' })
         };
         setElements(prev => [...prev, newElement]);
         setSelectedElement(newElement.id);
@@ -245,6 +246,13 @@ export default function LabelDesignerPage() {
                             <span className="text-xl">⬛</span>
                             <span className="font-medium text-gray-700">Rectangle</span>
                         </button>
+                        <button
+                            onClick={() => addElement('line')}
+                            className="w-full px-4 py-3 bg-gray-50 hover:bg-indigo-50 border border-gray-200 hover:border-indigo-300 rounded-lg text-left transition flex items-center gap-2"
+                        >
+                            <span className="text-xl">➖</span>
+                            <span className="font-medium text-gray-700">Line</span>
+                        </button>
                     </div>
 
                     <div className="mt-6 pt-6 border-t border-gray-200">
@@ -293,8 +301,8 @@ export default function LabelDesignerPage() {
                             ref={canvasRef}
                             className="bg-white shadow-2xl relative"
                             style={{
-                                width: `${600 * (zoom / 100)}px`,
-                                height: `${400 * (zoom / 100)}px`,
+                                width: `${900 * (zoom / 100)}px`,
+                                height: `${600 * (zoom / 100)}px`,
                                 backgroundImage: showGrid ? 'linear-gradient(#e5e7eb 1px, transparent 1px), linear-gradient(90deg, #e5e7eb 1px, transparent 1px)' : 'none',
                                 backgroundSize: showGrid ? `${10 * (zoom / 100)}px ${10 * (zoom / 100)}px` : 'auto'
                             }}
@@ -408,6 +416,16 @@ function ElementRenderer({ element, zoom, isSelected, onSelect, onUpdate }) {
                     }}
                 />
             )}
+
+            {element.type === 'line' && (
+                <div
+                    style={{
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: element.fill || '#000000'
+                    }}
+                />
+            )}
         </Rnd>
     );
 }
@@ -495,6 +513,18 @@ function PropertiesPanel({ element, onUpdate }) {
             {element.type === 'rectangle' && (
                 <div>
                     <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Fill Color</label>
+                    <input
+                        type="color"
+                        value={element.fill}
+                        onChange={(e) => onUpdate({ fill: e.target.value })}
+                        className="w-full h-10 border border-gray-300 rounded-lg"
+                    />
+                </div>
+            )}
+
+            {element.type === 'line' && (
+                <div>
+                    <label className="block text-xs font-semibold text-gray-500 uppercase mb-1">Line Color</label>
                     <input
                         type="color"
                         value={element.fill}
