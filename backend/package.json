@@ -27,6 +27,7 @@
     "dependencies": {
         "@googlemaps/google-maps-services-js": "^3.4.2",
         "@prisma/client": "^5.7.0",
+        "@vercel/blob": "^2.0.0",
         "bcrypt": "^6.0.0",
         "bcryptjs": "^2.4.3",
         "better-sqlite3": "^12.5.0",

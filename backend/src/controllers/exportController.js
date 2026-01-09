@@ -412,6 +412,9 @@ export const generateDriverInvoice = async (req, res) => {
             }
         });
 
+        console.log(`[Invoice] Found ${deductions.length} deductions for driver ${driverId}`);
+        deductions.forEach(d => console.log(`  - ${d.description}: £${d.amount} (${d.frequency})`));
+
         // Calculate applicable deductions
         const applicableDeductions = [];
         let totalDeductions = 0;
@@ -434,6 +437,8 @@ export const generateDriverInvoice = async (req, res) => {
                 totalDeductions += deduction.amount;
             }
         }
+
+        console.log(`[Invoice] Applicable deductions: ${applicableDeductions.length}, total: £${totalDeductions}`);
 
         const netPay = totalAmount - totalDeductions;
 

@@ -347,7 +347,7 @@ router.put('/profile', async (req, res) => {
     }
 });
 
-// Upload profile picture
+// Upload profile picture (with Vercel Blob Storage)
 router.post('/profile/photo', upload.single('photo'), async (req, res) => {
     try {
         if (!req.file) {
@@ -355,9 +355,31 @@ router.post('/profile/photo', upload.single('photo'), async (req, res) => {
         }
 
         const userId = req.user.id;
-        // Construct URL for the uploaded file
-        const photoUrl = `/uploads/profiles/${req.file.filename}`;
 
+        // Get current user to check for existing photo
+        const currentUser = await prisma.user.findUnique({
+            where: { id: userId },
+            select: { photoUrl: true }
+        });
+
+        // Upload to Vercel Blob Storage or local
+        let photoUrl;
+        if (process.env.BLOB_READ_WRITE_TOKEN && process.env.BLOB_READ_WRITE_TOKEN !== 'vercel_blob_rw_PLACEHOLDER_GET_FROM_VERCEL') {
+            // Use Blob Storage (production)
+            const { uploadToBlob, deleteFromBlob } = await import('../lib/blob.js');
+            const pathname = `profiles/${userId}-${Date.now()}.${req.file.mimetype.split('/')[1]}`;
+            photoUrl = await uploadToBlob(req.file.buffer, pathname);
+
+            // Delete old photo from Blob if exists
+            if (currentUser?.photoUrl && currentUser.photoUrl.includes('blob.vercel-storage.com')) {
+                await deleteFromBlob(currentUser.photoUrl);
+            }
+        } else {
+            // Fallback to local storage (development)
+            photoUrl = `/uploads/profiles/${req.file.filename}`;
+        }
+
+        // Update user in database
         const user = await prisma.user.update({
             where: { id: userId },
             data: { photoUrl },
