@@ -16,12 +16,21 @@ router.get('/stats', async (req, res) => {
         const user = await prisma.user.findUnique({
             where: { id: userId },
             select: {
-                totalEarnings: true,
                 totalTasks: true,
                 completedTasks: true,
                 rating: true
             }
         });
+
+        // Calculate total earnings dynamically from ALL completed tasks
+        const allCompletedTasks = await prisma.task.findMany({
+            where: {
+                assignedToId: userId,
+                status: 'COMPLETED'
+            }
+        });
+
+        const totalEarnings = allCompletedTasks.reduce((sum, task) => sum + (task.actualEarnings || task.price || 0), 0);
 
         // Get this month's earnings
         const now = new Date();
@@ -37,7 +46,7 @@ router.get('/stats', async (req, res) => {
             }
         });
 
-        const monthlyEarnings = monthlyTasks.reduce((sum, task) => sum + (task.actualEarnings || task.price), 0);
+        const monthlyEarnings = monthlyTasks.reduce((sum, task) => sum + (task.actualEarnings || task.price || 0), 0);
 
         // Get this week's earnings
         const firstDayOfWeek = new Date(now);
@@ -53,11 +62,12 @@ router.get('/stats', async (req, res) => {
             }
         });
 
-        const weeklyEarnings = weeklyTasks.reduce((sum, task) => sum + (task.actualEarnings || task.price), 0);
+        const weeklyEarnings = weeklyTasks.reduce((sum, task) => sum + (task.actualEarnings || task.price || 0), 0);
 
         res.json({
             stats: {
                 ...user,
+                totalEarnings, // Dynamically calculated
                 monthlyEarnings,
                 weeklyEarnings,
                 monthlyTasks: monthlyTasks.length,
