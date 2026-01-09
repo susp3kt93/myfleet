@@ -909,7 +909,7 @@ export default function EnhancedDashboardPage() {
                             <div className="relative group">
                                 {user.photoUrl ? (
                                     <img
-                                        src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${user.photoUrl}`}
+                                        src={user.photoUrl.startsWith('http') ? user.photoUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${user.photoUrl}`}
                                         alt={user.name}
                                         className="w-32 h-32 rounded-full object-cover border-4 border-white shadow-lg"
                                     />
