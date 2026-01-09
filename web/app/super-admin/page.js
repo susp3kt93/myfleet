@@ -183,10 +183,22 @@ export default function SuperAdminDashboard() {
                                 <div className="flex items-center justify-between">
                                     <div>
                                         <p className="text-sm text-gray-500 font-medium uppercase tracking-wider">Barcode Generator</p>
-                                        <p className="text-lg font-bold text-gray-900 mt-1">Create Labels</p>
+                                        <p className="text-lg font-bold text-gray-900 mt-1">Create Barcodes</p>
                                         <p className="text-xs text-gray-500 mt-2">Generate barcodes & QR codes</p>
                                     </div>
                                     <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-3xl">🏷️</div>
+                                </div>
+                            </div>
+                        </Link>
+                        <Link href="/super-admin/label-designer" className="block transform hover:scale-[1.02] transition duration-200">
+                            <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-pink-500 cursor-pointer hover:shadow-xl">
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-sm text-gray-500 font-medium uppercase tracking-wider">Label Designer</p>
+                                        <p className="text-lg font-bold text-gray-900 mt-1">Shipping Labels</p>
+                                        <p className="text-xs text-gray-500 mt-2">Design 4x6 inch labels</p>
+                                    </div>
+                                    <div className="w-14 h-14 bg-pink-100 rounded-xl flex items-center justify-center text-3xl">📦</div>
                                 </div>
                             </div>
                         </Link>
