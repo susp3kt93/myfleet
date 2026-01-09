@@ -48,6 +48,9 @@ export default function EnhancedDashboardPage() {
     // Pending tasks notification
     const [pendingTasksCount, setPendingTasksCount] = useState(0);
     const [showTaskBadge, setShowTaskBadge] = useState(false);
+    // Available tasks notification (marketplace)
+    const [availableTasksCount, setAvailableTasksCount] = useState(0);
+    const [showAvailableBadge, setShowAvailableBadge] = useState(false);
 
     useEffect(() => {
         dispatch(loadStoredAuth());
@@ -102,10 +105,22 @@ export default function EnhancedDashboardPage() {
 
     const fetchPendingTasksCount = async () => {
         try {
-            const response = await api.get('/tasks?status=PENDING');
-            const count = Array.isArray(response.data.tasks) ? response.data.tasks.length : 0;
-            setPendingTasksCount(count);
-            setShowTaskBadge(count > 0);
+            // My pending tasks (assigned to me)
+            const myPendingResponse = await api.get('/tasks?status=PENDING');
+            const myPendingTasks = Array.isArray(myPendingResponse.data.tasks)
+                ? myPendingResponse.data.tasks.filter(t => t.assignedToId === user?.id)
+                : [];
+            const myCount = myPendingTasks.length;
+            setPendingTasksCount(myCount);
+            setShowTaskBadge(myCount > 0);
+
+            // Available tasks (marketplace - not assigned)
+            const availableTasks = Array.isArray(myPendingResponse.data.tasks)
+                ? myPendingResponse.data.tasks.filter(t => !t.assignedToId)
+                : [];
+            const availableCount = availableTasks.length;
+            setAvailableTasksCount(availableCount);
+            setShowAvailableBadge(availableCount > 0);
         } catch (error) {
             console.error('[Dashboard] Error fetching pending tasks count:', error);
         }
@@ -412,6 +427,15 @@ export default function EnhancedDashboardPage() {
                                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
                                         <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs font-bold items-center justify-center">
                                             {pendingTasksCount}
+                                        </span>
+                                    </span>
+                                )}
+                                {/* Pulsing badge for available tasks (marketplace) */}
+                                {tab === 'calendar' && showAvailableBadge && (
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-5 w-5 bg-blue-500 text-white text-xs font-bold items-center justify-center">
+                                            {availableTasksCount}
                                         </span>
                                     </span>
                                 )}
