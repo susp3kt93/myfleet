@@ -286,8 +286,12 @@ export default function EnhancedDashboardPage() {
     // - Overview/Tasks tabs: My PENDING + ACCEPTED tasks (assigned to me)
     // - Completed: My COMPLETED tasks
     const pendingTasks = allTasks.filter(t => t.status === 'PENDING' && !t.assignedToId);
-    const myPendingTasks = allTasks.filter(t => t.status === 'PENDING' && t.assignedToId === user?.id);
-    const myAcceptedTasks = allTasks.filter(t => t.status === 'ACCEPTED' && t.assignedToId === user?.id);
+    const myPendingTasks = allTasks
+        .filter(t => t.status === 'PENDING' && t.assignedToId === user?.id)
+        .sort((a, b) => new Date(a.scheduledDate) - new Date(b.scheduledDate)); // Oldest first
+    const myAcceptedTasks = allTasks
+        .filter(t => t.status === 'ACCEPTED' && t.assignedToId === user?.id)
+        .sort((a, b) => new Date(a.scheduledDate) - new Date(b.scheduledDate)); // Oldest first
     const acceptedTasks = [...myPendingTasks, ...myAcceptedTasks]; // All my active tasks (pending + accepted)
     const completedTasks = allTasks.filter(t => t.status === 'COMPLETED' && t.assignedToId === user?.id)
         .sort((a, b) => new Date(b.completedAt || b.updatedAt) - new Date(a.completedAt || a.updatedAt))
