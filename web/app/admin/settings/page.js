@@ -39,7 +39,8 @@ export default function AdminSettingsPage() {
             setCompany(res.data);
             if (res.data.logo) {
                 // Ensure absolute URL if needed, or relative to public
-                setLogoPreview(`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${res.data.logo}`);
+                const logoUrl = res.data.logo;
+                setLogoPreview(logoUrl.startsWith('http') ? logoUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${logoUrl}`);
             }
         } catch (error) {
             console.error('Error fetching company details:', error);
