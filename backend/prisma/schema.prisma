@@ -31,6 +31,11 @@ model Company {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   
+  // Invoice settings
+  invoiceTemplate    String?  // JSON string for custom invoice template settings
+  invoicePrefix      String?  // e.g., "INV-COLETIX-"
+  invoiceFooterText  String?  // Custom footer text
+  
   // Relations
   users           User[]
   tasks           Task[]
@@ -38,6 +43,7 @@ model Company {
   messages        Message[]
   notifications   Notification[]
   timeOffRequests TimeOffRequest[]
+  deductions      Deduction[]
 
   @@map("companies")
 }
@@ -130,12 +136,14 @@ model User {
   updatedAt   DateTime @updatedAt
 
   // Relations
-  assignedVehicle  Vehicle?
-  assignedTasks    Task[]          @relation("AssignedTasks")
-  createdTasks     Task[]          @relation("CreatedTasks")
-  messages         Message[]
-  notifications    Notification[]
-  timeOffRequests  TimeOffRequest[]
+  assignedVehicle     Vehicle?
+  assignedTasks       Task[]          @relation("AssignedTasks")
+  createdTasks        Task[]          @relation("CreatedTasks")
+  messages            Message[]
+  notifications       Notification[]
+  timeOffRequests     TimeOffRequest[]
+  deductions          Deduction[]
+  deductionsCreated   Deduction[]     @relation("DeductionCreatedBy")
 
   @@map("users")
 }
@@ -253,4 +261,42 @@ model TimeOffRequest {
   updatedAt     DateTime  @updatedAt
 
   @@map("time_off_requests")
+}
+// ============================================
+// DEDUCTION MODEL - Invoice deductions system
+// ============================================
+model Deduction {
+  id          String   @id @default(cuid())
+  
+  // User and Company association
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyId   String
+  company     Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  // Deduction details
+  type        String   // 'VAN_RENTAL', 'PENALTY', 'INSURANCE', 'FUEL', 'EQUIPMENT', 'OTHER'
+  description String
+  amount      Float
+  frequency   String   // 'WEEKLY', 'MONTHLY', 'ONE_TIME'
+  
+  // Date range
+  startDate   DateTime
+  endDate     DateTime?
+  
+  // Status tracking
+  status      String   @default("ACTIVE") // 'ACTIVE', 'INACTIVE', 'COMPLETED'
+  applied     Boolean  @default(false)    // For ONE_TIME deductions
+  
+  // Audit trail
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdById String
+  createdBy   User     @relation("DeductionCreatedBy", fields: [createdById], references: [id])
+  
+  @@index([userId])
+  @@index([companyId])
+  @@index([type])
+  @@index([status])
+  @@map("deductions")
 }
