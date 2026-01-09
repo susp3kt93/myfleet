@@ -45,6 +45,9 @@ export default function EnhancedDashboardPage() {
     const [mileageUpdating, setMileageUpdating] = useState(false);
     // Earnings week navigation state
     const [earningsWeekStart, setEarningsWeekStart] = useState(() => startOfWeek(new Date(), { weekStartsOn: 0 }));
+    // Pending tasks notification
+    const [pendingTasksCount, setPendingTasksCount] = useState(0);
+    const [showTaskBadge, setShowTaskBadge] = useState(false);
 
     useEffect(() => {
         dispatch(loadStoredAuth());
@@ -88,9 +91,23 @@ export default function EnhancedDashboardPage() {
             const earningsRes = await api.get('/driver/earnings?period=month');
             setEarnings(earningsRes.data.earnings);
 
+            // Fetch pending tasks count for notification badge
+            await fetchPendingTasksCount();
+
             console.log('[Dashboard] Data loading complete');
         } catch (error) {
             console.error('[Dashboard] Error loading data:', error);
+        }
+    };
+
+    const fetchPendingTasksCount = async () => {
+        try {
+            const response = await api.get('/tasks?status=PENDING');
+            const count = Array.isArray(response.data.tasks) ? response.data.tasks.length : 0;
+            setPendingTasksCount(count);
+            setShowTaskBadge(count > 0);
+        } catch (error) {
+            console.error('[Dashboard] Error fetching pending tasks count:', error);
         }
     };
 
@@ -210,32 +227,50 @@ export default function EnhancedDashboardPage() {
     const handleAcceptTaskFromCalendar = async (taskId) => {
         try {
             console.log('[Dashboard] Accepting task:', taskId);
+
+            // Optimistic UI update
+            setAllTasks(prev => prev.map(t =>
+                t.id === taskId ? { ...t, status: 'ACCEPTED' } : t
+            ));
+
             const response = await api.post(`/tasks/${taskId}/accept`);
             console.log('[Dashboard] Task accepted successfully:', response.data);
-            // Reload tasks
-            loadData();
+
+            // Reload tasks to ensure consistency
+            await loadData();
             alert(t('tasks.successAccepted'));
         } catch (error) {
             console.error('[Dashboard] Error accepting task:', error);
             console.error('[Dashboard] Error response:', error.response?.data);
             const errorMsg = error.response?.data?.error || error.message || tCommon('errors.unknown');
             alert(t('tasks.errorAccept') + ': ' + errorMsg);
+            // Revert optimistic update on error
+            await loadData();
         }
     };
 
     const handleRejectTaskFromCalendar = async (taskId) => {
         try {
             console.log('[Dashboard] Rejecting task:', taskId);
+
+            // Optimistic UI update
+            setAllTasks(prev => prev.map(t =>
+                t.id === taskId ? { ...t, status: 'REJECTED' } : t
+            ));
+
             const response = await api.post(`/tasks/${taskId}/reject`);
             console.log('[Dashboard] Task rejected successfully:', response.data);
-            // Reload tasks
-            loadData();
+
+            // Reload tasks to ensure consistency
+            await loadData();
             alert(t('tasks.successRejected'));
         } catch (error) {
             console.error('[Dashboard] Error rejecting task:', error);
             console.error('[Dashboard] Error response:', error.response?.data);
             const errorMsg = error.response?.data?.error || error.message || tCommon('errors.unknown');
             alert(t('tasks.errorReject') + ': ' + errorMsg);
+            // Revert optimistic update on error
+            await loadData();
         }
     };
 
@@ -355,7 +390,7 @@ export default function EnhancedDashboardPage() {
                             <button
                                 key={tab}
                                 onClick={() => setActiveTab(tab)}
-                                className={`px-5 py-2.5 font-medium capitalize transition rounded-xl whitespace-nowrap ${activeTab === tab
+                                className={`px-5 py-2.5 font-medium capitalize transition rounded-xl whitespace-nowrap relative ${activeTab === tab
                                     ? 'bg-gradient-to-r from-green-500 to-emerald-600 text-white shadow-md'
                                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                                     }`}
@@ -367,6 +402,15 @@ export default function EnhancedDashboardPage() {
                                 {tab === 'timeoff' && '🏖️ '}
                                 {tab === 'profile' && '👤 '}
                                 {t(`tabs.${tab}`)}
+                                {/* Pulsing badge for pending tasks */}
+                                {tab === 'tasks' && showTaskBadge && (
+                                    <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center">
+                                        <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+                                        <span className="relative inline-flex rounded-full h-5 w-5 bg-red-500 text-white text-xs font-bold items-center justify-center">
+                                            {pendingTasksCount}
+                                        </span>
+                                    </span>
+                                )}
                             </button>
                         ))}
                     </div>
