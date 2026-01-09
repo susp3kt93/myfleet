@@ -326,10 +326,30 @@ router.post('/:id/logo', requireCompanyAdmin, canManageCompany, upload.single('l
             return res.status(400).json({ error: 'No logo file provided' });
         }
 
-        const logoUrl = `/uploads/profiles/${req.file.filename}`;
+        const companyId = req.params.id;
+
+        // Get current company for old logo
+        const currentCompany = await prisma.company.findUnique({
+            where: { id: companyId },
+            select: { logo: true }
+        });
+
+        // Upload to Blob or local
+        let logoUrl;
+        if (process.env.BLOB_READ_WRITE_TOKEN && process.env.BLOB_READ_WRITE_TOKEN !== 'vercel_blob_rw_PLACEHOLDER_GET_FROM_VERCEL') {
+            const { uploadToBlob, deleteFromBlob } = await import('../lib/blob.js');
+            const pathname = `companies/${companyId}-${Date.now()}.${req.file.mimetype.split('/')[1]}`;
+            logoUrl = await uploadToBlob(req.file.buffer, pathname);
+
+            if (currentCompany?.logo && currentCompany.logo.includes('blob.vercel-storage.com')) {
+                await deleteFromBlob(currentCompany.logo);
+            }
+        } else {
+            logoUrl = `/uploads/companies/${req.file.filename}`;
+        }
 
         const company = await prisma.company.update({
-            where: { id: req.params.id },
+            where: { id: companyId },
             data: { logo: logoUrl }
         });
 
