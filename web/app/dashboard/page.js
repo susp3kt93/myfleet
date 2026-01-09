@@ -374,7 +374,7 @@ export default function EnhancedDashboardPage() {
                         <div className="flex items-center space-x-4">
                             {user.photoUrl ? (
                                 <img
-                                    src={`${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${user.photoUrl}`}
+                                    src={user.photoUrl.startsWith('http') ? user.photoUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${user.photoUrl}`}
                                     alt={user.name}
                                     className="w-14 h-14 rounded-full object-cover border-3 border-white/30 shadow-lg"
                                 />
