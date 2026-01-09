@@ -27,7 +27,7 @@ export default function DeductionsPage() {
     });
 
     useEffect(() => {
-        if (!user || user.role !== 'ADMIN') {
+        if (!user || (user.role !== 'ADMIN' && user.role !== 'SUPER_ADMIN')) {
             router.push('/');
         } else {
             loadData();
@@ -256,8 +256,8 @@ export default function DeductionsPage() {
                                                 <button
                                                     onClick={() => handleStatusToggle(deduction)}
                                                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${deduction.status === 'ACTIVE'
-                                                            ? 'bg-green-100 text-green-800'
-                                                            : 'bg-gray-100 text-gray-800'
+                                                        ? 'bg-green-100 text-green-800'
+                                                        : 'bg-gray-100 text-gray-800'
                                                         }`}
                                                 >
                                                     {deduction.status}
