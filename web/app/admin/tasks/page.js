@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
+import UnifiedBackButton from '../../../components/UnifiedBackButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadStoredAuth } from '../../../lib/authSlice';
 import { fetchTasks, createTask, createTasksBatch, deleteTask } from '../../../lib/tasksSlice';
