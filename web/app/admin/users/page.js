@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import UnifiedBackButton from '../../../components/UnifiedBackButton';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadStoredAuth } from '../../../lib/authSlice';
 import { fetchUsers, createUser, deleteUser, updateUser } from '../../../lib/usersSlice';
@@ -105,16 +106,14 @@ export default function UsersPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <Link href="/admin" className="text-white/70 hover:text-white transition">
-                                ← Back
-                            </Link>
+                            <UnifiedBackButton href="/admin" label="Back" />
                             <h1 className="text-2xl font-bold text-white">👥 User Management</h1>
                         </div>
                         <button
                             onClick={() => setShowForm(!showForm)}
                             className={`px-4 py-2 rounded-lg transition font-medium ${showForm
-                                    ? 'bg-white/20 hover:bg-white/30 text-white'
-                                    : 'bg-white text-green-600 hover:bg-gray-100 shadow-lg'
+                                ? 'bg-white/20 hover:bg-white/30 text-white'
+                                : 'bg-white text-green-600 hover:bg-gray-100 shadow-lg'
                                 }`}
                         >
                             {showForm ? '✕ Cancel' : '+ Add User'}

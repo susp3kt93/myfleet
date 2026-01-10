@@ -131,9 +131,7 @@ export default function ReportsPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <Link href="/admin" className="text-white/70 hover:text-white transition">
-                                ← {tCommon('buttons.back')}
-                            </Link>
+                            <UnifiedBackButton href="/admin" label={tCommon('buttons.back')} />
                             <h1 className="text-2xl font-bold text-white">📊 {t('reports.title')}</h1>
                         </div>
                         <button

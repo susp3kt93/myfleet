@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter, useParams } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
+import UnifiedBackButton from '../../../../components/UnifiedBackButton';
 
 export default function CompanyDetailsPage() {
     const router = useRouter();
@@ -153,24 +154,22 @@ export default function CompanyDetailsPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="bg-white shadow-sm border-b">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+            {/* Header */}
+            <header className="bg-gradient-to-r from-gray-900 to-indigo-900 shadow-lg text-white">
+                <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="flex items-center justify-between">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">{company.name}</h1>
-                            <p className="text-sm text-gray-600">Company Details & Management</p>
+                        <div className="flex items-center space-x-4">
+                            <UnifiedBackButton href="/super-admin" label="Back" />
+                            <div>
+                                <h1 className="text-2xl font-bold text-white">{company.name}</h1>
+                                <p className="text-sm text-indigo-200">Company Details & Management</p>
+                            </div>
                         </div>
                         <div className="flex items-center gap-3">
-                            <Link
-                                href="/super-admin"
-                                className="px-4 py-2 text-gray-700 hover:text-gray-900 transition"
-                            >
-                                ← Back
-                            </Link>
                             {!editing && (
                                 <button
                                     onClick={() => setEditing(true)}
-                                    className="px-4 py-2 bg-primary-600 text-white rounded-lg hover:bg-primary-700 transition"
+                                    className="px-4 py-2 bg-white/10 text-white rounded-lg hover:bg-white/20 transition backdrop-blur border border-white/10"
                                 >
                                     Edit
                                 </button>
@@ -178,7 +177,7 @@ export default function CompanyDetailsPage() {
                         </div>
                     </div>
                 </div>
-            </div>
+            </header>
 
             <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 {error && (

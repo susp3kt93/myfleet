@@ -223,9 +223,7 @@ export default function VehiclesPage() {
             <header className="bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
                     <div className="flex items-center gap-4">
-                        <button onClick={() => router.push('/admin')} className="text-white/70 hover:text-white transition">
-                            ← Back
-                        </button>
+                        <UnifiedBackButton href="/admin" label="Back" />
                         <h1 className="text-2xl font-bold text-white">🚗 Fleet Vehicles</h1>
                     </div>
                     <button

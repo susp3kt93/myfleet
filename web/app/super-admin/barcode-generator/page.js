@@ -113,12 +113,7 @@ export default function BarcodeGeneratorPage() {
                 <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <Link
-                                href="/super-admin"
-                                className="w-10 h-10 bg-white/10 backdrop-blur rounded-lg flex items-center justify-center border border-white/20 hover:bg-white/20 transition text-white"
-                            >
-                                ←
-                            </Link>
+                            <UnifiedBackButton href="/super-admin" label="Back" />
                             <div>
                                 <h1 className="text-2xl font-bold text-white">Barcode Generator</h1>
                                 <p className="text-sm text-indigo-200">Generate professional barcodes & QR codes</p>
@@ -166,8 +161,8 @@ export default function BarcodeGeneratorPage() {
                                                 key={format}
                                                 onClick={() => setFormData({ ...formData, format })}
                                                 className={`px-4 py-3 rounded-xl border-2 transition font-medium text-sm ${formData.format === format
-                                                        ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
-                                                        : 'border-gray-200 hover:border-indigo-200 text-gray-700'
+                                                    ? 'border-indigo-500 bg-indigo-50 text-indigo-700'
+                                                    : 'border-gray-200 hover:border-indigo-200 text-gray-700'
                                                     }`}
                                             >
                                                 {format}

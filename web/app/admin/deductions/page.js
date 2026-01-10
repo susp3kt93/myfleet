@@ -167,12 +167,7 @@ export default function DeductionsPage() {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <Link
-                                href="/admin"
-                                className="w-10 h-10 bg-white/20 backdrop-blur rounded-lg flex items-center justify-center border border-white/30 hover:bg-white/30 transition text-white"
-                            >
-                                ←
-                            </Link>
+                            <UnifiedBackButton href="/admin" label="Back" />
                             <div>
                                 <h1 className="text-2xl font-bold text-white">Deductions Management</h1>
                                 <p className="text-sm text-blue-100">Manage driver deductions and charges</p>

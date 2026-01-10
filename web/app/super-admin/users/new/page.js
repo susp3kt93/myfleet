@@ -123,22 +123,19 @@ export default function NewUserPage() {
     return (
         <div className="min-h-screen bg-gray-50">
             {/* Header */}
-            <div className="bg-white shadow-sm border-b">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                    <div className="flex justify-between items-center py-4">
-                        <div>
-                            <h1 className="text-2xl font-bold text-gray-900">Add New User</h1>
-                            <p className="text-sm text-gray-600">Create a new Company Admin or Driver</p>
+            <header className="bg-gradient-to-r from-gray-900 to-indigo-900 shadow-lg text-white">
+                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
+                    <div className="flex justify-between items-center">
+                        <div className="flex items-center space-x-4">
+                            <UnifiedBackButton href="/super-admin/users" label="Back to Users" />
+                            <div>
+                                <h1 className="text-2xl font-bold text-white">Add New User</h1>
+                                <p className="text-sm text-indigo-200">Create a new Company Admin or Driver</p>
+                            </div>
                         </div>
-                        <Link
-                            href="/super-admin/users"
-                            className="px-4 py-2 text-gray-700 hover:bg-gray-100 rounded-lg transition"
-                        >
-                            ← Back to Users
-                        </Link>
                     </div>
                 </div>
-            </div>
+            </header>
 
             <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
                 <div className="bg-white rounded-lg shadow-sm border p-6">
