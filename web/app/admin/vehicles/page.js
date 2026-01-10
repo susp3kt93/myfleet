@@ -5,6 +5,7 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import api from '../../../lib/api';
+import UnifiedBackButton from '../../../components/UnifiedBackButton';
 import { format } from 'date-fns';
 
 export default function VehiclesPage() {

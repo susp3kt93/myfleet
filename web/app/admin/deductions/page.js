@@ -5,6 +5,7 @@ import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import api from '../../../lib/api';
 import Link from 'next/link';
+import UnifiedBackButton from '../../../components/UnifiedBackButton';
 
 export default function DeductionsPage() {
     const router = useRouter();

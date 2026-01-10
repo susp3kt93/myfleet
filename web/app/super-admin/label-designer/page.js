@@ -4,6 +4,7 @@ import { useEffect, useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
+import UnifiedBackButton from '../../../../components/UnifiedBackButton';
 import { Rnd } from 'react-rnd';
 import JsBarcode from 'jsbarcode';
 import jsPDF from 'jspdf';
