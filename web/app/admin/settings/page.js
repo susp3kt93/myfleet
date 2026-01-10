@@ -9,7 +9,6 @@ import { useTranslation } from '../../../contexts/LanguageContext';
 import LanguageSwitcher from '../../../components/LanguageSwitcher';
 import Link from 'next/link';
 import UnifiedBackButton from '../../../components/UnifiedBackButton';
-import UnifiedBackButton from '../../../components/UnifiedBackButton';
 
 export default function AdminSettingsPage() {
     const { t } = useTranslation('admin');

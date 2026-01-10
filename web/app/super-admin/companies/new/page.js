@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import UnifiedBackButton from '../../../../components/UnifiedBackButton';
-import UnifiedBackButton from '../../../../components/UnifiedBackButton';
 
 export default function NewCompanyPage() {
     const router = useRouter();
