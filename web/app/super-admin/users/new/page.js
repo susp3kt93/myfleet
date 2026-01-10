@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSelector } from 'react-redux';
 import Link from 'next/link';
+import UnifiedBackButton from '../../../../components/UnifiedBackButton';
 
 export default function NewUserPage() {
     const router = useRouter();
