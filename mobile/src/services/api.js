@@ -124,6 +124,56 @@ export const timeoffAPI = {
 
     cancelRequest: (id) =>
         api.delete(`/timeoff/${id}`),
+
+    updateRequest: (id, data) =>
+        api.put(`/timeoff/${id}`, data),
+
+    approveRequest: (id) =>
+        api.put(`/timeoff/${id}/approve`),
+
+    rejectRequest: (id) =>
+        api.put(`/timeoff/${id}/reject`),
+};
+
+export const deductionsAPI = {
+    getDeductions: () =>
+        api.get('/deductions'),
+
+    createDeduction: (data) =>
+        api.post('/deductions', data),
+
+    updateDeduction: (id, data) =>
+        api.put(`/deductions/${id}`, data),
+
+    deleteDeduction: (id) =>
+        api.delete(`/deductions/${id}`),
+};
+
+export const vehiclesAPI = {
+    getVehicles: () =>
+        api.get('/vehicles'),
+
+    getVehicle: (id) =>
+        api.get(`/vehicles/${id}`),
+
+    assignDriver: (vehicleId, driverId) =>
+        api.put(`/vehicles/${vehicleId}/assign`, { driverId }),
+
+    updateMileage: (vehicleId, mileage) =>
+        api.put(`/vehicles/${vehicleId}/mileage`, { mileage }),
+};
+
+export const reportsAPI = {
+    getWeeklyReport: (startDate, endDate) =>
+        api.get('/reports/weekly', { params: { startDate, endDate } }),
+
+    exportCSV: (startDate, endDate) =>
+        api.get('/reports/weekly/csv', { params: { startDate, endDate }, responseType: 'blob' }),
+};
+
+export const activityAPI = {
+    getActivity: (params) =>
+        api.get('/admin/activity', { params }),
 };
 
 export default api;

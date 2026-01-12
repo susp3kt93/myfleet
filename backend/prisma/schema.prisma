@@ -44,6 +44,7 @@ model Company {
   notifications   Notification[]
   timeOffRequests TimeOffRequest[]
   deductions      Deduction[]
+  activityLogs    ActivityLog[]
 
   @@map("companies")
 }
@@ -144,6 +145,7 @@ model User {
   timeOffRequests     TimeOffRequest[]
   deductions          Deduction[]
   deductionsCreated   Deduction[]     @relation("DeductionCreatedBy")
+  activityLogs        ActivityLog[]
 
   @@map("users")
 }
@@ -299,4 +301,26 @@ model Deduction {
   @@index([type])
   @@index([status])
   @@map("deductions")
+}
+
+// ============================================
+// ACTIVITY LOG MODEL
+// ============================================
+model ActivityLog {
+  id        String   @id @default(cuid())
+  action    String   // 'TASK_CREATED', 'TASK_ACCEPTED', 'TASK_REJECTED', 'TASK_COMPLETED', 'TASK_CANCELLED', 'DRIVER_CREATED', 'VEHICLE_CREATED'
+  details   String?
+  metadata  String?  // JSON string for extra data (e.g. { taskId: "..." })
+  
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  companyId String
+  company   Company  @relation(fields: [companyId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  
+  @@map("activity_logs")
+  @@index([companyId])
+  @@index([createdAt])
 }

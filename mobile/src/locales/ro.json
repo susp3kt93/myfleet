@@ -17,13 +17,19 @@
         "totalRevenue": "Încasări Totale"
     },
     "admin": {
+        "overview": "Prezentare",
         "presentation": "Prezentare",
         "tasks": "Task-uri",
+        "drivers": "Șoferi",
+        "reports": "Rapoarte",
+        "deductions": "Deduceri",
+        "timeOff": "Zile Libere",
+        "vehicles": "Vehicule",
+        "more": "Mai Mult",
         "companies": "Companii",
         "superAdmin": "Super Administrator",
         "companyAdmin": "Administrator Companie",
         "active": "Activ",
-        "drivers": "Șoferi",
         "recentActivity": "Activitate Recentă",
         "listView": "Listă",
         "driverView": "Grupare Șoferi"

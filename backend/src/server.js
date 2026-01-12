@@ -15,6 +15,7 @@ import vehicleRoutes from './routes/vehicles.js';
 import pushTokenRoutes from './routes/pushToken.js';
 import debugRoutes from './routes/debug.js';
 import deductionRoutes from './routes/deductions.js';
+import adminRoutes from './routes/admin.js';
 
 dotenv.config();
 

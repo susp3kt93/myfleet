@@ -17,13 +17,19 @@
         "totalRevenue": "Total Revenue"
     },
     "admin": {
+        "overview": "Overview",
         "presentation": "Overview",
         "tasks": "Tasks",
+        "drivers": "Drivers",
+        "reports": "Reports",
+        "deductions": "Deductions",
+        "timeOff": "Time-Off",
+        "vehicles": "Vehicles",
+        "more": "More",
         "companies": "Companies",
         "superAdmin": "Super Admin",
         "companyAdmin": "Company Admin",
         "active": "Active",
-        "drivers": "Drivers",
         "recentActivity": "Recent Activity",
         "listView": "List View",
         "driverView": "Group by Driver"

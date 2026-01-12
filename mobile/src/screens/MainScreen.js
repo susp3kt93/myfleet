@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
+import { useFocusEffect, CommonActions } from '@react-navigation/native';
 import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
 import { Text, Avatar, FAB, Card, Button } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
@@ -61,9 +62,28 @@ export default function EnhancedMainScreen({ navigation }) {
         setRefreshing(false);
     };
 
-    const handleLogout = () => {
-        dispatch(logout());
-        navigation.replace('Login');
+    const handleLogout = async () => {
+        try {
+            // Clear auth state first
+            await dispatch(logout());
+
+            // Use CommonActions for more reliable navigation reset
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }],
+                })
+            );
+        } catch (error) {
+            console.error('Logout error:', error);
+            // Force navigation even if logout fails
+            navigation.dispatch(
+                CommonActions.reset({
+                    index: 0,
+                    routes: [{ name: 'Login' }],
+                })
+            );
+        }
     };
 
     const getFilteredTasks = () => {

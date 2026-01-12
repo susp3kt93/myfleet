@@ -21,7 +21,8 @@
         "NSLocationWhenInUseUsageDescription": "MyFleet needs your location to show nearby tasks and calculate distances.",
         "NSLocationAlwaysAndWhenInUseUsageDescription": "MyFleet needs your location to track task completion and provide accurate navigation.",
         "ITSAppUsesNonExemptEncryption": false
-      }
+      },
+      "runtimeVersion": "1.0.0"
     },
     "android": {
       "adaptiveIcon": {
@@ -32,8 +33,14 @@
       "permissions": [
         "ACCESS_COARSE_LOCATION",
         "ACCESS_FINE_LOCATION",
+        "FOREGROUND_SERVICE",
+        "ACCESS_COARSE_LOCATION",
+        "ACCESS_FINE_LOCATION",
         "FOREGROUND_SERVICE"
-      ]
+      ],
+      "runtimeVersion": {
+        "policy": "appVersion"
+      }
     },
     "web": {
       "favicon": "./assets/favicon.png"
@@ -61,6 +68,9 @@
       "eas": {
         "projectId": "8edda9a1-4af4-4718-a977-bcdbc426f9a0"
       }
+    },
+    "updates": {
+      "url": "https://u.expo.dev/8edda9a1-4af4-4718-a977-bcdbc426f9a0"
     }
   }
 }

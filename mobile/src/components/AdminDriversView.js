@@ -173,6 +173,7 @@ export default function AdminDriversView({ drivers, onRefresh }) {
                 keyExtractor={item => item.id}
                 renderItem={renderItem}
                 contentContainerStyle={styles.list}
+                style={{ flex: 1 }}
             />
 
             <Portal>
