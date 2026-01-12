@@ -1,5 +1,11 @@
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Alert } from 'react-native';
+import { Text, Card, Button, DataTable, ActivityIndicator } from 'react-native-paper';
 import { DatePickerModal } from 'react-native-paper-dates';
-// ... other imports
+import { useTranslation } from 'react-i18next';
+import { format, startOfWeek, endOfWeek } from 'date-fns';
+import * as Sharing from 'expo-sharing';
+import { reportsAPI } from '../services/api';
 
 export default function AdminReportsView() {
     const { t } = useTranslation();
