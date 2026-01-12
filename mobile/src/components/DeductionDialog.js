@@ -105,9 +105,8 @@ export default function DeductionDialog({ visible, onDismiss, onSubmit, deductio
                                     mode="outlined"
                                     onPress={() => setDriverMenuVisible(true)}
                                     style={styles.dropdownButton}
-                                    disabled={!!deduction} // Disable changing driver in edit mode if desired, usually safer
                                 >
-                                    {selectedDriver ? (selectedDriver.name || selectedDriver.personalId) : 'Select Driver'}
+                                    {selectedDriver ? `${selectedDriver.name} (${selectedDriver.personalId || 'N/A'})` : 'Select Driver'}
                                 </Button>
                             }
                         >

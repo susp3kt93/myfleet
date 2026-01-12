@@ -20,9 +20,9 @@ export default function DriverActivityPage() {
     const [dateRange, setDateRange] = useState(() => {
         const today = new Date();
         const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - today.getDay() + 1); // Monday
+        startOfWeek.setDate(today.getDate() - today.getDay()); // Start on Sunday
         const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6); // Sunday
+        endOfWeek.setDate(startOfWeek.getDate() + 6); // End on Saturday
 
         return {
             startDate: startOfWeek.toISOString().split('T')[0],
