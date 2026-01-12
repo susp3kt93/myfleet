@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Alert } from 'react-native';
 import { Text, Card, Button, DataTable, ActivityIndicator } from 'react-native-paper';
-import { DatePickerModal } from 'react-native-paper-dates';
+import { DatePickerModal, registerTranslation, en } from 'react-native-paper-dates';
 import { useTranslation } from 'react-i18next';
 import { format, startOfWeek, endOfWeek } from 'date-fns';
 import * as Sharing from 'expo-sharing';
 import { reportsAPI } from '../services/api';
+
+// Register locale for the date picker
+registerTranslation('en', en);
 
 export default function AdminReportsView() {
     const { t } = useTranslation();
@@ -74,7 +77,7 @@ export default function AdminReportsView() {
                         </View>
 
                         <DatePickerModal
-                            locale="en_GB"
+                            locale="en"
                             mode="range"
                             visible={open}
                             onDismiss={onDismiss}
