@@ -7,6 +7,10 @@ import { sendTaskAssignedEmail } from '../services/emailService.js';
 import { sendTaskAssignedNotification } from '../services/pushNotificationService.js';
 import { logActivity } from '../services/activityService.js';
 
+const router = express.Router();
+
+router.use(authenticate);
+
 // Create task
 router.post('/', requireAdmin, async (req, res) => {
     // ... (existing logic)
@@ -118,9 +122,7 @@ router.post('/:id/complete', async (req, res) => {
     // ...
 });
 
-const router = express.Router();
 
-router.use(authenticate);
 
 // Get tasks (filtered by role and company)
 router.get('/', async (req, res) => {
