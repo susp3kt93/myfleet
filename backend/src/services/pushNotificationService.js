@@ -137,11 +137,33 @@ export const sendTaskStatusChangedNotification = async (pushToken, taskTitle, ne
     );
 };
 
+export const sendTimeOffUpdatedNotification = async (pushToken, startDate, endDate) => {
+    const period = endDate ? `${startDate} → ${endDate}` : startDate;
+    return sendPushNotification(
+        pushToken,
+        '✏️ Time Off Updated',
+        `Your request for ${period} has been updated by admin.`,
+        { type: 'TIMEOFF_UPDATED', screen: 'TimeOff' }
+    );
+};
+
+export const sendTimeOffDeletedNotification = async (pushToken, startDate, endDate) => {
+    const period = endDate ? `${startDate} → ${endDate}` : startDate;
+    return sendPushNotification(
+        pushToken,
+        '🗑️ Time Off Deleted',
+        `Your request for ${period} has been deleted by admin.`,
+        { type: 'TIMEOFF_DELETED', screen: 'TimeOff' }
+    );
+};
+
 export default {
     sendPushNotification,
     sendPushNotificationToMany,
     sendTaskAssignedNotification,
     sendTimeOffApprovedNotification,
     sendTimeOffRejectedNotification,
-    sendTaskStatusChangedNotification
+    sendTaskStatusChangedNotification,
+    sendTimeOffUpdatedNotification,
+    sendTimeOffDeletedNotification
 };
