@@ -91,52 +91,51 @@ export default function AdminReportsView() {
                         </Button>
                     </Card.Content>
                 </Card>
-            </Card>
 
-            {report && report.length > 0 ? (
-                <Card style={styles.card}>
-                    <Card.Content>
-                        <Text variant="titleMedium" style={styles.sectionTitle}>
-                            Report Summary
-                        </Text>
-                        <DataTable>
-                            <DataTable.Header>
-                                <DataTable.Title>Driver</DataTable.Title>
-                                <DataTable.Title numeric>Tasks</DataTable.Title>
-                                <DataTable.Title numeric>Earnings</DataTable.Title>
-                                <DataTable.Title numeric>Net Pay</DataTable.Title>
-                            </DataTable.Header>
-
-                            {report.map((row, index) => (
-                                <DataTable.Row key={index}>
-                                    <DataTable.Cell>{row.name}</DataTable.Cell>
-                                    <DataTable.Cell numeric>{row.completed_tasks}</DataTable.Cell>
-                                    <DataTable.Cell numeric>£{row.total_earnings}</DataTable.Cell>
-                                    <DataTable.Cell numeric>£{row.net_pay}</DataTable.Cell>
-                                </DataTable.Row>
-                            ))}
-                        </DataTable>
-
-                        <Button
-                            mode="outlined"
-                            icon="download"
-                            onPress={exportCSV}
-                            style={styles.exportButton}
-                        >
-                            Export to CSV
-                        </Button>
-                    </Card.Content>
-                </Card>
-            ) : (
-                report && report.length === 0 && (
+                {report && report.length > 0 ? (
                     <Card style={styles.card}>
                         <Card.Content>
-                            <Text style={styles.empty}>No report data for this period</Text>
+                            <Text variant="titleMedium" style={styles.sectionTitle}>
+                                Report Summary
+                            </Text>
+                            <DataTable>
+                                <DataTable.Header>
+                                    <DataTable.Title>Driver</DataTable.Title>
+                                    <DataTable.Title numeric>Tasks</DataTable.Title>
+                                    <DataTable.Title numeric>Earnings</DataTable.Title>
+                                    <DataTable.Title numeric>Net Pay</DataTable.Title>
+                                </DataTable.Header>
+
+                                {report.map((row, index) => (
+                                    <DataTable.Row key={index}>
+                                        <DataTable.Cell>{row.name}</DataTable.Cell>
+                                        <DataTable.Cell numeric>{row.completed_tasks}</DataTable.Cell>
+                                        <DataTable.Cell numeric>£{row.total_earnings}</DataTable.Cell>
+                                        <DataTable.Cell numeric>£{row.net_pay}</DataTable.Cell>
+                                    </DataTable.Row>
+                                ))}
+                            </DataTable>
+
+                            <Button
+                                mode="outlined"
+                                icon="download"
+                                onPress={exportCSV}
+                                style={styles.exportButton}
+                            >
+                                Export to CSV
+                            </Button>
                         </Card.Content>
                     </Card>
-                )
-            )}
-        </ScrollView>
+                ) : (
+                    report && report.length === 0 && (
+                        <Card style={styles.card}>
+                            <Card.Content>
+                                <Text style={styles.empty}>No report data for this period</Text>
+                            </Card.Content>
+                        </Card>
+                    )
+                )}
+            </ScrollView>
         </View >
     );
 }
