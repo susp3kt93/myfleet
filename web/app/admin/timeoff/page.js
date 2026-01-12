@@ -23,10 +23,63 @@ export default function TimeOffManagementPage() {
     const [showNotesModal, setShowNotesModal] = useState(null);
     const [driverStats, setDriverStats] = useState({ year: new Date().getFullYear(), drivers: [] });
     const [showDriverStats, setShowDriverStats] = useState(false);
+    const [editModal, setEditModal] = useState(null);
 
     useEffect(() => {
         dispatch(loadStoredAuth());
     }, [dispatch]);
+
+    // ... (useEffect for auth check - no change)
+
+    // ... (useEffect for fetch - no change)
+
+    // ... (fetchDriverStats - no change)
+
+    // ... (fetchRequests - no change)
+
+    const handleDelete = async (id) => {
+        if (!window.confirm(t('timeoff.confirmDelete') || 'Are you sure you want to delete this request?')) return;
+
+        try {
+            setProcessingId(id);
+            await api.delete(`/timeoff/${id}`);
+            fetchRequests();
+        } catch (error) {
+            console.error('Error deleting request:', error);
+            alert('Failed to delete request');
+        } finally {
+            setProcessingId(null);
+        }
+    };
+
+    const handleEdit = (request) => {
+        setEditModal({
+            id: request.id,
+            startDate: request.requestDate,
+            endDate: request.endDate,
+            reason: request.reason
+        });
+    };
+
+    const handleSaveEdit = async () => {
+        if (!editModal) return;
+
+        try {
+            setProcessingId(editModal.id);
+            await api.put(`/timeoff/${editModal.id}/details`, {
+                requestDate: editModal.startDate,
+                endDate: editModal.endDate,
+                reason: editModal.reason
+            });
+            setEditModal(null);
+            fetchRequests();
+        } catch (error) {
+            console.error('Error updating request:', error);
+            alert('Failed to update request');
+        } finally {
+            setProcessingId(null);
+        }
+    };
 
     useEffect(() => {
         if (!isAuthenticated) {
@@ -321,7 +374,24 @@ export default function TimeOffManagementPage() {
                                         </div>
 
                                         <div className="flex flex-col items-end space-y-3">
-                                            {getStatusBadge(request.status)}
+                                            <div className="flex items-center space-x-2">
+                                                {getStatusBadge(request.status)}
+
+                                                <button
+                                                    onClick={() => handleEdit(request)}
+                                                    className="p-1 text-gray-500 hover:text-blue-600 transition"
+                                                    title="Edit"
+                                                >
+                                                    ✏️
+                                                </button>
+                                                <button
+                                                    onClick={() => handleDelete(request.id)}
+                                                    className="p-1 text-gray-500 hover:text-red-600 transition"
+                                                    title="Delete"
+                                                >
+                                                    🗑️
+                                                </button>
+                                            </div>
 
                                             {request.status === 'PENDING' && (
                                                 <div className="flex space-x-2 mt-3">
@@ -394,6 +464,63 @@ export default function TimeOffManagementPage() {
                                     }`}
                             >
                                 {processingId !== null ? t('timeoff.processing') : t('timeoff.confirm')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Edit Request Modal */}
+            {editModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+                        <h3 className="text-lg font-bold mb-4">✏️ {t('timeoff.editRequest') || 'Edit Request'}</h3>
+
+                        <div className="space-y-4">
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                <input
+                                    type="date"
+                                    value={editModal.startDate ? new Date(editModal.startDate).toISOString().split('T')[0] : ''}
+                                    onChange={(e) => setEditModal({ ...editModal, startDate: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                <input
+                                    type="date"
+                                    value={editModal.endDate ? new Date(editModal.endDate).toISOString().split('T')[0] : ''}
+                                    onChange={(e) => setEditModal({ ...editModal, endDate: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                />
+                            </div>
+
+                            <div>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+                                <textarea
+                                    value={editModal.reason || ''}
+                                    onChange={(e) => setEditModal({ ...editModal, reason: e.target.value })}
+                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                    rows={3}
+                                />
+                            </div>
+                        </div>
+
+                        <div className="flex justify-end space-x-3 mt-6">
+                            <button
+                                onClick={() => setEditModal(null)}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
+                            >
+                                {t('timeoff.cancel')}
+                            </button>
+                            <button
+                                onClick={handleSaveEdit}
+                                disabled={processingId !== null}
+                                className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition disabled:opacity-50"
+                            >
+                                {processingId !== null ? t('timeoff.processing') : t('timeoff.save')}
                             </button>
                         </div>
                     </div>
