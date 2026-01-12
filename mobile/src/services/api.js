@@ -133,6 +133,9 @@ export const timeoffAPI = {
 
     rejectRequest: (id) =>
         api.put(`/timeoff/${id}/reject`),
+
+    updateRequestDetails: (id, data) =>
+        api.put(`/timeoff/${id}/details`, data),
 };
 
 export const deductionsAPI = {

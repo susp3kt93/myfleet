@@ -1,15 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, FlatList, Alert } from 'react-native';
-import { Text, Card, Button, Chip, ActivityIndicator, Badge } from 'react-native-paper';
+import { Text, Card, Button, Chip, ActivityIndicator, IconButton } from 'react-native-paper';
 import { useTranslation } from 'react-i18next';
 import { format } from 'date-fns';
 import { timeoffAPI } from '../services/api';
+import TimeOffDialog from './TimeOffDialog';
 
 export default function AdminTimeOffView({ onRefresh }) {
     const { t } = useTranslation();
     const [loading, setLoading] = useState(true);
     const [requests, setRequests] = useState([]);
     const [filter, setFilter] = useState('PENDING');
+
+    // Dialog State
+    const [dialogVisible, setDialogVisible] = useState(false);
+    const [editingRequest, setEditingRequest] = useState(null);
+    const [saving, setSaving] = useState(false);
 
     useEffect(() => {
         loadRequests();
@@ -77,6 +83,54 @@ export default function AdminTimeOffView({ onRefresh }) {
         );
     };
 
+    const handleDelete = async (id) => {
+        Alert.alert(
+            'Delete Request',
+            'Are you sure you want to delete this request? This action cannot be undone.',
+            [
+                { text: 'Cancel', style: 'cancel' },
+                {
+                    text: 'Delete',
+                    style: 'destructive',
+                    onPress: async () => {
+                        try {
+                            await timeoffAPI.cancelRequest(id); // Using existing cancelRequest which maps to DELETE
+                            loadRequests();
+                            if (onRefresh) onRefresh();
+                            Alert.alert('Success', 'Request deleted');
+                        } catch (error) {
+                            console.error('Delete error:', error);
+                            Alert.alert('Error', 'Failed to delete request');
+                        }
+                    }
+                }
+            ]
+        );
+    };
+
+    const handleEdit = (request) => {
+        setEditingRequest(request);
+        setDialogVisible(true);
+    };
+
+    const handleSaveRequest = async (data) => {
+        if (!editingRequest) return;
+
+        try {
+            setSaving(true);
+            await timeoffAPI.updateRequestDetails(editingRequest.id, data);
+            setDialogVisible(false);
+            setEditingRequest(null);
+            loadRequests();
+            Alert.alert('Success', 'Request updated successfully');
+        } catch (error) {
+            console.error('Update error:', error);
+            Alert.alert('Error', 'Failed to update request');
+        } finally {
+            setSaving(false);
+        }
+    };
+
     const getStatusColor = (status) => {
         switch (status) {
             case 'APPROVED': return '#22c55e';
@@ -100,12 +154,28 @@ export default function AdminTimeOffView({ onRefresh }) {
                             }
                         </Text>
                     </View>
-                    <Chip
-                        style={{ backgroundColor: getStatusColor(item.status) }}
-                        textStyle={{ color: 'white', fontSize: 11 }}
-                    >
-                        {item.status}
-                    </Chip>
+                    <View style={{ alignItems: 'flex-end' }}>
+                        <Chip
+                            style={{ backgroundColor: getStatusColor(item.status), marginBottom: 4 }}
+                            textStyle={{ color: 'white', fontSize: 11 }}
+                        >
+                            {item.status}
+                        </Chip>
+                        <View style={{ flexDirection: 'row' }}>
+                            <IconButton
+                                icon="pencil"
+                                size={20}
+                                onPress={() => handleEdit(item)}
+                                iconColor="#666"
+                            />
+                            <IconButton
+                                icon="delete"
+                                size={20}
+                                onPress={() => handleDelete(item.id)}
+                                iconColor="#ef4444"
+                            />
+                        </View>
+                    </View>
                 </View>
 
                 {item.reason && (
@@ -183,6 +253,17 @@ export default function AdminTimeOffView({ onRefresh }) {
                     }
                 />
             )}
+
+            <TimeOffDialog
+                visible={dialogVisible}
+                onDismiss={() => {
+                    setDialogVisible(false);
+                    setEditingRequest(null);
+                }}
+                onSave={handleSaveRequest}
+                request={editingRequest}
+                loading={saving}
+            />
         </View>
     );
 }
