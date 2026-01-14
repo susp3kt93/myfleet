@@ -133,6 +133,14 @@ model User {
   completedTasks     Int      @default(0)
   rating             Float?
   
+  // Gamification fields (v1.2)
+  totalPoints        Int      @default(0)
+  currentLevel       Int      @default(1)
+  currentStreak      Int      @default(0)
+  longestStreak      Int      @default(0)
+  lastActiveDate     DateTime?
+  totalKilometers    Float    @default(0)
+  
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
@@ -146,6 +154,7 @@ model User {
   deductions          Deduction[]
   deductionsCreated   Deduction[]     @relation("DeductionCreatedBy")
   activityLogs        ActivityLog[]
+  userAchievements    UserAchievement[] // Gamification (v1.2)
 
   @@map("users")
 }
@@ -323,4 +332,40 @@ model ActivityLog {
   @@map("activity_logs")
   @@index([companyId])
   @@index([createdAt])
+}
+
+// ============================================
+// GAMIFICATION MODELS (v1.2)
+// ============================================
+model Achievement {
+  id          String   @id @default(cuid())
+  code        String   @unique
+  name        String
+  description String
+  category    String   // 'tasks', 'earnings', 'streaks', 'efficiency', 'distance'
+  icon        String   // Emoji or URL
+  requirement Int
+  points      Int      @default(0)
+  
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  userAchievements UserAchievement[]
+  
+  @@map("achievements")
+}
+
+model UserAchievement {
+  id            String   @id @default(cuid())
+  userId        String
+  achievementId String
+  unlockedAt    DateTime @default(now())
+  
+  // Relations
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement   Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@map("user_achievements")
 }
