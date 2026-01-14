@@ -17,7 +17,6 @@ router.get('/stats', async (req, res) => {
             where: { id: userId },
             select: {
                 totalTasks: true,
-                completedTasks: true,
                 rating: true
             }
         });
@@ -67,6 +66,7 @@ router.get('/stats', async (req, res) => {
         res.json({
             stats: {
                 ...user,
+                completedTasks: allCompletedTasks.length, // Dynamic count
                 totalEarnings, // Dynamically calculated
                 monthlyEarnings,
                 weeklyEarnings,

@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useCallback } from 'react';
 import { useFocusEffect, CommonActions } from '@react-navigation/native';
-import { View, StyleSheet, ScrollView, RefreshControl } from 'react-native';
+import { View, StyleSheet, ScrollView, RefreshControl, Alert, Platform } from 'react-native';
 import { Text, Avatar, FAB, Card, Button } from 'react-native-paper';
 import { useDispatch, useSelector } from 'react-redux';
 import { useTranslation } from 'react-i18next';
+import { format, startOfWeek, endOfWeek, subWeeks } from 'date-fns';
+import * as FileSystem from 'expo-file-system';
+import * as Sharing from 'expo-sharing';
 import { fetchTasks } from '../store/tasksSlice';
 import { logout } from '../store/authSlice';
 import api from '../services/api';
@@ -13,13 +16,69 @@ import EarningsChart from '../components/EarningsChart';
 export default function EnhancedMainScreen({ navigation }) {
     const dispatch = useDispatch();
     const { t } = useTranslation();
-    const { user } = useSelector((state) => state.auth);
+    const { user, token } = useSelector((state) => state.auth);
     const { tasks, loading } = useSelector((state) => state.tasks);
     const [refreshing, setRefreshing] = React.useState(false);
     const [stats, setStats] = useState(null);
     const [monthlyEarnings, setMonthlyEarnings] = useState([]);
     const [activeTab, setActiveTab] = useState('overview');
-    const [taskFilter, setTaskFilter] = useState('available'); // available, active, completed
+    const [taskFilter, setTaskFilter] = useState('active'); // active, available, completed
+    const [downloadingWeek, setDownloadingWeek] = useState(null);
+
+    const getRecentWeeks = () => {
+        const weeks = [];
+        const today = new Date();
+        // Generate last 8 weeks
+        for (let i = 0; i < 8; i++) {
+            const date = subWeeks(today, i);
+            const start = startOfWeek(date, { weekStartsOn: 0 }); // Sunday
+            const end = endOfWeek(date, { weekStartsOn: 0 });     // Saturday
+
+            let label;
+            if (i === 0) label = t('common.thisWeek') || 'This Week';
+            else if (i === 1) label = t('common.lastWeek') || 'Last Week';
+            else label = `${t('common.week') || 'Week'} ${format(start, 'w')}`;
+
+            weeks.push({
+                start,
+                end,
+                label
+            });
+        }
+        return weeks;
+    };
+
+    const handleDownloadInvoice = async (week, index) => {
+        try {
+            setDownloadingWeek(index);
+            const startDate = format(week.start, 'yyyy-MM-dd');
+            const endDate = format(week.end, 'yyyy-MM-dd');
+
+            const fileUri = FileSystem.documentDirectory + `invoice_${startDate}.pdf`;
+            const downloadResumable = FileSystem.createDownloadResumable(
+                `${process.env.EXPO_PUBLIC_API_URL}/reports/export/pdf?startDate=${startDate}&endDate=${endDate}`,
+                fileUri,
+                {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                }
+            );
+
+            const { uri } = await downloadResumable.downloadAsync();
+
+            if (await Sharing.isAvailableAsync()) {
+                await Sharing.shareAsync(uri);
+            } else {
+                Alert.alert('Error', 'Sharing is not available on this device');
+            }
+        } catch (error) {
+            console.error('Download error:', error);
+            Alert.alert('Error', t('earnings.downloadError') || 'Failed to download invoice');
+        } finally {
+            setDownloadingWeek(null);
+        }
+    };
 
     useEffect(() => {
         loadData();
@@ -267,20 +326,20 @@ export default function EnhancedMainScreen({ navigation }) {
                         {/* Filter Buttons */}
                         <View style={styles.filterContainer}>
                             <Button
-                                mode={taskFilter === 'available' ? 'contained' : 'outlined'}
-                                onPress={() => setTaskFilter('available')}
-                                style={styles.filterButton}
-                                compact
-                            >
-                                {t('tasks.available')}
-                            </Button>
-                            <Button
                                 mode={taskFilter === 'active' ? 'contained' : 'outlined'}
                                 onPress={() => setTaskFilter('active')}
                                 style={styles.filterButton}
                                 compact
                             >
                                 {t('tasks.active')}
+                            </Button>
+                            <Button
+                                mode={taskFilter === 'available' ? 'contained' : 'outlined'}
+                                onPress={() => setTaskFilter('available')}
+                                style={styles.filterButton}
+                                compact
+                            >
+                                {t('tasks.available')}
                             </Button>
                             <Button
                                 mode={taskFilter === 'completed' ? 'contained' : 'outlined'}
@@ -293,16 +352,16 @@ export default function EnhancedMainScreen({ navigation }) {
                         </View>
 
                         <Text style={styles.sectionTitle}>
-                            {taskFilter === 'available' && t('tasks.availableTasks')}
                             {taskFilter === 'active' && t('tasks.activeTasks')}
+                            {taskFilter === 'available' && t('tasks.availableTasks')}
                             {taskFilter === 'completed' && t('tasks.completedTasks')}
                         </Text>
 
                         {filteredTasks.length === 0 ? (
                             <View style={styles.emptyState}>
                                 <Text style={styles.emptyStateText}>
-                                    {taskFilter === 'available' && t('tasks.noAvailable')}
                                     {taskFilter === 'active' && t('tasks.noActive')}
+                                    {taskFilter === 'available' && t('tasks.noAvailable')}
                                     {taskFilter === 'completed' && t('tasks.noCompleted')}
                                 </Text>
                             </View>
@@ -382,6 +441,35 @@ export default function EnhancedMainScreen({ navigation }) {
                                 </Text>
                             </Card.Content>
                         </Card>
+
+                        {/* Weekly Invoices */}
+                        <Text style={styles.sectionTitle}>{t('earnings.invoices') || 'Weekly Invoices'}</Text>
+                        <View style={{ marginBottom: 20 }}>
+                            {getRecentWeeks().map((week, index) => (
+                                <Card key={index} style={styles.invoiceCard}>
+                                    <Card.Content>
+                                        <View style={styles.invoiceRow}>
+                                            <View>
+                                                <Text style={styles.invoicePeriod}>{week.label}</Text>
+                                                <Text style={styles.invoiceDate}>
+                                                    {format(week.start, 'dd MMM')} - {format(week.end, 'dd MMM yyyy')}
+                                                </Text>
+                                            </View>
+                                            <Button
+                                                mode="outlined"
+                                                compact
+                                                loading={downloadingWeek === index}
+                                                disabled={downloadingWeek !== null}
+                                                onPress={() => handleDownloadInvoice(week, index)}
+                                                icon="download"
+                                            >
+                                                PDF
+                                            </Button>
+                                        </View>
+                                    </Card.Content>
+                                </Card>
+                            ))}
+                        </View>
 
                         {/* Monthly History */}
                         <Text style={styles.sectionTitle}>{t('earnings.history')}</Text>
@@ -474,7 +562,10 @@ export default function EnhancedMainScreen({ navigation }) {
                             </Card.Content>
                         </Card>
 
-                        <Card style={styles.actionCard}>
+                        <Card
+                            style={styles.actionCard}
+                            onPress={() => setActiveTab('earnings')}
+                        >
                             <Card.Content>
                                 <View style={styles.actionRow}>
                                     <View style={styles.actionIcon}>
@@ -486,6 +577,7 @@ export default function EnhancedMainScreen({ navigation }) {
                                             {stats?.completedTasks || 0} {t('profile.tasksCompleted')}
                                         </Text>
                                     </View>
+                                    <Text style={styles.actionArrow}>→</Text>
                                 </View>
                             </Card.Content>
                         </Card>
@@ -669,6 +761,26 @@ const styles = StyleSheet.create({
     earningsSubtitle: {
         fontSize: 14,
         color: '#6B7280',
+    },
+    invoiceCard: {
+        marginBottom: 8,
+        backgroundColor: '#fff',
+        borderRadius: 8,
+    },
+    invoiceRow: {
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+    },
+    invoicePeriod: {
+        fontWeight: 'bold',
+        fontSize: 14,
+        color: '#333',
+    },
+    invoiceDate: {
+        fontSize: 12,
+        color: '#666',
+        marginTop: 2,
     },
     filterContainer: {
         flexDirection: 'row',

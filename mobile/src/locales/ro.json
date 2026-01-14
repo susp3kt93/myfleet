@@ -71,7 +71,9 @@
         "history": "Istoric Lunar",
         "noHistory": "📊 Nu există date pentru lunile anterioare",
         "tasksCompleted": "taskuri completate",
-        "taskCompleted": "task"
+        "taskCompleted": "task",
+        "invoices": "Facturi Săptămânale",
+        "downloadError": "Nu s-a putut descărca factura"
     },
     "profile": {
         "title": "Profil",
@@ -104,7 +106,10 @@
         "close": "Închide",
         "save": "Salvează",
         "cancel": "Anulează",
-        "select": "Selectează"
+        "select": "Selectează",
+        "thisWeek": "Săptămâna Aceasta",
+        "lastWeek": "Săptămâna Trecută",
+        "week": "Săptămâna"
     },
     "login": {
         "title": "Autentificare",

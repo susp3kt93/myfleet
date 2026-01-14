@@ -71,7 +71,9 @@
         "history": "Monthly History",
         "noHistory": "📊 No data for previous months",
         "tasksCompleted": "tasks completed",
-        "taskCompleted": "task"
+        "taskCompleted": "task",
+        "invoices": "Weekly Invoices",
+        "downloadError": "Failed to download invoice"
     },
     "profile": {
         "title": "Profile",
@@ -104,7 +106,10 @@
         "close": "Close",
         "save": "Save",
         "cancel": "Cancel",
-        "select": "Select"
+        "select": "Select",
+        "thisWeek": "This Week",
+        "lastWeek": "Last Week",
+        "week": "Week"
     },
     "login": {
         "title": "Login",
