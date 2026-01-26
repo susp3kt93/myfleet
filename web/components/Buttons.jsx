@@ -194,6 +194,7 @@ export function IconButton({ icon, onClick, variant = 'default', title = '' }) {
 
 // Export all
 export default {
+    Back: BackButton,
     Primary: PrimaryButton,
     Secondary: SecondaryButton,
     Success: SuccessButton,
