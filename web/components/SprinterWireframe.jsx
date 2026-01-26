@@ -5,98 +5,107 @@ export default function SprinterWireframe({ className }) {
                 viewBox="0 0 800 400"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
-                className="w-full h-auto drop-shadow-[0_0_8px_rgba(6,182,212,0.8)] filter contrast-125"
+                className="w-full h-auto drop-shadow-[0_0_15px_rgba(6,182,212,0.6)] filter contrast-125"
             >
                 <defs>
-                    <linearGradient id="bodyGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="#a855f7" stopOpacity="0.8" />
-                        <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.8" />
-                        <stop offset="100%" stopColor="#a855f7" stopOpacity="0.4" />
+                    <linearGradient id="cyberGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+                        <stop offset="0%" stopColor="#d946ef" stopOpacity="1" />
+                        <stop offset="50%" stopColor="#8b5cf6" stopOpacity="1" />
+                        <stop offset="100%" stopColor="#06b6d4" stopOpacity="1" />
                     </linearGradient>
-                    <linearGradient id="glassGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                        <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.1" />
-                        <stop offset="100%" stopColor="#06b6d4" stopOpacity="0.05" />
+                    <linearGradient id="glassShield" x1="0%" y1="0%" x2="100%" y2="100%">
+                        <stop offset="0%" stopColor="#06b6d4" stopOpacity="0.15" />
+                        <stop offset="100%" stopColor="transparent" stopOpacity="0" />
                     </linearGradient>
-                    <linearGradient id="scanGradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                        <stop offset="0%" stopColor="transparent" />
-                        <stop offset="50%" stopColor="#06b6d4" stopOpacity="0.3" />
-                        <stop offset="100%" stopColor="transparent" />
-                    </linearGradient>
+                    <filter id="neonGlow">
+                        <feGaussianBlur stdDeviation="3" result="coloredBlur" />
+                        <feMerge>
+                            <feMergeNode in="coloredBlur" />
+                            <feMergeNode in="SourceGraphic" />
+                        </feMerge>
+                    </filter>
                 </defs>
 
-                {/* --- CHASSIS & BODY --- */}
-                {/* Roofline & Dynamic Curve */}
+                {/* --- FUTURE CONCEPT BODY --- */}
+                {/* Main Aerodynamic Silhouette */}
                 <path
-                    d="M140,280 L140,180 L200,120 L350,80 L750,80 L780,280 L780,300 M140,280 L780,280"
-                    stroke="url(#bodyGradient)"
-                    strokeWidth="2.5"
+                    d="M100,280 L80,250 C80,250 100,100 250,80 L600,70 C650,70 750,70 780,280 L780,300 M100,280 L780,280"
+                    stroke="url(#cyberGradient)"
+                    strokeWidth="3"
                     strokeLinecap="round"
                     strokeLinejoin="round"
+                    filter="url(#neonGlow)"
                     fill="none"
                 />
 
-                {/* Front Bumper & Grill Area */}
-                <path d="M140,280 L130,280 L120,250 L140,180" stroke="#06b6d4" strokeWidth="2" fill="none" />
-
-                {/* Side Panel Detail (The Mercedes Side Character Line) */}
-                <path d="M140,210 L300,190 L780,190" stroke="#a855f7" strokeWidth="1.5" fill="none" opacity="0.7" />
-
-                {/* Rub Strip (Bottom Protection) */}
-                <path d="M230,280 L750,280" stroke="#06b6d4" strokeWidth="3" opacity="0.5" />
-
-                {/* --- WINDOWS --- */}
-                {/* Windshield */}
+                {/* The Signature "Vision" Continuous Windshield Line */}
                 <path
-                    d="M200,120 L350,80 L350,180 L200,180 Z"
+                    d="M250,80 C180,90 140,150 120,220"
                     stroke="#06b6d4"
-                    strokeWidth="1"
-                    fill="url(#glassGradient)"
+                    strokeWidth="2"
+                    fill="none"
+                    opacity="0.8"
                 />
-                {/* Driver Window */}
+
+                {/* Futuristic LED Front Strip (The "Face") */}
                 <path
-                    d="M360,85 L480,85 L480,180 L360,180 Z"
+                    d="M115,230 L160,225"
                     stroke="#06b6d4"
-                    strokeWidth="1"
-                    fill="url(#glassGradient)"
+                    strokeWidth="4"
+                    strokeLinecap="round"
+                    filter="url(#neonGlow)"
+                    className="animate-pulse"
                 />
-                {/* Caro Window 1 */}
-                <path d="M500,90 L620,90 L620,180 L500,180 Z" stroke="rgba(6,182,212,0.3)" strokeWidth="1" fill="url(#glassGradient)" />
-                {/* Caro Window 2 */}
-                <path d="M640,90 L750,90 L750,180 L640,180 Z" stroke="rgba(6,182,212,0.3)" strokeWidth="1" fill="url(#glassGradient)" />
 
-                {/* --- WHEELS (Detailed Mag Wheels style) --- */}
-                {/* Front */}
-                <circle cx="230" cy="280" r="45" stroke="#a855f7" strokeWidth="2" fill="none" />
-                <circle cx="230" cy="280" r="35" stroke="#06b6d4" strokeWidth="1" strokeDasharray="4 2" />
-                <circle cx="230" cy="280" r="15" fill="#1e293b" stroke="#06b6d4" />
+                {/* Side Illuminated Character Line (Glowing Stream) */}
+                <path
+                    d="M160,225 C250,220 500,210 780,210"
+                    stroke="#d946ef"
+                    strokeWidth="2"
+                    opacity="0.9"
+                    filter="url(#neonGlow)"
+                />
 
-                {/* Rear */}
-                <circle cx="650" cy="280" r="45" stroke="#a855f7" strokeWidth="2" fill="none" />
-                <circle cx="650" cy="280" r="35" stroke="#06b6d4" strokeWidth="1" strokeDasharray="4 2" />
-                <circle cx="650" cy="280" r="15" fill="#1e293b" stroke="#06b6d4" />
+                {/* --- GLASS CANOPY --- */}
+                <path
+                    d="M250,80 C180,90 140,150 120,220 L300,220 L350,85 Z"
+                    fill="url(#glassShield)"
+                    stroke="none"
+                />
 
-                {/* --- HEADLIGHTS (Aggressive Look) --- */}
-                <path d="M140,190 L180,185 L180,205 L145,210 Z" fill="#06b6d4" fillOpacity="0.3" stroke="#06b6d4" strokeWidth="1" />
+                {/* --- AERO WHEELS (Solid Futuristic Look) --- */}
+                {/* Front Wheel */}
+                <g transform="translate(200, 280)">
+                    <circle cx="0" cy="0" r="45" stroke="#8b5cf6" strokeWidth="2" filter="url(#neonGlow)" />
+                    {/* Turbine Spokes */}
+                    <path d="M0,0 L0,-45" stroke="#06b6d4" strokeWidth="1" opacity="0.5" transform="rotate(0)" />
+                    <path d="M0,0 L0,-45" stroke="#06b6d4" strokeWidth="1" opacity="0.5" transform="rotate(60)" />
+                    <path d="M0,0 L0,-45" stroke="#06b6d4" strokeWidth="1" opacity="0.5" transform="rotate(120)" />
+                    <circle cx="0" cy="0" r="15" fill="#0f172a" stroke="#d946ef" strokeWidth="2" />
+                </g>
 
-                {/* --- MIRRORS --- */}
-                <path d="M350,160 L330,160 L330,130 L350,130" stroke="#a855f7" strokeWidth="2" fill="#0f172a" />
+                {/* Rear Wheel */}
+                <g transform="translate(680, 280)">
+                    <circle cx="0" cy="0" r="45" stroke="#8b5cf6" strokeWidth="2" filter="url(#neonGlow)" />
+                    <path d="M0,0 L0,-45" stroke="#06b6d4" strokeWidth="1" opacity="0.5" transform="rotate(0)" />
+                    <path d="M0,0 L0,-45" stroke="#06b6d4" strokeWidth="1" opacity="0.5" transform="rotate(60)" />
+                    <path d="M0,0 L0,-45" stroke="#06b6d4" strokeWidth="1" opacity="0.5" transform="rotate(120)" />
+                    <circle cx="0" cy="0" r="15" fill="#0f172a" stroke="#d946ef" strokeWidth="2" />
+                </g>
 
-                {/* --- TECH DETAILS (Scanning Lines) --- */}
+                {/* --- REAR LED TAIL LIGHT (Vertical) --- */}
+                <path d="M780,100 L780,250" stroke="#d946ef" strokeWidth="3" filter="url(#neonGlow)" opacity="0.8" />
 
-                {/* Vertical Scan Lines */}
-                <line x1="200" y1="50" x2="200" y2="350" stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="440" y1="50" x2="440" y2="350" stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1" strokeDasharray="4 4" />
-                <line x1="650" y1="50" x2="650" y2="350" stroke="rgba(168, 85, 247, 0.2)" strokeWidth="1" strokeDasharray="4 4" />
+                {/* --- SPEED / DATA STREAM EFFECTS --- */}
+                <line x1="300" y1="60" x2="350" y2="60" stroke="#06b6d4" strokeWidth="1" opacity="0.5" className="animate-pulse" />
+                <line x1="280" y1="50" x2="380" y2="50" stroke="#8b5cf6" strokeWidth="1" opacity="0.3" className="animate-pulse" style={{ animationDelay: '0.1s' }} />
 
-                {/* Horizontal Scan Animation */}
-                <rect x="100" y="50" width="700" height="300" fill="url(#scanGradient)" opacity="0.1">
-                    <animate attributeName="x" from="-800" to="800" dur="3s" repeatCount="indefinite" />
-                </rect>
+                {/* Holographic Ground Projection */}
+                <ellipse cx="440" cy="310" rx="300" ry="10" fill="url(#cyberGradient)" opacity="0.1" filter="blur(10px)" />
 
-                {/* Measurement Markers */}
-                <text x="230" y="350" fill="#06b6d4" fontSize="12" fontFamily="monospace" opacity="0.8">AXLE A-1</text>
-                <text x="650" y="350" fill="#06b6d4" fontSize="12" fontFamily="monospace" opacity="0.8">AXLE B-1</text>
-                <text x="400" y="380" fill="#a855f7" fontSize="14" fontFamily="monospace" letterSpacing="2" textAnchor="middle">MERCEDES-BENZ SPRINTER // 2026</text>
+                {/* Tech Specs */}
+                <text x="50" y="380" fill="#06b6d4" fontSize="12" fontFamily="monospace" opacity="0.8">MODEL: VISION VAN X</text>
+                <text x="650" y="380" fill="#d946ef" fontSize="12" fontFamily="monospace" opacity="0.8">AERO COEFF: 0.19</text>
 
             </svg>
         </div>
