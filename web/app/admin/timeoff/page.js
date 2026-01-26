@@ -406,118 +406,116 @@ export default function TimeOffManagementPage() {
                     })}
                 </div>
             )}
-        </main>
 
-            {/* Admin Notes Modal */ }
-    {
-        showNotesModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-                    <h3 className="text-lg font-bold mb-4">
-                        {showNotesModal.action === 'approve' ? ('✅ ' + t('timeoff.approveRequest')) : ('❌ ' + t('timeoff.rejectRequest'))}
-                    </h3>
-                    <div className="mb-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-2">
-                            {t('timeoff.notesOptional')}
-                        </label>
-                        <textarea
-                            value={adminNotes}
-                            onChange={(e) => setAdminNotes(e.target.value)}
-                            placeholder={t('timeoff.notesPlaceholder')}
-                            className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                            rows={3}
-                        />
-                    </div>
-                    <div className="flex justify-end space-x-3">
-                        <button
-                            onClick={() => {
-                                setShowNotesModal(null);
-                                setAdminNotes('');
-                            }}
-                            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
-                        >
-                            {t('timeoff.cancel')}
-                        </button>
-                        <button
-                            onClick={() => {
-                                if (showNotesModal.action === 'approve') {
-                                    handleApprove(showNotesModal.id);
-                                } else {
-                                    handleReject(showNotesModal.id);
-                                }
-                            }}
-                            disabled={processingId !== null}
-                            className={`px-4 py-2 text-white rounded-lg transition disabled:opacity-50 ${showNotesModal.action === 'approve'
-                                ? 'bg-green-500 hover:bg-green-600'
-                                : 'bg-red-500 hover:bg-red-600'
-                                }`}
-                        >
-                            {processingId !== null ? t('timeoff.processing') : t('timeoff.confirm')}
-                        </button>
-                    </div>
-                </div>
-            </div>
-        )
-    }
-
-    {/* Edit Request Modal */ }
-    {
-        editModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-                <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
-                    <h3 className="text-lg font-bold mb-4">✏️ {t('timeoff.editRequest') || 'Edit Request'}</h3>
-
-                    <div className="space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
-                            <input
-                                type="date"
-                                value={editModal.startDate ? new Date(editModal.startDate).toISOString().split('T')[0] : ''}
-                                onChange={(e) => setEditModal({ ...editModal, startDate: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
-                            <input
-                                type="date"
-                                value={editModal.endDate ? new Date(editModal.endDate).toISOString().split('T')[0] : ''}
-                                onChange={(e) => setEditModal({ ...editModal, endDate: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
-                            />
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+            {/* Admin Notes Modal */}
+            {showNotesModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+                        <h3 className="text-lg font-bold mb-4">
+                            {showNotesModal.action === 'approve' ? ('✅ ' + t('timeoff.approveRequest')) : ('❌ ' + t('timeoff.rejectRequest'))}
+                        </h3>
+                        <div className="mb-4">
+                            <label className="block text-sm font-medium text-gray-700 mb-2">
+                                {t('timeoff.notesOptional')}
+                            </label>
                             <textarea
-                                value={editModal.reason || ''}
-                                onChange={(e) => setEditModal({ ...editModal, reason: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                value={adminNotes}
+                                onChange={(e) => setAdminNotes(e.target.value)}
+                                placeholder={t('timeoff.notesPlaceholder')}
+                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                                 rows={3}
                             />
                         </div>
-                    </div>
-
-                    <div className="flex justify-end space-x-3 mt-6">
-                        <button
-                            onClick={() => setEditModal(null)}
-                            className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
-                        >
-                            {t('timeoff.cancel')}
-                        </button>
-                        <button
-                            onClick={handleSaveEdit}
-                            disabled={processingId !== null}
-                            className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition disabled:opacity-50"
-                        >
-                            {processingId !== null ? t('timeoff.processing') : t('timeoff.save')}
-                        </button>
+                        <div className="flex justify-end space-x-3">
+                            <button
+                                onClick={() => {
+                                    setShowNotesModal(null);
+                                    setAdminNotes('');
+                                }}
+                                className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
+                            >
+                                {t('timeoff.cancel')}
+                            </button>
+                            <button
+                                onClick={() => {
+                                    if (showNotesModal.action === 'approve') {
+                                        handleApprove(showNotesModal.id);
+                                    } else {
+                                        handleReject(showNotesModal.id);
+                                    }
+                                }}
+                                disabled={processingId !== null}
+                                className={`px-4 py-2 text-white rounded-lg transition disabled:opacity-50 ${showNotesModal.action === 'approve'
+                                    ? 'bg-green-500 hover:bg-green-600'
+                                    : 'bg-red-500 hover:bg-red-600'
+                                    }`}
+                            >
+                                {processingId !== null ? t('timeoff.processing') : t('timeoff.confirm')}
+                            </button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        )
-    }
+            )
+            }
+
+            {/* Edit Request Modal */}
+            {
+                editModal && (
+                    <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                        <div className="bg-white rounded-lg shadow-xl p-6 max-w-md w-full mx-4">
+                            <h3 className="text-lg font-bold mb-4">✏️ {t('timeoff.editRequest') || 'Edit Request'}</h3>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input
+                                        type="date"
+                                        value={editModal.startDate ? new Date(editModal.startDate).toISOString().split('T')[0] : ''}
+                                        onChange={(e) => setEditModal({ ...editModal, startDate: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date</label>
+                                    <input
+                                        type="date"
+                                        value={editModal.endDate ? new Date(editModal.endDate).toISOString().split('T')[0] : ''}
+                                        onChange={(e) => setEditModal({ ...editModal, endDate: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Reason</label>
+                                    <textarea
+                                        value={editModal.reason || ''}
+                                        onChange={(e) => setEditModal({ ...editModal, reason: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500"
+                                        rows={3}
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-3 mt-6">
+                                <button
+                                    onClick={() => setEditModal(null)}
+                                    className="px-4 py-2 text-gray-600 hover:text-gray-800 transition"
+                                >
+                                    {t('timeoff.cancel')}
+                                </button>
+                                <button
+                                    onClick={handleSaveEdit}
+                                    disabled={processingId !== null}
+                                    className="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-lg transition disabled:opacity-50"
+                                >
+                                    {processingId !== null ? t('timeoff.processing') : t('timeoff.save')}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                )
+            }
         </AdminLayout >
     );
 }
