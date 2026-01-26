@@ -18,6 +18,25 @@ export default function AdminLayout({ children }) {
     const router = useRouter();
     const dispatch = useDispatch();
     const { user } = useSelector((state) => state.auth);
+    const [companyLogo, setCompanyLogo] = useState(null);
+
+    // Fetch company logo
+    useEffect(() => {
+        const fetchCompanyLogo = async () => {
+            if (user?.companyId) {
+                try {
+                    const res = await api.get(`/companies/${user.companyId}`);
+                    if (res.data.logo) {
+                        const logoUrl = res.data.logo;
+                        setCompanyLogo(logoUrl.startsWith('http') ? logoUrl : `${process.env.NEXT_PUBLIC_API_URL?.replace('/api', '') || 'http://localhost:3002'}${logoUrl}`);
+                    }
+                } catch (error) {
+                    console.error('Error fetching company logo:', error);
+                }
+            }
+        };
+        fetchCompanyLogo();
+    }, [user?.companyId]);
 
     const handleLogout = () => {
         dispatch(logout());
@@ -34,9 +53,20 @@ export default function AdminLayout({ children }) {
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center space-x-4">
-                            <div className="w-16 h-16 bg-white/25 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg ring-2 ring-white/30">
-                                <span className="text-4xl">👨‍💼</span>
-                            </div>
+                            <Link
+                                href="/admin/settings"
+                                className="w-16 h-16 bg-white/25 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg ring-2 ring-white/30 hover:bg-white/35 transition-all duration-200 hover:scale-105 cursor-pointer overflow-hidden"
+                            >
+                                {companyLogo ? (
+                                    <img
+                                        src={companyLogo}
+                                        alt="Company Logo"
+                                        className="w-12 h-12 object-contain"
+                                    />
+                                ) : (
+                                    <span className="text-4xl">🏢</span>
+                                )}
+                            </Link>
                             <div>
                                 <h1 className="text-3xl font-bold text-white drop-shadow-lg">
                                     {user?.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Company Admin'}
