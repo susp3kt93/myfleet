@@ -193,7 +193,6 @@ export default function AdminPage() {
 
             {/* Floating Action Button */}
             <FloatingActionButton />
-        </main>
-        </div >
+        </AdminLayout>
     );
 }
