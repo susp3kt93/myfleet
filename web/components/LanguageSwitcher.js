@@ -36,12 +36,12 @@ export default function LanguageSwitcher() {
                 <>
                     {/* Backdrop */}
                     <div
-                        className="fixed inset-0 z-10"
+                        className="fixed inset-0 z-[100]"
                         onClick={() => setShowDropdown(false)}
                     ></div>
 
                     {/* Dropdown */}
-                    <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-20">
+                    <div className="absolute right-0 mt-2 w-40 bg-white border border-gray-200 rounded-lg shadow-lg z-[110]">
                         {languages.map((lang) => (
                             <button
                                 key={lang.code}
