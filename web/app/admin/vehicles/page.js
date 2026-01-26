@@ -5,6 +5,8 @@ import { useSelector } from 'react-redux';
 import { useRouter } from 'next/navigation';
 import { useTranslation } from 'react-i18next';
 import api from '../../../lib/api';
+import AdminLayout from '../../../components/AdminLayout';
+import { PrimaryButton, SecondaryButton, SmallPrimaryButton, SmallSecondaryButton, IconButton } from '../../../components/Buttons';
 import UnifiedBackButton from '../../../components/UnifiedBackButton';
 import { format } from 'date-fns';
 
@@ -219,135 +221,128 @@ export default function VehiclesPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            {/* Header with Green Gradient */}
-            <header className="bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 flex justify-between items-center">
-                    <div className="flex items-center gap-4">
-                        <UnifiedBackButton href="/admin" label="Back" />
-                        <h1 className="text-2xl font-bold text-white">🚗 Fleet Vehicles</h1>
-                    </div>
-                    <button
-                        onClick={handleAddVehicle}
-                        className="px-4 py-2 bg-white text-green-600 hover:bg-gray-100 rounded-lg font-medium transition shadow-lg"
-                    >
-                        + Add Vehicle
-                    </button>
+        <AdminLayout>
+            {/* Page Header */}
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                    <UnifiedBackButton href="/admin" label="Back" />
+                    <h1 className="text-3xl font-bold text-gray-900">🚗 Fleet Vehicles</h1>
                 </div>
-            </header>
+                <PrimaryButton onClick={handleAddVehicle}>
+                    + Add Vehicle
+                </PrimaryButton>
+            </div>
 
             {/* Stats */}
-            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
-                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
-                    <div className="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-blue-500">
-                        <div className="text-2xl font-bold text-gray-900">{vehicles.length}</div>
-                        <div className="text-sm text-gray-500">Total Vehicles</div>
-                    </div>
-                    <div className="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-green-500">
-                        <div className="text-2xl font-bold text-green-600">{vehicles.filter(v => v.status === 'ACTIVE').length}</div>
-                        <div className="text-sm text-gray-500">Active</div>
-                    </div>
-                    <div className="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-amber-500">
-                        <div className="text-2xl font-bold text-amber-600">{vehicles.filter(v => v.status === 'IN_SERVICE').length}</div>
-                        <div className="text-sm text-gray-500">In Service</div>
-                    </div>
-                    <div className="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-red-500">
-                        <div className="text-2xl font-bold text-red-600">{vehicles.filter(v => v.status === 'NEEDS_SERVICE').length}</div>
-                        <div className="text-sm text-gray-500">Needs Service</div>
-                    </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div className="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-blue-500">
+                    <div className="text-2xl font-bold text-gray-900">{vehicles.length}</div>
+                    <div className="text-sm text-gray-500">Total Vehicles</div>
                 </div>
+                <div className="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-green-500">
+                    <div className="text-2xl font-bold text-green-600">{vehicles.filter(v => v.status === 'ACTIVE').length}</div>
+                    <div className="text-sm text-gray-500">Active</div>
+                </div>
+                <div className="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-amber-500">
+                    <div className="text-2xl font-bold text-amber-600">{vehicles.filter(v => v.status === 'IN_SERVICE').length}</div>
+                    <div className="text-sm text-gray-500">In Service</div>
+                </div>
+                <div className="bg-white rounded-2xl shadow-lg p-4 border-l-4 border-red-500">
+                    <div className="text-2xl font-bold text-red-600">{vehicles.filter(v => v.status === 'NEEDS_SERVICE').length}</div>
+                    <div className="text-sm text-gray-500">Needs Service</div>
+                </div>
+            </div>
 
-                {/* Vehicles Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                    {vehicles.map(vehicle => (
-                        <div key={vehicle.id} className="bg-white rounded-lg shadow overflow-hidden">
-                            <div className="p-4 border-b border-gray-100">
-                                <div className="flex justify-between items-start mb-2">
-                                    <div>
-                                        <h3 className="text-lg font-bold text-gray-900">{vehicle.plate}</h3>
-                                        <p className="text-sm text-gray-600">{vehicle.make} {vehicle.model} {vehicle.year}</p>
-                                    </div>
-                                    {getStatusBadge(vehicle.status)}
+            {/* Vehicles Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {vehicles.map(vehicle => (
+                    <div key={vehicle.id} className="bg-white rounded-lg shadow overflow-hidden">
+                        <div className="p-4 border-b border-gray-100">
+                            <div className="flex justify-between items-start mb-2">
+                                <div>
+                                    <h3 className="text-lg font-bold text-gray-900">{vehicle.plate}</h3>
+                                    <p className="text-sm text-gray-600">{vehicle.make} {vehicle.model} {vehicle.year}</p>
                                 </div>
-                                <div className="flex items-center gap-2 text-sm text-gray-500">
-                                    <span>🚐 {vehicle.type}</span>
-                                    {vehicle.color && <span>• {vehicle.color}</span>}
-                                </div>
+                                {getStatusBadge(vehicle.status)}
                             </div>
+                            <div className="flex items-center gap-2 text-sm text-gray-500">
+                                <span>🚐 {vehicle.type}</span>
+                                {vehicle.color && <span>• {vehicle.color}</span>}
+                            </div>
+                        </div>
 
-                            <div className="p-4 bg-gray-50">
-                                {/* Driver */}
-                                <div className="flex items-center justify-between mb-3">
-                                    <span className="text-sm text-gray-600">Driver:</span>
-                                    {vehicle.assignedTo ? (
-                                        <span className="font-medium text-gray-900">{vehicle.assignedTo.name}</span>
-                                    ) : (
-                                        <span className="text-gray-400 italic">Unassigned</span>
-                                    )}
-                                </div>
-
-                                {/* Mileage */}
-                                <div className="flex items-center justify-between mb-3">
-                                    <span className="text-sm text-gray-600">Mileage:</span>
-                                    <div className="text-right">
-                                        <span className="font-medium">{vehicle.currentMileage.toLocaleString()} {vehicle.mileageUnit}</span>
-                                        {getMileageWarning(vehicle)}
-                                    </div>
-                                </div>
-
-                                {/* Next Service */}
-                                {vehicle.nextServiceMileage && (
-                                    <div className="flex items-center justify-between mb-3 text-sm">
-                                        <span className="text-gray-600">Next service:</span>
-                                        <span>{vehicle.nextServiceMileage.toLocaleString()} {vehicle.mileageUnit}</span>
-                                    </div>
+                        <div className="p-4 bg-gray-50">
+                            {/* Driver */}
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm text-gray-600">Driver:</span>
+                                {vehicle.assignedTo ? (
+                                    <span className="font-medium text-gray-900">{vehicle.assignedTo.name}</span>
+                                ) : (
+                                    <span className="text-gray-400 italic">Unassigned</span>
                                 )}
                             </div>
 
-                            {/* Actions */}
-                            <div className="p-4 border-t border-gray-100 flex flex-wrap gap-2">
-                                <button
-                                    onClick={() => handleMileage(vehicle)}
-                                    className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
-                                >
-                                    🔢 Mileage
-                                </button>
-                                <button
-                                    onClick={() => handleAssign(vehicle)}
-                                    className="px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200"
-                                >
-                                    👤 Assign
-                                </button>
-                                <button
-                                    onClick={() => handleStatus(vehicle)}
-                                    className="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200"
-                                >
-                                    🔧 Status
-                                </button>
-                                <button
-                                    onClick={() => handleEditVehicle(vehicle)}
-                                    className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
-                                >
-                                    ✏️ Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(vehicle)}
-                                    className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200"
-                                >
-                                    🗑️
-                                </button>
+                            {/* Mileage */}
+                            <div className="flex items-center justify-between mb-3">
+                                <span className="text-sm text-gray-600">Mileage:</span>
+                                <div className="text-right">
+                                    <span className="font-medium">{vehicle.currentMileage.toLocaleString()} {vehicle.mileageUnit}</span>
+                                    {getMileageWarning(vehicle)}
+                                </div>
                             </div>
-                        </div>
-                    ))}
-                </div>
 
-                {vehicles.length === 0 && (
-                    <div className="text-center py-12">
-                        <p className="text-gray-500 text-lg">No vehicles yet.</p>
-                        <p className="text-gray-400">Click "Add Vehicle" to add your first vehicle.</p>
+                            {/* Next Service */}
+                            {vehicle.nextServiceMileage && (
+                                <div className="flex items-center justify-between mb-3 text-sm">
+                                    <span className="text-gray-600">Next service:</span>
+                                    <span>{vehicle.nextServiceMileage.toLocaleString()} {vehicle.mileageUnit}</span>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Actions */}
+                        <div className="p-4 border-t border-gray-100 flex flex-wrap gap-2">
+                            <button
+                                onClick={() => handleMileage(vehicle)}
+                                className="px-3 py-1 text-sm bg-blue-100 text-blue-700 rounded hover:bg-blue-200"
+                            >
+                                🔢 Mileage
+                            </button>
+                            <button
+                                onClick={() => handleAssign(vehicle)}
+                                className="px-3 py-1 text-sm bg-purple-100 text-purple-700 rounded hover:bg-purple-200"
+                            >
+                                👤 Assign
+                            </button>
+                            <button
+                                onClick={() => handleStatus(vehicle)}
+                                className="px-3 py-1 text-sm bg-yellow-100 text-yellow-700 rounded hover:bg-yellow-200"
+                            >
+                                🔧 Status
+                            </button>
+                            <button
+                                onClick={() => handleEditVehicle(vehicle)}
+                                className="px-3 py-1 text-sm bg-gray-100 text-gray-700 rounded hover:bg-gray-200"
+                            >
+                                ✏️ Edit
+                            </button>
+                            <button
+                                onClick={() => handleDelete(vehicle)}
+                                className="px-3 py-1 text-sm bg-red-100 text-red-700 rounded hover:bg-red-200"
+                            >
+                                🗑️
+                            </button>
+                        </div>
                     </div>
-                )}
+                ))}
             </div>
+
+            {vehicles.length === 0 && (
+                <div className="text-center py-12">
+                    <p className="text-gray-500 text-lg">No vehicles yet.</p>
+                    <p className="text-gray-400">Click "Add Vehicle" to add your first vehicle.</p>
+                </div>
+            )}
 
             {/* Modal */}
             {showModal && (
@@ -638,6 +633,6 @@ export default function VehiclesPage() {
                     </div>
                 </div>
             )}
-        </div>
+        </AdminLayout>
     );
 }
