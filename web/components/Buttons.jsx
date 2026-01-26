@@ -199,7 +199,7 @@ export default {
     Success: SuccessButton,
     Danger: DangerButton,
     SmallPrimary: SmallPrimaryButton,
-    SmallSe condary: SmallSecondaryButton,
+    SmallSecondary: SmallSecondaryButton,
     Nav: NavButton,
     Icon: IconButton,
 };
