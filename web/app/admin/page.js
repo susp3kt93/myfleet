@@ -120,24 +120,8 @@ export default function AdminPage() {
                 />
             </div>
 
-            {/* Quick Actions - Gradient Style */}
+            {/* Quick Actions - Only Unique Destinations */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <ActionCard
-                    title={t('dashboard.actions.manageUsers')}
-                    description={t('dashboard.actions.manageUsersDesc')}
-                    icon="👥"
-                    gradient="blue"
-                    href="/admin/users"
-                />
-
-                <ActionCard
-                    title={t('dashboard.actions.manageTasks')}
-                    description={t('dashboard.actions.manageTasksDesc')}
-                    icon="📋"
-                    gradient="purple"
-                    href="/admin/tasks"
-                />
-
                 <ActionCard
                     title={t('dashboard.actions.weeklyReports')}
                     description={t('dashboard.actions.weeklyReportsDesc')}
@@ -172,14 +156,6 @@ export default function AdminPage() {
                     highlight={pendingTimeOffCount > 0}
                     badge={pendingTimeOffCount > 0 ? pendingTimeOffCount : null}
                     href="/admin/timeoff"
-                />
-
-                <ActionCard
-                    title={t('dashboard.actions.fleetVehicles') || 'Fleet Vehicles'}
-                    description={t('dashboard.actions.fleetVehiclesDesc') || 'Manage vehicles, mileage, and service'}
-                    icon="🚗"
-                    gradient="cyan"
-                    href="/admin/vehicles"
                 />
 
                 <ActionCard
