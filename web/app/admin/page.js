@@ -12,6 +12,7 @@ import LanguageSwitcher from '../../components/LanguageSwitcher';
 import MetricCard from '../../components/MetricCard';
 import ActionCard from '../../components/ActionCard';
 import FloatingActionButton from '../../components/FloatingActionButton';
+import AdminLayout from '../../components/AdminLayout';
 import api from '../../lib/api';
 
 export default function AdminPage() {
@@ -78,156 +79,121 @@ export default function AdminPage() {
     };
 
     return (
-        <div className="min-h-screen bg-gray-50">
-            {/* Modern Header with Gradient */}
-            <header className="bg-gradient-to-r from-purple-600 via-purple-500 to-pink-500 shadow-2xl relative overflow-hidden">
-                {/* Background decoration */}
-                <div className="absolute top-0 right-0 w-96 h-96 bg-white/10 rounded-full blur-3xl -mr-48 -mt-48" />
+        <AdminLayout>
+            {/* Large Gradient Metric Cards - 2x2 Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                <MetricCard
+                    title="Active Users"
+                    value={stats.totalDrivers}
+                    subtitle={`${stats.totalDrivers} drivers active`}
+                    icon="👥"
+                    gradient="purple-pink"
+                    href="/admin/users"
+                />
 
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 relative z-10">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <div className="w-16 h-16 bg-white/25 backdrop-blur-md rounded-2xl flex items-center justify-center shadow-lg ring-2 ring-white/30">
-                                <span className="text-4xl">👨‍💼</span>
-                            </div>
-                            <div>
-                                <h1 className="text-3xl font-bold text-white drop-shadow-lg">
-                                    {user.role === 'SUPER_ADMIN' ? 'Super Admin' : 'Company Admin'}
-                                </h1>
-                                <p className="text-sm text-white/90 font-medium mt-1">
-                                    {user.name} {user.companyId ? '• Company ID: ' + user.companyId.slice(0, 8) : ''}
-                                </p>
-                            </div>
-                        </div>
-                        <div className="flex items-center space-x-4">
-                            <LanguageSwitcher />
-                            <button
-                                onClick={handleLogout}
-                                className="px-6 py-2.5 bg-white/25 hover:bg-white/35 backdrop-blur-md text-white rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl hover:scale-105 border border-white/30"
-                            >
-                                {tCommon('navigation.logout')}
-                            </button>
-                        </div>
-                    </div>
-                </div>
-            </header>
+                <MetricCard
+                    title="Pending Tasks"
+                    value={stats.pendingTasks}
+                    subtitle={`${stats.totalTasks} total tasks`}
+                    icon="📋"
+                    gradient="blue-cyan"
+                    progress={stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks * 100) : 0}
+                    href="/admin/tasks"
+                />
 
-            {/* Main Content */}
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Large Gradient Metric Cards - 2x2 Grid */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-                    <MetricCard
-                        title="Active Users"
-                        value={stats.totalDrivers}
-                        subtitle={`${stats.totalDrivers} drivers active`}
-                        icon="👥"
-                        gradient="purple-pink"
-                        href="/admin/users"
-                    />
+                <MetricCard
+                    title="Fleet Status"
+                    value={stats.totalDrivers}
+                    subtitle="Vehicles operational"
+                    icon="🚗"
+                    gradient="orange-red"
+                    href="/admin/vehicles"
+                />
 
-                    <MetricCard
-                        title="Pending Tasks"
-                        value={stats.pendingTasks}
-                        subtitle={`${stats.totalTasks} total tasks`}
-                        icon="📋"
-                        gradient="blue-cyan"
-                        progress={stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks * 100) : 0}
-                        href="/admin/tasks"
-                    />
+                <MetricCard
+                    title="Completed Tasks"
+                    value={stats.completedTasks}
+                    subtitle={`${stats.totalTasks > 0 ? Math.round(stats.completedTasks / stats.totalTasks * 100) : 0}% completion rate`}
+                    icon="✅"
+                    gradient="magenta-purple"
+                    href="/admin/tasks?status=COMPLETED"
+                />
+            </div>
 
-                    <MetricCard
-                        title="Fleet Status"
-                        value={stats.totalDrivers}
-                        subtitle="Vehicles operational"
-                        icon="🚗"
-                        gradient="orange-red"
-                        href="/admin/vehicles"
-                    />
+            {/* Quick Actions - Gradient Style */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                <ActionCard
+                    title={t('dashboard.actions.manageUsers')}
+                    description={t('dashboard.actions.manageUsersDesc')}
+                    icon="👥"
+                    gradient="blue"
+                    href="/admin/users"
+                />
 
-                    <MetricCard
-                        title="Completed Tasks"
-                        value={stats.completedTasks}
-                        subtitle={`${stats.totalTasks > 0 ? Math.round(stats.completedTasks / stats.totalTasks * 100) : 0}% completion rate`}
-                        icon="✅"
-                        gradient="magenta-purple"
-                        href="/admin/tasks?status=COMPLETED"
-                    />
-                </div>
+                <ActionCard
+                    title={t('dashboard.actions.manageTasks')}
+                    description={t('dashboard.actions.manageTasksDesc')}
+                    icon="📋"
+                    gradient="purple"
+                    href="/admin/tasks"
+                />
 
-                {/* Quick Actions - Gradient Style */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <ActionCard
-                        title={t('dashboard.actions.manageUsers')}
-                        description={t('dashboard.actions.manageUsersDesc')}
-                        icon="👥"
-                        gradient="blue"
-                        href="/admin/users"
-                    />
+                <ActionCard
+                    title={t('dashboard.actions.weeklyReports')}
+                    description={t('dashboard.actions.weeklyReportsDesc')}
+                    icon="📊"
+                    gradient="amber"
+                    href="/admin/reports"
+                />
 
-                    <ActionCard
-                        title={t('dashboard.actions.manageTasks')}
-                        description={t('dashboard.actions.manageTasksDesc')}
-                        icon="📋"
-                        gradient="purple"
-                        href="/admin/tasks"
-                    />
+                <ActionCard
+                    title={t('dashboard.actions.driverActivity')}
+                    description={t('dashboard.actions.driverActivityDesc')}
+                    icon="📆"
+                    gradient="green"
+                    href="/admin/activity"
+                />
 
-                    <ActionCard
-                        title={t('dashboard.actions.weeklyReports')}
-                        description={t('dashboard.actions.weeklyReportsDesc')}
-                        icon="📊"
-                        gradient="amber"
-                        href="/admin/reports"
-                    />
+                <ActionCard
+                    title="Deductions"
+                    description="Manage driver deductions & charges"
+                    icon="💰"
+                    gradient="purple"
+                    href="/admin/deductions"
+                />
 
-                    <ActionCard
-                        title={t('dashboard.actions.driverActivity')}
-                        description={t('dashboard.actions.driverActivityDesc')}
-                        icon="📆"
-                        gradient="green"
-                        href="/admin/activity"
-                    />
+                <ActionCard
+                    title={t('dashboard.actions.timeOffRequests')}
+                    description={pendingTimeOffCount > 0
+                        ? `${pendingTimeOffCount} ${t('timeoff.pending')}`
+                        : t('dashboard.actions.timeOffRequestsDesc')}
+                    icon="🏖️"
+                    gradient={pendingTimeOffCount > 0 ? 'red' : 'orange'}
+                    highlight={pendingTimeOffCount > 0}
+                    badge={pendingTimeOffCount > 0 ? pendingTimeOffCount : null}
+                    href="/admin/timeoff"
+                />
 
-                    <ActionCard
-                        title="Deductions"
-                        description="Manage driver deductions & charges"
-                        icon="💰"
-                        gradient="purple"
-                        href="/admin/deductions"
-                    />
+                <ActionCard
+                    title={t('dashboard.actions.fleetVehicles') || 'Fleet Vehicles'}
+                    description={t('dashboard.actions.fleetVehiclesDesc') || 'Manage vehicles, mileage, and service'}
+                    icon="🚗"
+                    gradient="cyan"
+                    href="/admin/vehicles"
+                />
 
-                    <ActionCard
-                        title={t('dashboard.actions.timeOffRequests')}
-                        description={pendingTimeOffCount > 0
-                            ? `${pendingTimeOffCount} ${t('timeoff.pending')}`
-                            : t('dashboard.actions.timeOffRequestsDesc')}
-                        icon="🏖️"
-                        gradient={pendingTimeOffCount > 0 ? 'red' : 'orange'}
-                        highlight={pendingTimeOffCount > 0}
-                        badge={pendingTimeOffCount > 0 ? pendingTimeOffCount : null}
-                        href="/admin/timeoff"
-                    />
+                <ActionCard
+                    title="Company Settings"
+                    description="Manage branding and company details"
+                    icon="⚙️"
+                    gradient="blue"
+                    href="/admin/settings"
+                />
+            </div>
 
-                    <ActionCard
-                        title={t('dashboard.actions.fleetVehicles') || 'Fleet Vehicles'}
-                        description={t('dashboard.actions.fleetVehiclesDesc') || 'Manage vehicles, mileage, and service'}
-                        icon="🚗"
-                        gradient="cyan"
-                        href="/admin/vehicles"
-                    />
-
-                    <ActionCard
-                        title="Company Settings"
-                        description="Manage branding and company details"
-                        icon="⚙️"
-                        gradient="blue"
-                        href="/admin/settings"
-                    />
-                </div>
-
-                {/* Floating Action Button */}
-                <FloatingActionButton />
-            </main>
-        </div>
+            {/* Floating Action Button */}
+            <FloatingActionButton />
+        </main>
+        </div >
     );
 }
