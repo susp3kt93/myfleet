@@ -10,6 +10,7 @@ import { fetchUsers } from '../../lib/usersSlice';
 import { useTranslation } from '../../contexts/LanguageContext';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
 import MetricCard from '../../components/MetricCard';
+import ActionCard from '../../components/ActionCard';
 import FloatingActionButton from '../../components/FloatingActionButton';
 import api from '../../lib/api';
 
@@ -146,121 +147,75 @@ export default function AdminPage() {
                     />
                 </div>
 
-                {/* Quick Actions */}
+                {/* Quick Actions - Gradient Style */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    <Link href="/admin/users" className="block group">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-blue-500 group-hover:scale-[1.02]">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-16 h-16 bg-blue-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-blue-200 transition">👥</div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.manageUsers')}</h3>
-                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.manageUsersDesc')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
+                    <ActionCard
+                        title={t('dashboard.actions.manageUsers')}
+                        description={t('dashboard.actions.manageUsersDesc')}
+                        icon="👥"
+                        gradient="blue"
+                        href="/admin/users"
+                    />
 
-                    <Link href="/admin/tasks" className="block group">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-purple-500 group-hover:scale-[1.02]">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-purple-200 transition">📋</div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.manageTasks')}</h3>
-                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.manageTasksDesc')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
+                    <ActionCard
+                        title={t('dashboard.actions.manageTasks')}
+                        description={t('dashboard.actions.manageTasksDesc')}
+                        icon="📋"
+                        gradient="purple"
+                        href="/admin/tasks"
+                    />
 
-                    <Link href="/admin/reports" className="block group">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-amber-500 group-hover:scale-[1.02]">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-16 h-16 bg-amber-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-amber-200 transition">📊</div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.weeklyReports')}</h3>
-                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.weeklyReportsDesc')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
+                    <ActionCard
+                        title={t('dashboard.actions.weeklyReports')}
+                        description={t('dashboard.actions.weeklyReportsDesc')}
+                        icon="📊"
+                        gradient="amber"
+                        href="/admin/reports"
+                    />
 
-                    <Link href="/admin/activity" className="block group">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-green-500 group-hover:scale-[1.02]">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-16 h-16 bg-green-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-green-200 transition">📆</div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.driverActivity')}</h3>
-                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.driverActivityDesc')}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
+                    <ActionCard
+                        title={t('dashboard.actions.driverActivity')}
+                        description={t('dashboard.actions.driverActivityDesc')}
+                        icon="📆"
+                        gradient="green"
+                        href="/admin/activity"
+                    />
 
-                    <Link href="/admin/deductions" className="block group">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-purple-500 group-hover:scale-[1.02]">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-16 h-16 bg-purple-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-purple-200 transition">💰</div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900">Deductions</h3>
-                                    <p className="text-gray-500 text-sm mt-1">Manage driver deductions & charges</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
+                    <ActionCard
+                        title="Deductions"
+                        description="Manage driver deductions & charges"
+                        icon="💰"
+                        gradient="purple"
+                        href="/admin/deductions"
+                    />
 
-                    <Link href="/admin/timeoff" className="block group relative">
-                        {showTimeOffBadge && (
-                            <div className="absolute top-4 right-4 bg-red-500 text-white text-xs font-bold w-6 h-6 flex items-center justify-center rounded-full shadow-lg border-2 border-white animate-pulse z-10">
-                                {pendingTimeOffCount}
-                            </div>
-                        )}
-                        <div className={`rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer group-hover:scale-[1.02] ${pendingTimeOffCount > 0
-                            ? 'bg-gradient-to-br from-orange-50 to-red-50 border-l-4 border-red-500 animate-pulse ring-2 ring-red-400 ring-opacity-50'
-                            : 'bg-white border-l-4 border-orange-500'
-                            }`}>
-                            <div className="flex items-center space-x-4">
-                                <div className={`w-16 h-16 rounded-xl flex items-center justify-center text-4xl transition ${pendingTimeOffCount > 0 ? 'bg-white shadow-sm' : 'bg-orange-100 group-hover:bg-orange-200'
-                                    }`}>🏖️</div>
-                                <div>
-                                    <h3 className={`text-xl font-bold ${pendingTimeOffCount > 0 ? 'text-red-800' : 'text-gray-900'}`}>{t('dashboard.actions.timeOffRequests')}</h3>
-                                    <p className={`text-sm mt-1 ${pendingTimeOffCount > 0 ? 'text-red-600 font-medium' : 'text-gray-500'}`}>
-                                        {pendingTimeOffCount > 0
-                                            ? <span className="flex items-center gap-2">
-                                                <span className="inline-block w-2 h-2 rounded-full bg-red-600 animate-ping" />
-                                                {pendingTimeOffCount} {t('timeoff.pending')}
-                                            </span>
-                                            : t('dashboard.actions.timeOffRequestsDesc')}
-                                    </p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
+                    <ActionCard
+                        title={t('dashboard.actions.timeOffRequests')}
+                        description={pendingTimeOffCount > 0
+                            ? `${pendingTimeOffCount} ${t('timeoff.pending')}`
+                            : t('dashboard.actions.timeOffRequestsDesc')}
+                        icon="🏖️"
+                        gradient={pendingTimeOffCount > 0 ? 'red' : 'orange'}
+                        highlight={pendingTimeOffCount > 0}
+                        badge={pendingTimeOffCount > 0 ? pendingTimeOffCount : null}
+                        href="/admin/timeoff"
+                    />
 
+                    <ActionCard
+                        title={t('dashboard.actions.fleetVehicles') || 'Fleet Vehicles'}
+                        description={t('dashboard.actions.fleetVehiclesDesc') || 'Manage vehicles, mileage, and service'}
+                        icon="🚗"
+                        gradient="cyan"
+                        href="/admin/vehicles"
+                    />
 
-                    <Link href="/admin/vehicles" className="block group">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-cyan-500 group-hover:scale-[1.02]">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-16 h-16 bg-cyan-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-cyan-200 transition">🚗</div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900">{t('dashboard.actions.fleetVehicles') || 'Fleet Vehicles'}</h3>
-                                    <p className="text-gray-500 text-sm mt-1">{t('dashboard.actions.fleetVehiclesDesc') || 'Manage vehicles, mileage, and service'}</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
-
-                    {/* NEW: Settings Card */}
-                    <Link href="/admin/settings" className="block group">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 hover:shadow-xl transition-all cursor-pointer border-l-4 border-gray-500 group-hover:scale-[1.02]">
-                            <div className="flex items-center space-x-4">
-                                <div className="w-16 h-16 bg-gray-100 rounded-xl flex items-center justify-center text-4xl group-hover:bg-gray-200 transition">⚙️</div>
-                                <div>
-                                    <h3 className="text-xl font-bold text-gray-900">Company Settings</h3>
-                                    <p className="text-gray-500 text-sm mt-1">Manage branding and company details</p>
-                                </div>
-                            </div>
-                        </div>
-                    </Link>
+                    <ActionCard
+                        title="Company Settings"
+                        description="Manage branding and company details"
+                        icon="⚙️"
+                        gradient="blue"
+                        href="/admin/settings"
+                    />
                 </div>
 
                 {/* Floating Action Button */}
