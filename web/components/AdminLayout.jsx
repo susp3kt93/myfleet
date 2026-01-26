@@ -2,9 +2,12 @@
 
 import { useRouter } from 'next/navigation';
 import { useDispatch, useSelector } from 'react-redux';
+import { useState, useEffect } from 'react';
 import { logout } from '../lib/authSlice';
 import { useTranslation } from '../contexts/LanguageContext';
 import LanguageSwitcher from './LanguageSwitcher';
+import Link from 'next/link';
+import api from '../lib/api';
 
 /**
  * AdminLayout - Reusable layout component for all admin pages
