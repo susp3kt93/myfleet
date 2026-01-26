@@ -1,9 +1,26 @@
 'use client';
 
+import Link from 'next/link';
+
 /**
  * Modern Button Components with Gradient Styles
  * Consistent design system for all admin pages
  */
+
+// Modern Back Button with Gradient and Arrow Icon
+export function BackButton({ href = '/admin', label = 'Back', className = '' }) {
+    return (
+        <Link
+            href={href}
+            className={`inline-flex items-center gap-2 px-5 py-2.5 bg-gradient-to-r from-purple-600 to-pink-500 hover:from-purple-700 hover:to-pink-600 text-white font-semibold rounded-xl shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 ${className}`}
+        >
+            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            </svg>
+            <span>{label}</span>
+        </Link>
+    );
+}
 
 // Primary gradient button (main actions)
 export function PrimaryButton({ children, onClick, type = 'button', className = '', disabled = false }) {
