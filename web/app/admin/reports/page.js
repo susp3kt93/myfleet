@@ -9,6 +9,8 @@ import { loadStoredAuth } from '../../../lib/authSlice';
 import { startOfWeek, endOfWeek } from 'date-fns';
 import WeekNavigator from '../../../components/WeekNavigator';
 import { useTranslation } from '../../../contexts/LanguageContext';
+import AdminLayout from '../../../components/AdminLayout';
+import { PrimaryButton, SuccessButton } from '../../../components/Buttons';
 import api from '../../../lib/api';
 
 export default function ReportsPage() {
@@ -126,147 +128,137 @@ export default function ReportsPage() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            {/* Header with Green Gradient */}
-            <header className="bg-gradient-to-r from-green-500 to-emerald-600 shadow-lg">
-                <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center space-x-4">
-                            <UnifiedBackButton href="/admin" label={tCommon('buttons.back')} />
-                            <h1 className="text-2xl font-bold text-white">📊 {t('reports.title')}</h1>
-                        </div>
-                        <button
-                            onClick={handleExportCSV}
-                            disabled={loading}
-                            className="px-4 py-2 bg-white text-green-600 hover:bg-gray-100 disabled:bg-gray-300 rounded-lg transition flex items-center gap-2 font-medium shadow-lg"
-                        >
-                            {loading ? '⏳' : '📊'} Export CSV
-                        </button>
-                    </div>
+        <AdminLayout>
+            {/* Page Header */}
+            <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center space-x-4">
+                    <UnifiedBackButton href="/admin" label={tCommon('buttons.back')} />
+                    <h1 className="text-3xl font-bold text-gray-900">📊 {t('reports.title')}</h1>
                 </div>
-            </header>
+                <SuccessButton onClick={handleExportCSV} disabled={loading}>
+                    {loading ? '⏳' : '📊'} Export CSV
+                </SuccessButton>
+            </div>
 
-            <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Week Navigator */}
-                <WeekNavigator
-                    currentDate={currentDate}
-                    onDateChange={setCurrentDate}
-                />
+            {/* Week Navigator */}
+            <WeekNavigator
+                currentDate={currentDate}
+                onDateChange={setCurrentDate}
+            />
 
-                {/* Loading State */}
-                {loading && (
-                    <div className="text-center py-12">
-                        <div className="text-gray-600">{t('reports.loadingReport')}</div>
-                    </div>
-                )}
+            {/* Loading State */}
+            {loading && (
+                <div className="text-center py-12">
+                    <div className="text-gray-600">{t('reports.loadingReport')}</div>
+                </div>
+            )}
 
-                {/* Report Table */}
-                {!loading && reportData && (
-                    <div className="bg-white rounded-lg shadow-md overflow-hidden">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
-                                <tr>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t('reports.driver')}
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t('reports.completed')}
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t('reports.accepted')}
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t('reports.pending')}
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t('reports.earnings')}
-                                    </th>
-                                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        {t('reports.rating')}
-                                    </th>
-                                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                                        Invoice
-                                    </th>
-                                </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {reportData.drivers.map((driver) => (
-                                    <tr key={driver.id} className="hover:bg-gray-50">
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="flex items-center">
-                                                <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold">
-                                                    {driver.name.substring(0, 2).toUpperCase()}
-                                                </div>
-                                                <div className="ml-4">
-                                                    <div className="text-sm font-medium text-gray-900">{driver.name}</div>
-                                                    <div className="text-sm text-gray-500">{driver.personalId}</div>
-                                                </div>
+            {/* Report Table */}
+            {!loading && reportData && (
+                <div className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {t('reports.driver')}
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {t('reports.completed')}
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {t('reports.accepted')}
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {t('reports.pending')}
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {t('reports.earnings')}
+                                </th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    {t('reports.rating')}
+                                </th>
+                                <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                                    Invoice
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {reportData.drivers.map((driver) => (
+                                <tr key={driver.id} className="hover:bg-gray-50">
+                                    <td className="px-6 py-4 whitespace-nowrap">
+                                        <div className="flex items-center">
+                                            <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold">
+                                                {driver.name.substring(0, 2).toUpperCase()}
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
-                                                ✓ {driver.weeklyStats.completed}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
-                                                → {driver.weeklyStats.accepted}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
-                                                ⏳ {driver.weeklyStats.pending}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm font-bold text-green-600">
-                                                {driver.weeklyStats.earnings.toFixed(2)} £
+                                            <div className="ml-4">
+                                                <div className="text-sm font-medium text-gray-900">{driver.name}</div>
+                                                <div className="text-sm text-gray-500">{driver.personalId}</div>
                                             </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap">
-                                            <div className="text-sm text-gray-900">
-                                                {driver.rating?.toFixed(1) || 'N/A'} ⭐
-                                            </div>
-                                        </td>
-                                        <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                                            <button
-                                                onClick={() => handleDownloadInvoice(driver)}
-                                                className="text-primary-600 hover:text-primary-900 bg-primary-50 px-3 py-1 rounded-md transition hover:bg-primary-100 flex items-center gap-1 ml-auto"
-                                            >
-                                                📄 PDF
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                                {/* Totals Row */}
-                                <tr className="bg-gray-100 font-bold">
-                                    <td className="px-6 py-4 whitespace-nowrap text-gray-900">
-                                        {t('reports.total')}
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="text-green-800">✓ {reportData.totals.completed}</span>
+                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+                                            ✓ {driver.weeklyStats.completed}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="text-blue-800">→ {reportData.totals.accepted}</span>
+                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+                                            → {driver.weeklyStats.accepted}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="text-yellow-800">⏳ {reportData.totals.pending}</span>
+                                        <span className="px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+                                            ⏳ {driver.weeklyStats.pending}
+                                        </span>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        <span className="text-green-600">{reportData.totals.earnings.toFixed(2)} £</span>
+                                        <div className="text-sm font-bold text-green-600">
+                                            {driver.weeklyStats.earnings.toFixed(2)} £
+                                        </div>
                                     </td>
                                     <td className="px-6 py-4 whitespace-nowrap">
-                                        -
+                                        <div className="text-sm text-gray-900">
+                                            {driver.rating?.toFixed(1) || 'N/A'} ⭐
+                                        </div>
                                     </td>
-                                    <td className="px-6 py-4 whitespace-nowrap">
-                                        -
+                                    <td className="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
+                                        <button
+                                            onClick={() => handleDownloadInvoice(driver)}
+                                            className="text-primary-600 hover:text-primary-900 bg-primary-50 px-3 py-1 rounded-md transition hover:bg-primary-100 flex items-center gap-1 ml-auto"
+                                        >
+                                            📄 PDF
+                                        </button>
                                     </td>
                                 </tr>
-                            </tbody>
-                        </table>
-                    </div>
-                )}
-            </main>
-        </div>
+                            ))}
+                            {/* Totals Row */}
+                            <tr className="bg-gray-100 font-bold">
+                                <td className="px-6 py-4 whitespace-nowrap text-gray-900">
+                                    {t('reports.total')}
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="text-green-800">✓ {reportData.totals.completed}</span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="text-blue-800">→ {reportData.totals.accepted}</span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="text-yellow-800">⏳ {reportData.totals.pending}</span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    <span className="text-green-600">{reportData.totals.earnings.toFixed(2)} £</span>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    -
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                    -
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            )}
+        </AdminLayout>
     );
 }
