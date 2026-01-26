@@ -9,6 +9,8 @@ import { fetchTasks } from '../../lib/tasksSlice';
 import { fetchUsers } from '../../lib/usersSlice';
 import { useTranslation } from '../../contexts/LanguageContext';
 import LanguageSwitcher from '../../components/LanguageSwitcher';
+import MetricCard from '../../components/MetricCard';
+import FloatingActionButton from '../../components/FloatingActionButton';
 import api from '../../lib/api';
 
 export default function AdminPage() {
@@ -104,55 +106,44 @@ export default function AdminPage() {
 
             {/* Main Content */}
             <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-                    <Link href="/admin/users" className="block transform hover:scale-105 transition-transform duration-200">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-blue-500 cursor-pointer">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.totalDrivers')}</p>
-                                    <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalDrivers}</p>
-                                </div>
-                                <div className="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center text-3xl">👥</div>
-                            </div>
-                        </div>
-                    </Link>
+                {/* Large Gradient Metric Cards - 2x2 Grid */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                    <MetricCard
+                        title="Active Users"
+                        value={stats.totalDrivers}
+                        subtitle={`${stats.totalDrivers} drivers active`}
+                        icon="👥"
+                        gradient="purple-pink"
+                        href="/admin/users"
+                    />
 
-                    <Link href="/admin/tasks" className="block transform hover:scale-105 transition-transform duration-200">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-purple-500 cursor-pointer">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.totalTasks')}</p>
-                                    <p className="text-3xl font-bold text-gray-900 mt-1">{stats.totalTasks}</p>
-                                </div>
-                                <div className="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center text-3xl">📋</div>
-                            </div>
-                        </div>
-                    </Link>
+                    <MetricCard
+                        title="Pending Tasks"
+                        value={stats.pendingTasks}
+                        subtitle={`${stats.totalTasks} total tasks`}
+                        icon="📋"
+                        gradient="blue-cyan"
+                        progress={stats.totalTasks > 0 ? (stats.completedTasks / stats.totalTasks * 100) : 0}
+                        href="/admin/tasks"
+                    />
 
-                    <Link href="/admin/tasks?status=PENDING" className="block transform hover:scale-105 transition-transform duration-200">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-amber-500 cursor-pointer">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.pendingTasks')}</p>
-                                    <p className="text-3xl font-bold text-amber-600 mt-1">{stats.pendingTasks}</p>
-                                </div>
-                                <div className="w-14 h-14 bg-amber-100 rounded-xl flex items-center justify-center text-3xl">⏳</div>
-                            </div>
-                        </div>
-                    </Link>
+                    <MetricCard
+                        title="Fleet Status"
+                        value={stats.totalDrivers}
+                        subtitle="Vehicles operational"
+                        icon="🚗"
+                        gradient="orange-red"
+                        href="/admin/vehicles"
+                    />
 
-                    <Link href="/admin/tasks?status=COMPLETED" className="block transform hover:scale-105 transition-transform duration-200">
-                        <div className="bg-white rounded-2xl shadow-lg p-6 h-full border-l-4 border-green-500 cursor-pointer">
-                            <div className="flex items-center justify-between">
-                                <div>
-                                    <p className="text-sm text-gray-500 font-medium">{t('dashboard.stats.completed')}</p>
-                                    <p className="text-3xl font-bold text-green-600 mt-1">{stats.completedTasks}</p>
-                                </div>
-                                <div className="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center text-3xl">✅</div>
-                            </div>
-                        </div>
-                    </Link>
+                    <MetricCard
+                        title="Completed Tasks"
+                        value={stats.completedTasks}
+                        subtitle={`${stats.totalTasks > 0 ? Math.round(stats.completedTasks / stats.totalTasks * 100) : 0}% completion rate`}
+                        icon="✅"
+                        gradient="magenta-purple"
+                        href="/admin/tasks?status=COMPLETED"
+                    />
                 </div>
 
                 {/* Quick Actions */}
@@ -271,6 +262,9 @@ export default function AdminPage() {
                         </div>
                     </Link>
                 </div>
+
+                {/* Floating Action Button */}
+                <FloatingActionButton />
             </main>
         </div>
     );
