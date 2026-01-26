@@ -419,6 +419,6 @@ export default function DeductionsPage() {
                 </div>
             )
             }
-        </div >
+        </AdminLayout>
     );
 }

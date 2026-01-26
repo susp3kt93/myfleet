@@ -518,6 +518,6 @@ export default function TimeOffManagementPage() {
             </div>
         )
     }
-        </div >
+        </AdminLayout >
     );
 }
