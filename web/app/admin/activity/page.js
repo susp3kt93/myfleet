@@ -3,7 +3,7 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import UnifiedBackButton from '../../../components/UnifiedBackButton';
+import { BackButton } from '../../../components/Buttons';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadStoredAuth } from '../../../lib/authSlice';
 import api from '../../../lib/api';
@@ -129,7 +129,7 @@ export default function DriverActivityPage() {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                    <UnifiedBackButton href="/admin" label={t('activity.back')} />
+                    <BackButton href="/admin" label={t('activity.back')} />
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">📆 {t('activity.title')}</h1>
                         <p className="text-sm text-gray-500">

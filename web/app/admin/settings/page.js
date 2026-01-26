@@ -9,7 +9,7 @@ import AdminLayout from '../../../components/AdminLayout';
 import { useTranslation } from '../../../contexts/LanguageContext';
 import LanguageSwitcher from '../../../components/LanguageSwitcher';
 import Link from 'next/link';
-import UnifiedBackButton from '../../../components/UnifiedBackButton';
+import { BackButton } from '../../../components/Buttons';
 
 export default function AdminSettingsPage() {
     const { t } = useTranslation('admin');
@@ -96,7 +96,7 @@ export default function AdminSettingsPage() {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                    <UnifiedBackButton href="/admin" label="Back" />
+                    <BackButton href="/admin" label="Back" />
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">⚙️ Company Settings</h1>
                         <p className="text-sm text-gray-500">Manage your company preferences and configuration</p>

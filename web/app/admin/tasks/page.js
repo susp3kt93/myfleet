@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import UnifiedBackButton from '../../../components/UnifiedBackButton';
+import { BackButton } from '../../../components/Buttons';
 import { useDispatch, useSelector } from 'react-redux';
 import { loadStoredAuth } from '../../../lib/authSlice';
 import { fetchTasks, createTask, createTasksBatch, deleteTask } from '../../../lib/tasksSlice';
@@ -362,7 +362,7 @@ export default function TasksPage() {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                    <UnifiedBackButton href="/admin" label="Back" />
+                    <BackButton href="/admin" label="Back" />
                     <h1 className="text-3xl font-bold text-gray-900">📋 Task Management</h1>
                 </div>
                 <button

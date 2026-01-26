@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import api from '../../../lib/api';
 import AdminLayout from '../../../components/AdminLayout';
 import { PrimaryButton, SecondaryButton, SmallPrimaryButton, SmallSecondaryButton, IconButton } from '../../../components/Buttons';
-import UnifiedBackButton from '../../../components/UnifiedBackButton';
+import { BackButton } from '../../../components/Buttons';
 import { format } from 'date-fns';
 
 export default function VehiclesPage() {
@@ -225,7 +225,7 @@ export default function VehiclesPage() {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                    <UnifiedBackButton href="/admin" label="Back" />
+                    <BackButton href="/admin" label="Back" />
                     <h1 className="text-3xl font-bold text-gray-900">🚗 Fleet Vehicles</h1>
                 </div>
                 <PrimaryButton onClick={handleAddVehicle}>

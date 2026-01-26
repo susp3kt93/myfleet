@@ -7,7 +7,7 @@ import api from '../../../lib/api';
 import AdminLayout from '../../../components/AdminLayout';
 import { PrimaryButton } from '../../../components/Buttons';
 import Link from 'next/link';
-import UnifiedBackButton from '../../../components/UnifiedBackButton';
+import { BackButton } from '../../../components/Buttons';
 
 export default function DeductionsPage() {
     const router = useRouter();
@@ -168,7 +168,7 @@ export default function DeductionsPage() {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center space-x-4">
-                    <UnifiedBackButton href="/admin" label="Back" />
+                    <BackButton href="/admin" label="Back" />
                     <div>
                         <h1 className="text-3xl font-bold text-gray-900">💰 Deductions Management</h1>
                         <p className="text-sm text-gray-500">Manage driver deductions and charges</p>

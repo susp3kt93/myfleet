@@ -9,6 +9,7 @@ import { loadStoredAuth } from '../../../lib/authSlice';
 import { fetchUsers, createUser, deleteUser, updateUser } from '../../../lib/usersSlice';
 import { useTranslation } from '../../../contexts/LanguageContext';
 import AdminLayout from '../../../components/AdminLayout';
+import { BackButton, PrimaryButton, DangerButton } from '../../../components/Buttons';
 
 export default function UsersPage() {
     const { t } = useTranslation('admin');
@@ -104,14 +105,14 @@ export default function UsersPage() {
             {/* Page Header */}
             <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center space-x-4">
-                    <UnifiedBackButton href="/admin" label="Back" />
+                    <BackButton href="/admin" label="Back" />
                     <h1 className="text-3xl font-bold text-gray-900">👥 User Management</h1>
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
                     className={`px-6 py-2.5 rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${showForm
-                            ? 'bg-gray-300 hover:bg-gray-400 text-gray-800'
-                            : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white'
+                        ? 'bg-gray-300 hover:bg-gray-400 text-gray-800'
+                        : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white'
                         }`}
                 >
                     {showForm ? '✕ Cancel' : '+ Add User'}
