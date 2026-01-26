@@ -285,142 +285,140 @@ export default function DeductionsPage() {
                     </table>
                 </div>
             </div>
-        </div>
 
-            {/* Add/Edit Modal */ }
-    {
-        showModal && (
-            <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-                <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
-                    <div className="p-6 border-b border-gray-200">
-                        <h2 className="text-2xl font-bold text-gray-900">
-                            {editingDeduction ? 'Edit Deduction' : 'Add New Deduction'}
-                        </h2>
-                    </div>
-                    <form onSubmit={handleSubmit} className="p-6 space-y-4">
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Driver</label>
-                            <select
-                                value={formData.userId}
-                                onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                required
-                                disabled={!!editingDeduction}
-                            >
-                                <option value="">Select Driver</option>
-                                {drivers.map(driver => (
-                                    <option key={driver.id} value={driver.id}>
-                                        {driver.name} ({driver.personalId})
-                                    </option>
-                                ))}
-                            </select>
+            {/* Add/Edit Modal */}
+            {showModal && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+                    <div className="bg-white rounded-xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+                        <div className="p-6 border-b border-gray-200">
+                            <h2 className="text-2xl font-bold text-gray-900">
+                                {editingDeduction ? 'Edit Deduction' : 'Add New Deduction'}
+                            </h2>
                         </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
-                            <select
-                                value={formData.type}
-                                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                required
-                            >
-                                <option value="VAN_RENTAL">Van Rental</option>
-                                <option value="PENALTY">Penalty</option>
-                                <option value="INSURANCE">Insurance</option>
-                                <option value="FUEL">Fuel</option>
-                                <option value="EQUIPMENT">Equipment</option>
-                                <option value="OTHER">Other</option>
-                            </select>
-                        </div>
-
-                        <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-                            <input
-                                type="text"
-                                value={formData.description}
-                                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                placeholder="e.g., Weekly van rental - Mercedes Sprinter"
-                                required
-                            />
-                        </div>
-
-                        <div className="grid grid-cols-2 gap-4">
+                        <form onSubmit={handleSubmit} className="p-6 space-y-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Amount (£)</label>
-                                <input
-                                    type="number"
-                                    step="0.01"
-                                    value={formData.amount}
-                                    onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Driver</label>
+                                <select
+                                    value={formData.userId}
+                                    onChange={(e) => setFormData({ ...formData, userId: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                    placeholder="250.00"
                                     required
-                                />
+                                    disabled={!!editingDeduction}
+                                >
+                                    <option value="">Select Driver</option>
+                                    {drivers.map(driver => (
+                                        <option key={driver.id} value={driver.id}>
+                                            {driver.name} ({driver.personalId})
+                                        </option>
+                                    ))}
+                                </select>
                             </div>
 
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Type</label>
                                 <select
-                                    value={formData.frequency}
-                                    onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
+                                    value={formData.type}
+                                    onChange={(e) => setFormData({ ...formData, type: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
                                     required
                                 >
-                                    <option value="WEEKLY">Weekly</option>
-                                    <option value="MONTHLY">Monthly</option>
-                                    <option value="ONE_TIME">One Time</option>
+                                    <option value="VAN_RENTAL">Van Rental</option>
+                                    <option value="PENALTY">Penalty</option>
+                                    <option value="INSURANCE">Insurance</option>
+                                    <option value="FUEL">Fuel</option>
+                                    <option value="EQUIPMENT">Equipment</option>
+                                    <option value="OTHER">Other</option>
                                 </select>
                             </div>
-                        </div>
 
-                        <div className="grid grid-cols-2 gap-4">
                             <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
                                 <input
-                                    type="date"
-                                    value={formData.startDate}
-                                    onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                    type="text"
+                                    value={formData.description}
+                                    onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                                     className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    placeholder="e.g., Weekly van rental - Mercedes Sprinter"
                                     required
                                 />
                             </div>
 
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
-                                <input
-                                    type="date"
-                                    value={formData.endDate}
-                                    onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                                    className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
-                                />
-                            </div>
-                        </div>
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Amount (£)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={formData.amount}
+                                        onChange={(e) => setFormData({ ...formData, amount: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        placeholder="250.00"
+                                        required
+                                    />
+                                </div>
 
-                        <div className="flex justify-end space-x-3 pt-4">
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    setShowModal(false);
-                                    setEditingDeduction(null);
-                                    resetForm();
-                                }}
-                                className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                type="submit"
-                                className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
-                            >
-                                {editingDeduction ? 'Update' : 'Create'} Deduction
-                            </button>
-                        </div>
-                    </form>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Frequency</label>
+                                    <select
+                                        value={formData.frequency}
+                                        onChange={(e) => setFormData({ ...formData, frequency: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    >
+                                        <option value="WEEKLY">Weekly</option>
+                                        <option value="MONTHLY">Monthly</option>
+                                        <option value="ONE_TIME">One Time</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Start Date</label>
+                                    <input
+                                        type="date"
+                                        value={formData.startDate}
+                                        onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                        required
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">End Date (Optional)</label>
+                                    <input
+                                        type="date"
+                                        value={formData.endDate}
+                                        onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
+                                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500"
+                                    />
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end space-x-3 pt-4">
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setShowModal(false);
+                                        setEditingDeduction(null);
+                                        resetForm();
+                                    }}
+                                    className="px-4 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700"
+                                >
+                                    {editingDeduction ? 'Update' : 'Create'} Deduction
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
-        )
-    }
+            )
+            }
         </div >
     );
 }
