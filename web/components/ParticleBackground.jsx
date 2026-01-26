@@ -23,37 +23,22 @@ export default function ParticleBackground() {
                 },
                 opacity: 0,
             },
-            fpsLimit: 120,
+            fpsLimit: 60, // Limit FPS to save battery
             interactivity: {
                 events: {
-                    onClick: {
-                        enable: true,
-                        mode: "push",
-                    },
-                    onHover: {
-                        enable: true,
-                        mode: "grab", // Interacts with particles (connecting lines)
-                    },
+                    onClick: { enable: true, mode: "push" },
+                    onHover: { enable: true, mode: "grab" },
                     resize: true,
                 },
                 modes: {
-                    push: {
-                        quantity: 4,
-                    },
-                    grab: {
-                        distance: 140,
-                        links: {
-                            opacity: 1
-                        }
-                    },
+                    push: { quantity: 4 },
+                    grab: { distance: 140, links: { opacity: 1 } },
                 },
             },
             particles: {
-                color: {
-                    value: ["#a855f7", "#06b6d4"], // Purple & Cyan
-                },
+                color: { value: ["#a855f7", "#06b6d4"] },
                 links: {
-                    color: "#4b5563", // Gray connections normally
+                    color: "#4b5563",
                     distance: 150,
                     enable: true,
                     opacity: 0.2,
@@ -62,30 +47,35 @@ export default function ParticleBackground() {
                 move: {
                     direction: "none",
                     enable: true,
-                    outModes: {
-                        default: "bounce",
-                    },
+                    outModes: { default: "bounce" },
                     random: false,
                     speed: 1,
                     straight: false,
                 },
                 number: {
-                    density: {
-                        enable: true,
-                        area: 800,
-                    },
-                    value: 100, // Number of particles
+                    density: { enable: true, area: 800 },
+                    value: 80, // Reduced from 100
                 },
-                opacity: {
-                    value: 0.5,
-                },
-                shape: {
-                    type: "circle",
-                },
-                size: {
-                    value: { min: 1, max: 3 },
-                },
+                opacity: { value: 0.5 },
+                shape: { type: "circle" },
+                size: { value: { min: 1, max: 3 } },
             },
+            // Responsive optimization
+            responsive: [
+                {
+                    maxWidth: 768, // On Mobile
+                    options: {
+                        particles: {
+                            number: { value: 20 }, // Very few particles
+                            links: { enable: false }, // NO connections (heavy CPU usage)
+                            move: { speed: 0.5 }, // Slower movement
+                        },
+                        interactivity: {
+                            events: { onHover: { enable: false } } // Disable hover interaction
+                        }
+                    }
+                }
+            ],
             detectRetina: true,
         }),
         [],
