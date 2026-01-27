@@ -218,8 +218,8 @@ export default function UsersPage() {
                 </div>
             )}
 
-            {/* Users Table */}
-            <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
+            {/* Desktop Table (Hidden on Mobile) */}
+            <div className="hidden md:block bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
@@ -298,6 +298,72 @@ export default function UsersPage() {
                         ))}
                     </tbody>
                 </table>
+            </div>
+
+            {/* Mobile Cards View (Visible on Mobile) */}
+            <div className="md:hidden space-y-4">
+                {users.map((u) => (
+                    <div key={u.id} className="bg-white p-4 rounded-xl shadow-md border border-gray-100">
+                        {/* Header: Avatar, Name, Role */}
+                        <div className="flex items-start justify-between mb-3">
+                            <div className="flex items-center gap-3">
+                                <div className="w-10 h-10 bg-primary-500 rounded-full flex items-center justify-center text-white font-bold shadow-sm shrink-0">
+                                    {u.name.substring(0, 2).toUpperCase()}
+                                </div>
+                                <div>
+                                    <h3 className="font-bold text-gray-900 text-sm">{u.name}</h3>
+                                    <p className="text-xs text-gray-400 font-mono tracking-wide">{u.personalId}</p>
+                                </div>
+                            </div>
+                            <span className={`px-2 py-0.5 text-[10px] font-bold uppercase tracking-wider rounded-full ${u.role === 'SUPER_ADMIN' ? 'bg-red-100 text-red-700' :
+                                u.role === 'COMPANY_ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
+                                }`}>
+                                {u.role === 'SUPER_ADMIN' ? 'Super' : u.role === 'COMPANY_ADMIN' ? 'Admin' : 'Driver'}
+                            </span>
+                        </div>
+
+                        {/* Details Grid */}
+                        <div className="grid grid-cols-1 gap-y-2 text-sm text-gray-600 mb-4 px-1">
+                            {u.email && (
+                                <div className="flex items-center gap-2 truncate">
+                                    <span className="text-lg">📧</span> <span className="truncate">{u.email}</span>
+                                </div>
+                            )}
+                            {u.phone && (
+                                <div className="flex items-center gap-2">
+                                    <span className="text-lg">📞</span> <span>{u.phone}</span>
+                                </div>
+                            )}
+                            <div className="flex items-center gap-2 mt-1">
+                                <span className={`flex items-center gap-1.5 px-2 py-0.5 text-xs font-medium rounded-full border ${u.isActive ? 'bg-green-50 text-green-700 border-green-200' : 'bg-red-50 text-red-700 border-red-200'
+                                    }`}>
+                                    <span className={`w-1.5 h-1.5 rounded-full ${u.isActive ? 'bg-green-500' : 'bg-red-500'}`}></span>
+                                    {u.isActive ? 'Active' : 'Inactive'}
+                                </span>
+                            </div>
+                        </div>
+
+                        {/* Actions */}
+                        <div className="flex gap-3 pt-3 border-t border-gray-50">
+                            <button
+                                onClick={() => handleEdit(u)}
+                                className="flex-1 py-2 text-sm font-semibold text-primary-700 bg-primary-50 hover:bg-primary-100 rounded-lg transition border border-primary-100"
+                            >
+                                ✏️ Edit
+                            </button>
+                            <button
+                                onClick={() => handleDelete(u)}
+                                disabled={u.id === user.id}
+                                className={`flex-1 py-2 text-sm font-semibold rounded-lg transition border ${u.id === user.id
+                                    ? 'text-gray-400 bg-gray-50 border-gray-100 cursor-not-allowed'
+                                    : 'text-red-700 bg-red-50 hover:bg-red-100 border-red-100'
+                                    }`}
+                            >
+                                🗑️ Delete
+                            </button>
+                        </div>
+                    </div>
+                ))}
             </div>
 
             {/* Edit User Modal */}
