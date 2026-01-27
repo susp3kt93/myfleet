@@ -193,6 +193,20 @@ export default function AdminLayout({ children }) {
                                             </div>
                                         )}
 
+                                        {/* Mobile Navigation Links (Visible on Mobile Only) */}
+                                        <div className="lg:hidden p-2 border-b border-gray-50 bg-gray-50/50">
+                                            <p className="px-4 py-2 text-xs font-bold text-gray-400 uppercase tracking-wider">Navigation</p>
+                                            <Link href="/admin/reports" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-white hover:shadow-sm rounded-xl transition-all">
+                                                <span>📊</span> Reports
+                                            </Link>
+                                            <Link href="/admin/activity" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-white hover:shadow-sm rounded-xl transition-all">
+                                                <span>📆</span> Activity
+                                            </Link>
+                                            <Link href="/admin/timeoff" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-white hover:shadow-sm rounded-xl transition-all">
+                                                <span>🏖️</span> Time Off
+                                            </Link>
+                                        </div>
+
                                         {/* Action Links */}
                                         <div className="p-2">
                                             <Link href="/admin/settings" className="flex items-center gap-3 px-4 py-3 text-sm text-gray-700 hover:bg-gray-50 rounded-xl transition-colors">

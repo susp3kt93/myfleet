@@ -112,14 +112,17 @@ export default function UsersPage() {
     return (
         <AdminLayout>
             {/* Page Header */}
-            <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center space-x-4 bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-white/50">
-                    <BackButton href="/admin" label="Back" />
-                    <h1 className="text-2xl font-bold text-gray-900">👥 User Management</h1>
+            {/* Page Header (Responsive) */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6 sm:mb-8">
+                <div className="flex items-center justify-between sm:justify-start space-x-4 bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-white/50 w-full sm:w-auto">
+                    <div className="flex items-center gap-3">
+                        <BackButton href="/admin" label="Back" />
+                        <h1 className="text-xl sm:text-2xl font-bold text-gray-900 truncate">👥 User Management</h1>
+                    </div>
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    className={`px-6 py-2.5 rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${showForm
+                    className={`w-full sm:w-auto px-6 py-2.5 rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 text-center ${showForm
                         ? 'bg-gray-300 hover:bg-gray-400 text-gray-800'
                         : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white'
                         }`}

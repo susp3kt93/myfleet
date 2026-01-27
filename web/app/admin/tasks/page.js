@@ -359,17 +359,17 @@ export default function TasksPage() {
 
     return (
         <AdminLayout>
-            {/* Page Header */}
-            <div className="flex items-center justify-between mb-6">
+            {/* Page Header (Responsive) */}
+            <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4 mb-6">
                 <div className="flex items-center space-x-4">
                     <BackButton href="/admin" label="Back" />
-                    <h1 className="text-3xl font-bold text-gray-900">📋 Task Management</h1>
+                    <h1 className="text-xl sm:text-3xl font-bold text-gray-900 truncate">📋 Task Management</h1>
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
-                    className={`px-6 py-2.5 rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl hover:scale-105 ${showForm
-                            ? 'bg-gray-300 hover:bg-gray-400 text-gray-800'
-                            : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white'
+                    className={`w-full sm:w-auto px-6 py-2.5 rounded-xl transition-all duration-200 font-semibold shadow-lg hover:shadow-xl hover:scale-105 active:scale-95 text-center ${showForm
+                        ? 'bg-gray-300 hover:bg-gray-400 text-gray-800'
+                        : 'bg-gradient-to-r from-purple-600 to-pink-500 text-white'
                         }`}
                 >
                     {showForm ? '✕ Cancel' : '+ Create Task'}
