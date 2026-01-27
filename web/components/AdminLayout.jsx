@@ -166,7 +166,7 @@ export default function AdminLayout({ children }) {
                                         {/* Header Info */}
                                         <div className="px-6 py-5 bg-gradient-to-br from-indigo-50 to-purple-50 border-b border-gray-100">
                                             <p className="text-sm text-gray-500 font-medium mb-1">Signed in as</p>
-                                            <p className="text-gray-900 font-bold truncate">{user?.email}</p>
+                                            <p className="text-gray-900 font-bold truncate">{user?.name}</p>
                                             <div className="mt-3 flex items-center gap-2">
                                                 <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider ${user?.role === 'SUPER_ADMIN' ? 'bg-red-100 text-red-700' :
                                                     user?.role === 'COMPANY_ADMIN' ? 'bg-purple-100 text-purple-700' : 'bg-blue-100 text-blue-700'
