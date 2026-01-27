@@ -10,12 +10,9 @@
 
 body {
   color: rgb(var(--foreground-rgb));
-  background: linear-gradient(
-      to bottom,
+  background: linear-gradient(to bottom,
       transparent,
-      rgb(var(--background-end-rgb))
-    )
-    rgb(var(--background-start-rgb));
+      rgb(var(--background-end-rgb))) rgb(var(--background-start-rgb));
 }
 
 @layer utilities {
@@ -26,19 +23,80 @@ body {
 
 @layer utilities {
   @keyframes pulse-red-custom {
-    0%, 100% {
-      background-color: #fff1f2; /* rose-50 */
-      border-color: #f43f5e;     /* rose-500 */
+
+    0%,
+    100% {
+      background-color: #fff1f2;
+      border-color: #f43f5e;
       box-shadow: 0 4px 6px -1px rgba(244, 63, 94, 0.1), 0 2px 4px -1px rgba(244, 63, 94, 0.06);
     }
+
     50% {
-      background-color: #ffe4e6; /* rose-100 */
-      border-color: #e11d48;     /* rose-600 */
+      background-color: #ffe4e6;
+      border-color: #e11d48;
       box-shadow: 0 10px 15px -3px rgba(244, 63, 94, 0.3), 0 4px 6px -2px rgba(244, 63, 94, 0.15);
     }
   }
 
   .animate-pulse-red {
     animation: pulse-red-custom 2s infinite;
+  }
+
+  @keyframes gradient-shift {
+
+    0%,
+    100% {
+      background-position: 0% 50%;
+    }
+
+    50% {
+      background-position: 100% 50%;
+    }
+  }
+
+  .animate-gradient-shift {
+    background-size: 200% 200%;
+    animation: gradient-shift 15s ease infinite;
+  }
+
+  @keyframes float {
+
+    0%,
+    100% {
+      transform: translateY(0px) translateX(0px);
+    }
+
+    33% {
+      transform: translateY(-20px) translateX(10px);
+    }
+
+    66% {
+      transform: translateY(10px) translateX(-10px);
+    }
+  }
+
+  .animate-float {
+    animation: float 20s ease-in-out infinite;
+  }
+
+  .animate-float-delayed {
+    animation: float 25s ease-in-out infinite;
+    animation-delay: 5s;
+  }
+
+  @keyframes pulse-slow {
+
+    0%,
+    100% {
+      opacity: 1;
+    }
+
+    50% {
+      opacity: 0.7;
+    }
+  }
+
+  .animate-pulse-slow {
+    animation: pulse-slow 3s ease-in-out infinite;
   }
 }
