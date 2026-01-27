@@ -184,9 +184,9 @@ export default function AdminLayout({ children }) {
                                                         <span className="text-lg">🏢</span>
                                                     </div>
                                                     <div className="flex-1 overflow-hidden">
-                                                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-0.5">Company ID</p>
-                                                        <p className="text-xs font-mono bg-gray-100 text-gray-600 p-1.5 rounded border border-gray-200 break-all select-all">
-                                                            {user.companyId}
+                                                        <p className="text-xs text-gray-500 font-medium uppercase tracking-wide mb-0.5">Company</p>
+                                                        <p className="text-sm font-bold text-gray-800 break-words">
+                                                            {user.company?.name || 'MyFleet'}
                                                         </p>
                                                     </div>
                                                 </div>

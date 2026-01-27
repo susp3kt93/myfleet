@@ -18,7 +18,14 @@ router.post('/login', async (req, res) => {
         }
 
         const user = await prisma.user.findUnique({
-            where: { personalId }
+            where: { personalId },
+            include: {
+                company: {
+                    select: {
+                        name: true
+                    }
+                }
+            }
         });
 
         console.log('[Auth] User found:', user ? 'yes' : 'no');
@@ -51,7 +58,9 @@ router.post('/login', async (req, res) => {
                 phone: user.phone,
                 role: user.role,
                 photoUrl: user.photoUrl,
-                companyId: user.companyId
+                photoUrl: user.photoUrl,
+                companyId: user.companyId,
+                company: user.company ? { name: user.company.name } : null
             }
         });
     } catch (error) {

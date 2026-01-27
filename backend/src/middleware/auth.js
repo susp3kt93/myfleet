@@ -24,7 +24,12 @@ export const authenticate = async (req, res, next) => {
                 role: true,
                 photoUrl: true,
                 isActive: true,
-                companyId: true  // Add company context for multi-tenant
+                companyId: true,  // Add company context for multi-tenant
+                company: {
+                    select: {
+                        name: true
+                    }
+                }
             }
         });
 
