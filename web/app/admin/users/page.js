@@ -20,6 +20,8 @@ export default function UsersPage() {
     const { users, loading } = useSelector((state) => state.users);
     const [showForm, setShowForm] = useState(false);
     const [showEditModal, setShowEditModal] = useState(false);
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [userToDelete, setUserToDelete] = useState(null);
     const [editingUser, setEditingUser] = useState(null);
     const [formData, setFormData] = useState({
         personalId: '',
@@ -65,9 +67,16 @@ export default function UsersPage() {
         setShowForm(false);
     };
 
-    const handleDelete = async (userId) => {
-        if (confirm('Are you sure you want to delete this user?')) {
-            await dispatch(deleteUser(userId));
+    const handleDelete = (user) => {
+        setUserToDelete(user);
+        setShowDeleteModal(true);
+    };
+
+    const confirmDelete = async () => {
+        if (userToDelete) {
+            await dispatch(deleteUser(userToDelete.id));
+            setShowDeleteModal(false);
+            setUserToDelete(null);
         }
     };
 
@@ -104,9 +113,9 @@ export default function UsersPage() {
         <AdminLayout>
             {/* Page Header */}
             <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center space-x-4">
+                <div className="flex items-center space-x-4 bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-sm border border-white/50">
                     <BackButton href="/admin" label="Back" />
-                    <h1 className="text-3xl font-bold text-gray-900">👥 User Management</h1>
+                    <h1 className="text-2xl font-bold text-gray-900">👥 User Management</h1>
                 </div>
                 <button
                     onClick={() => setShowForm(!showForm)}
@@ -207,7 +216,7 @@ export default function UsersPage() {
             )}
 
             {/* Users Table */}
-            <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-white shadow-xl rounded-2xl overflow-hidden border border-gray-100">
                 <table className="min-w-full divide-y divide-gray-200">
                     <thead className="bg-gray-50">
                         <tr>
@@ -275,7 +284,7 @@ export default function UsersPage() {
                                         Edit
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(u.id)}
+                                        onClick={() => handleDelete(u)}
                                         className="text-red-600 hover:text-red-900"
                                         disabled={u.id === user.id}
                                     >
@@ -368,6 +377,45 @@ export default function UsersPage() {
                                 </button>
                             </div>
                         </form>
+                    </div>
+                </div>
+            )}
+
+            {/* Delete Confirmation Modal */}
+            {showDeleteModal && userToDelete && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white rounded-lg p-6 w-full max-w-md mx-4">
+                        <div className="flex items-center justify-center w-12 h-12 mx-auto mb-4 bg-red-100 rounded-full">
+                            <svg className="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                        </div>
+                        <h3 className="text-lg font-semibold text-gray-900 text-center mb-2">
+                            Delete User
+                        </h3>
+                        <p className="text-sm text-gray-600 text-center mb-6">
+                            Are you sure you want to delete <strong>{userToDelete.name}</strong> ({userToDelete.personalId})?
+                            This action cannot be undone.
+                        </p>
+                        <div className="flex gap-4">
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setShowDeleteModal(false);
+                                    setUserToDelete(null);
+                                }}
+                                className="flex-1 px-4 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition font-medium"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                type="button"
+                                onClick={confirmDelete}
+                                className="flex-1 px-4 py-2 bg-red-600 hover:bg-red-700 text-white rounded-lg transition font-medium"
+                            >
+                                Delete
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}

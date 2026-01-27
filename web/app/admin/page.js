@@ -13,7 +13,14 @@ import MetricCard from '../../components/MetricCard';
 import ActionCard from '../../components/ActionCard';
 import FloatingActionButton from '../../components/FloatingActionButton';
 import AdminLayout from '../../components/AdminLayout';
+import DonutChart from '../../components/charts/DonutChart';
+import TasksPerUserChart from '../../components/charts/TasksPerUserChart';
+import TaskTrendChart from '../../components/charts/TaskTrendChart';
+import ActivityFeed from '../../components/ActivityFeed';
+import TaskCalendarHeatMap from '../../components/TaskCalendarHeatMap';
 import api from '../../lib/api';
+
+
 
 export default function AdminPage() {
     const { t } = useTranslation('admin');
@@ -25,6 +32,18 @@ export default function AdminPage() {
     const { users } = useSelector((state) => state.users);
     const [pendingTimeOffCount, setPendingTimeOffCount] = useState(0);
     const [showTimeOffBadge, setShowTimeOffBadge] = useState(false);
+    const [vehicles, setVehicles] = useState([]);
+
+    // Analytics data
+    const [taskStatusData, setTaskStatusData] = useState(null);
+    const [userPerformanceData, setUserPerformanceData] = useState(null);
+    const [taskTrendData, setTaskTrendData] = useState(null);
+    const [activityData, setActivityData] = useState(null);
+    const [calendarData, setCalendarData] = useState(null);
+    const [analyticsLoading, setAnalyticsLoading] = useState(true);
+    const [analyticsError, setAnalyticsError] = useState(null);
+
+
 
     useEffect(() => {
         dispatch(loadStoredAuth());
@@ -39,6 +58,8 @@ export default function AdminPage() {
             dispatch(fetchTasks());
             dispatch(fetchUsers());
             fetchTimeOffCount();
+            fetchVehicles();
+            fetchAnalyticsData();
         }
     }, [isAuthenticated, user]);
 
@@ -50,17 +71,58 @@ export default function AdminPage() {
             const count = Array.isArray(response.data) ? response.data.length : 0;
 
             setPendingTimeOffCount(count);
-
-            // Always show badge if there are pending requests
-            if (count > 0) {
-                setShowTimeOffBadge(true);
-            } else {
-                setShowTimeOffBadge(false);
-            }
+            setShowTimeOffBadge(count > 0);
         } catch (error) {
             console.error('Error fetching time off count:', error);
+            setPendingTimeOffCount(0);
         }
     };
+
+    const fetchVehicles = async () => {
+        try {
+            const response = await api.get('/vehicles');
+            setVehicles(response.data || []);
+        } catch (error) {
+            console.error('Error fetching vehicles:', error);
+            setVehicles([]);
+        }
+    };
+
+    const fetchAnalyticsData = async () => {
+        try {
+            setAnalyticsLoading(true);
+            setAnalyticsError(null);
+
+            // Fetch task status distribution
+            const statusResponse = await api.get('/analytics/tasks/status-distribution');
+            setTaskStatusData(statusResponse.data);
+
+            // Fetch user performance
+            const performanceResponse = await api.get('/analytics/users/performance?limit=10');
+            setUserPerformanceData(performanceResponse.data);
+
+            // Fetch task trend
+            const trendResponse = await api.get('/analytics/tasks/trend?days=7');
+            setTaskTrendData(trendResponse.data);
+
+            // Fetch recent activity
+            const activityResponse = await api.get('/analytics/activity/recent?limit=20');
+            setActivityData(activityResponse.data);
+
+            // Fetch calendar data for current month
+            const now = new Date();
+            const monthParam = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}`;
+            const calendarResponse = await api.get(`/analytics/tasks/calendar?month=${monthParam}`);
+            setCalendarData(calendarResponse.data);
+
+            setAnalyticsLoading(false);
+        } catch (error) {
+            console.error('Error fetching analytics data:', error);
+            setAnalyticsError('Failed to load analytics data');
+            setAnalyticsLoading(false);
+        }
+    };
+
 
     const handleLogout = () => {
         dispatch(logout());
@@ -73,6 +135,7 @@ export default function AdminPage() {
 
     const stats = {
         totalDrivers: users.filter(u => u.role === 'DRIVER').length,
+        totalVehicles: vehicles.length,
         totalTasks: tasks.length,
         pendingTasks: tasks.filter(t => t.status === 'PENDING').length,
         completedTasks: tasks.filter(t => t.status === 'COMPLETED').length,
@@ -103,8 +166,8 @@ export default function AdminPage() {
 
                 <MetricCard
                     title="Fleet Status"
-                    value={stats.totalDrivers}
-                    subtitle="Vehicles operational"
+                    value={stats.totalVehicles}
+                    subtitle={`${stats.totalVehicles} vehicles operational`}
                     icon="🚗"
                     gradient="orange-red"
                     href="/admin/vehicles"
@@ -120,55 +183,52 @@ export default function AdminPage() {
                 />
             </div>
 
-            {/* Quick Actions - Only Unique Destinations */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                <ActionCard
-                    title={t('dashboard.actions.weeklyReports')}
-                    description={t('dashboard.actions.weeklyReportsDesc')}
-                    icon="📊"
-                    gradient="amber"
-                    href="/admin/reports"
-                />
+            {/* Analytics Charts Section */}
+            <div className="mb-8">
+                <h2 className="text-2xl font-bold text-gray-900 mb-6">Analytics Overview</h2>
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <DonutChart
+                        data={taskStatusData}
+                        loading={analyticsLoading}
+                        error={analyticsError}
+                    />
+                    <TasksPerUserChart
+                        data={userPerformanceData}
+                        loading={analyticsLoading}
+                        error={analyticsError}
+                    />
+                </div>
 
-                <ActionCard
-                    title={t('dashboard.actions.driverActivity')}
-                    description={t('dashboard.actions.driverActivityDesc')}
-                    icon="📆"
-                    gradient="green"
-                    href="/admin/activity"
-                />
+                {/* Full-width Trend Chart */}
+                <div className="mt-6">
+                    <TaskTrendChart
+                        data={taskTrendData}
+                        loading={analyticsLoading}
+                        error={analyticsError}
+                        days={7}
+                    />
+                </div>
 
-                <ActionCard
-                    title="Deductions"
-                    description="Manage driver deductions & charges"
-                    icon="💰"
-                    gradient="purple"
-                    href="/admin/deductions"
-                />
-
-                <ActionCard
-                    title={t('dashboard.actions.timeOffRequests')}
-                    description={pendingTimeOffCount > 0
-                        ? `${pendingTimeOffCount} ${t('timeoff.pending')}`
-                        : t('dashboard.actions.timeOffRequestsDesc')}
-                    icon="🏖️"
-                    gradient={pendingTimeOffCount > 0 ? 'red' : 'orange'}
-                    highlight={pendingTimeOffCount > 0}
-                    badge={pendingTimeOffCount > 0 ? pendingTimeOffCount : null}
-                    href="/admin/timeoff"
-                />
-
-                <ActionCard
-                    title="Company Settings"
-                    description="Manage branding and company details"
-                    icon="⚙️"
-                    gradient="blue"
-                    href="/admin/settings"
-                />
+                {/* Activity Feed and Calendar - Side by Side on Desktop */}
+                <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+                    <ActivityFeed
+                        data={activityData}
+                        loading={analyticsLoading}
+                        error={analyticsError}
+                        autoRefresh={false}
+                    />
+                    <TaskCalendarHeatMap
+                        data={calendarData}
+                        loading={analyticsLoading}
+                        error={analyticsError}
+                    />
+                </div>
             </div>
+
+
 
             {/* Floating Action Button */}
             <FloatingActionButton />
-        </AdminLayout>
+        </AdminLayout >
     );
 }
