@@ -1,280 +1,198 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useRouter } from 'next/navigation';
-import Link from 'next/link';
-import { BackButton } from '../../../components/Buttons';
-import { useDispatch, useSelector } from 'react-redux';
-import { loadStoredAuth } from '../../../lib/authSlice';
-import api from '../../../lib/api';
 import AdminLayout from '../../../components/AdminLayout';
-import { NavButton } from '../../../components/Buttons';
-import { useTranslation } from '../../../contexts/LanguageContext';
+import api from '../../../lib/api';
+import { format } from 'date-fns';
+import { ro } from 'date-fns/locale';
 
-export default function DriverActivityPage() {
-    const { t, locale } = useTranslation('admin');
-    const router = useRouter();
-    const dispatch = useDispatch();
-    const { user, isAuthenticated } = useSelector((state) => state.auth);
-
+export default function ActivityPage() {
+    const [activities, setActivities] = useState([]);
     const [loading, setLoading] = useState(true);
-    const [activityData, setActivityData] = useState(null);
-    const [dateRange, setDateRange] = useState(() => {
-        const today = new Date();
-        const startOfWeek = new Date(today);
-        startOfWeek.setDate(today.getDate() - today.getDay()); // Start on Sunday
-        const endOfWeek = new Date(startOfWeek);
-        endOfWeek.setDate(startOfWeek.getDate() + 6); // End on Saturday
+    const [pagination, setPagination] = useState({ page: 1, limit: 20, totalPages: 1, total: 0 });
+    const [filters, setFilters] = useState({ userId: 'all', action: 'all' });
+    const [users, setUsers] = useState([]);
 
-        return {
-            startDate: startOfWeek.toISOString().split('T')[0],
-            endDate: endOfWeek.toISOString().split('T')[0]
+    // Fetch users for filter
+    useEffect(() => {
+        const fetchUsers = async () => {
+            try {
+                const res = await api.get('/admin/users');
+                setUsers(res.data.users || []);
+            } catch (error) {
+                console.error('Failed to fetch users:', error);
+            }
         };
-    });
+        fetchUsers();
+    }, []);
 
-    useEffect(() => {
-        dispatch(loadStoredAuth());
-    }, [dispatch]);
-
-    useEffect(() => {
-        if (!isAuthenticated) {
-            router.push('/');
-        } else if (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN') {
-            router.push('/dashboard');
-        }
-    }, [isAuthenticated, user, router]);
-
-    useEffect(() => {
-        if (isAuthenticated && (user?.role === 'COMPANY_ADMIN' || user?.role === 'SUPER_ADMIN')) {
-            fetchActivity();
-        }
-    }, [isAuthenticated, user, dateRange]);
-
-    const fetchActivity = async () => {
+    // Fetch activities
+    const fetchActivities = async (page = 1) => {
+        setLoading(true);
         try {
-            setLoading(true);
-            const response = await api.get('/reports/driver-activity', {
-                params: dateRange
-            });
-            setActivityData(response.data);
+            const params = {
+                page,
+                limit: pagination.limit,
+                userId: filters.userId,
+                action: filters.action
+            };
+            const res = await api.get('/admin/activity', { params });
+            setActivities(res.data.activity);
+            setPagination(prev => ({ ...prev, ...res.data.pagination }));
         } catch (error) {
-            console.error('Error fetching activity:', error);
+            console.error('Failed to fetch activity:', error);
         } finally {
             setLoading(false);
         }
     };
 
-    const navigateWeek = (direction) => {
-        const start = new Date(dateRange.startDate);
-        start.setDate(start.getDate() + (direction * 7));
-        const end = new Date(start);
-        end.setDate(start.getDate() + 6);
+    useEffect(() => {
+        fetchActivities(pagination.page);
+    }, [pagination.page, filters]);
 
-        setDateRange({
-            startDate: start.toISOString().split('T')[0],
-            endDate: end.toISOString().split('T')[0]
-        });
+    const handleFilterChange = (key, value) => {
+        setFilters(prev => ({ ...prev, [key]: value }));
+        setPagination(prev => ({ ...prev, page: 1 })); // Reset to first page
     };
 
-    const formatDate = (dateStr) => {
-        const date = new Date(dateStr);
-        return date.toLocaleDateString(locale === 'ro' ? 'ro-RO' : 'en-GB', { weekday: 'short', day: 'numeric' });
+    const getActionColor = (action) => {
+        if (action.includes('CREATED')) return 'bg-green-100 text-green-800';
+        if (action.includes('UPDATED')) return 'bg-blue-100 text-blue-800';
+        if (action.includes('DELETED')) return 'bg-red-100 text-red-800';
+        if (action.includes('REJECTED')) return 'bg-orange-100 text-orange-800';
+        if (action.includes('COMPLETED')) return 'bg-purple-100 text-purple-800';
+        return 'bg-gray-100 text-gray-800';
     };
-
-    const getActivityCell = (activity) => {
-        if (!activity) return <span className="text-gray-300">-</span>;
-
-        switch (activity.type) {
-            case 'WORKED':
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-lg font-bold text-green-600">
-                            {activity.completedCount}/{activity.taskCount}
-                        </span>
-                        <span className="text-xs text-gray-500">£{activity.earnings}</span>
-                    </div>
-                );
-            case 'OFF':
-                return (
-                    <div className="flex flex-col items-center">
-                        <span className="text-lg">🏖️</span>
-                        <span className="text-xs text-orange-500">{t('activity.dayOff')}</span>
-                    </div>
-                );
-            case 'IDLE':
-                return <span className="text-gray-300">-</span>;
-            default:
-                return <span className="text-gray-300">-</span>;
-        }
-    };
-
-    const getActivityBgColor = (activity) => {
-        if (!activity) return '';
-        switch (activity.type) {
-            case 'WORKED':
-                return activity.completedCount > 0 ? 'bg-green-50' : 'bg-yellow-50';
-            case 'OFF':
-                return 'bg-orange-50';
-            default:
-                return '';
-        }
-    };
-
-    if (!isAuthenticated || (user?.role !== 'COMPANY_ADMIN' && user?.role !== 'SUPER_ADMIN')) {
-        return null;
-    }
 
     return (
         <AdminLayout>
-            {/* Page Header */}
-            <div className="flex items-center justify-between mb-6">
-                <div className="flex items-center space-x-4">
-                    <BackButton href="/admin" label={t('activity.back')} />
-                    <div>
-                        <h1 className="text-3xl font-bold text-gray-900">📆 {t('activity.title')}</h1>
-                        <p className="text-sm text-gray-500">
-                            {t('activity.subtitle')}
-                        </p>
-                    </div>
+            <div className="flex flex-col sm:flex-row items-center justify-between gap-4 mb-6">
+                <div>
+                    <h1 className="text-2xl font-bold text-gray-900">Istoric Activitate</h1>
+                    <p className="text-gray-500">Monitorizează toate acțiunile din platformă</p>
+                </div>
+
+                {/* Filters */}
+                <div className="flex gap-2">
+                    <select
+                        value={filters.userId}
+                        onChange={(e) => handleFilterChange('userId', e.target.value)}
+                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="all">Toți Utilizatorii</option>
+                        {users.map(u => (
+                            <option key={u.id} value={u.id}>{u.name} ({u.role})</option>
+                        ))}
+                    </select>
+
+                    <select
+                        value={filters.action}
+                        onChange={(e) => handleFilterChange('action', e.target.value)}
+                        className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    >
+                        <option value="all">Toate Acțiunile</option>
+                        <option value="USER_CREATED">User Created</option>
+                        <option value="USER_UPDATED">User Updated</option>
+                        <option value="USER_DELETED">User Deleted</option>
+                        <option value="TASK_CREATED">Task Created</option>
+                        <option value="TASK_UPDATED">Task Updated</option>
+                        <option value="TASK_DELETED">Task Deleted</option>
+                        <option value="TASK_COMPLETED">Task Completed</option>
+                        <option value="TASK_REJECTED">Task Rejected</option>
+                    </select>
                 </div>
             </div>
 
-            {/* Week Navigator */}
-            <div className="bg-white rounded-lg shadow p-4 mb-6">
-                <div className="flex items-center justify-between">
-                    <NavButton onClick={() => navigateWeek(-1)} direction="prev">
-                        {t('activity.previousWeek')}
-                    </NavButton>
-                    <div className="text-center">
-                        <h2 className="text-lg font-semibold">
-                            {new Date(dateRange.startDate).toLocaleDateString(locale === 'ro' ? 'ro-RO' : 'en-GB', {
-                                day: 'numeric',
-                                month: 'long'
-                            })} - {new Date(dateRange.endDate).toLocaleDateString(locale === 'ro' ? 'ro-RO' : 'en-GB', {
-                                day: 'numeric',
-                                month: 'long',
-                                year: 'numeric'
-                            })}
-                        </h2>
-                    </div>
-                    <NavButton onClick={() => navigateWeek(1)} direction="next">
-                        {t('activity.nextWeek')}
-                    </NavButton>
-                </div>
-            </div>
-
-            {/* Summary Cards */}
-            {activityData && (
-                <div className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-6">
-                    <div className="bg-white rounded-lg shadow p-4">
-                        <p className="text-sm text-gray-600">{t('activity.activeDrivers')}</p>
-                        <p className="text-2xl font-bold">{activityData.drivers?.length || 0}</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-4">
-                        <p className="text-sm text-gray-600">{t('activity.daysWorked')}</p>
-                        <p className="text-2xl font-bold text-green-600">{activityData.totals?.daysWorked || 0}</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-4">
-                        <p className="text-sm text-gray-600">{t('activity.daysOff')}</p>
-                        <p className="text-2xl font-bold text-orange-600">{activityData.totals?.daysOff || 0}</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-4">
-                        <p className="text-sm text-gray-600">{t('activity.tasksCompleted')}</p>
-                        <p className="text-2xl font-bold text-blue-600">{activityData.totals?.completedTasks || 0}</p>
-                    </div>
-                    <div className="bg-white rounded-lg shadow p-4">
-                        <p className="text-sm text-gray-600">{t('activity.totalEarnings')}</p>
-                        <p className="text-2xl font-bold text-purple-600">£{activityData.totals?.totalEarnings || 0}</p>
-                    </div>
-                </div>
-            )}
-
-            {/* Activity Table */}
-            {loading ? (
-                <div className="bg-white rounded-lg shadow p-8 text-center">
-                    <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary-500 mx-auto"></div>
-                    <p className="mt-4 text-gray-600">{t('activity.loading')}</p>
-                </div>
-            ) : activityData ? (
-                <div className="bg-white rounded-lg shadow overflow-hidden">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full divide-y divide-gray-200">
-                            <thead className="bg-gray-50">
+            <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                <div className="overflow-x-auto">
+                    <table className="min-w-full divide-y divide-gray-200">
+                        <thead className="bg-gray-50">
+                            <tr>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Utilizator</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Acțiune</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detalii</th>
+                                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Dată</th>
+                            </tr>
+                        </thead>
+                        <tbody className="bg-white divide-y divide-gray-200">
+                            {loading ? (
+                                Array.from({ length: 5 }).map((_, i) => (
+                                    <tr key={i} className="animate-pulse">
+                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-24"></div></td>
+                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-20"></div></td>
+                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-full"></div></td>
+                                        <td className="px-6 py-4"><div className="h-4 bg-gray-200 rounded w-32"></div></td>
+                                    </tr>
+                                ))
+                            ) : activities.length === 0 ? (
                                 <tr>
-                                    <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider sticky left-0 bg-gray-50">
-                                        {t('activity.driver')}
-                                    </th>
-                                    {activityData.dates.map(date => (
-                                        <th key={date} className="px-3 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider min-w-[80px]">
-                                            {formatDate(date)}
-                                        </th>
-                                    ))}
-                                    <th className="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider bg-gray-100">
-                                        Total
-                                    </th>
+                                    <td colSpan="4" className="px-6 py-12 text-center text-gray-500">
+                                        Nu există activitate înregistrată.
+                                    </td>
                                 </tr>
-                            </thead>
-                            <tbody className="bg-white divide-y divide-gray-200">
-                                {activityData.drivers.map((driverData, idx) => (
-                                    <tr key={driverData.driver.id} className={idx % 2 === 0 ? 'bg-white' : 'bg-gray-50'}>
-                                        <td className="px-4 py-3 whitespace-nowrap sticky left-0 bg-inherit">
+                            ) : (
+                                activities.map((activity) => (
+                                    <tr key={activity.id} className="hover:bg-gray-50 transition-colors">
+                                        <td className="px-6 py-4 whitespace-nowrap">
                                             <div className="flex items-center">
-                                                <div className="flex-shrink-0 h-8 w-8 bg-primary-100 rounded-full flex items-center justify-center">
-                                                    <span className="text-sm font-medium text-primary-600">
-                                                        {driverData.driver.name.charAt(0)}
-                                                    </span>
-                                                </div>
-                                                <div className="ml-3">
-                                                    <div className="text-sm font-medium text-gray-900">
-                                                        {driverData.driver.name}
+                                                {activity.user?.photoUrl ? (
+                                                    <img className="h-8 w-8 rounded-full object-cover mr-3" src={activity.user.photoUrl} alt="" />
+                                                ) : (
+                                                    <div className="h-8 w-8 rounded-full bg-gray-200 flex items-center justify-center mr-3 text-xs font-bold text-gray-600">
+                                                        {activity.user?.name?.substring(0, 2).toUpperCase() || '??'}
                                                     </div>
-                                                    <div className="text-xs text-gray-500">
-                                                        {driverData.driver.personalId}
-                                                    </div>
+                                                )}
+                                                <div>
+                                                    <div className="text-sm font-medium text-gray-900">{activity.user?.name || 'Unknown User'}</div>
+                                                    <div className="text-xs text-gray-500">{activity.user?.role}</div>
                                                 </div>
                                             </div>
                                         </td>
-                                        {activityData.dates.map(date => (
-                                            <td
-                                                key={date}
-                                                className={`px-3 py-3 text-center ${getActivityBgColor(driverData.dailyActivity[date])}`}
-                                            >
-                                                {getActivityCell(driverData.dailyActivity[date])}
-                                            </td>
-                                        ))}
-                                        <td className="px-4 py-3 text-center bg-gray-100">
-                                            <div className="text-sm">
-                                                <span className="font-bold text-green-600">{driverData.summary.daysWorked}</span> {t('activity.days')}
-                                            </div>
-                                            <div className="text-xs text-gray-500">
-                                                £{driverData.summary.totalEarnings}
-                                            </div>
+                                        <td className="px-6 py-4 whitespace-nowrap">
+                                            <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getActionColor(activity.action)}`}>
+                                                {activity.action.replace('_', ' ')}
+                                            </span>
+                                        </td>
+                                        <td className="px-6 py-4 text-sm text-gray-500">
+                                            {activity.details}
+                                        </td>
+                                        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                                            {format(new Date(activity.createdAt), 'dd MMM yyyy HH:mm', { locale: ro })}
                                         </td>
                                     </tr>
-                                ))}
-                            </tbody>
-                        </table>
-                    </div>
+                                ))
+                            )}
+                        </tbody>
+                    </table>
                 </div>
-            ) : (
-                <div className="bg-white rounded-lg shadow p-8 text-center">
-                    <p className="text-gray-500">{t('activity.noData')}</p>
-                </div>
-            )}
 
-            {/* Legend */}
-            <div className="mt-4 flex items-center justify-center space-x-6 text-sm">
-                <div className="flex items-center">
-                    <div className="w-4 h-4 bg-green-50 border border-green-200 rounded mr-2"></div>
-                    <span>{t('activity.worked')}</span>
-                </div>
-                <div className="flex items-center">
-                    <div className="w-4 h-4 bg-orange-50 border border-orange-200 rounded mr-2"></div>
-                    <span>🏖️ {t('activity.dayOff')}</span>
-                </div>
-                <div className="flex items-center">
-                    <span className="text-gray-300 mr-2">-</span>
-                    <span>{t('activity.noActivity')}</span>
+                {/* Pagination */}
+                <div className="bg-white px-4 py-3 flex items-center justify-between border-t border-gray-200 sm:px-6">
+                    <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                        <div>
+                            <p className="text-sm text-gray-700">
+                                Afișare <span className="font-medium">{(pagination.page - 1) * pagination.limit + 1}</span> - <span className="font-medium">{Math.min(pagination.page * pagination.limit, pagination.total)}</span> din <span className="font-medium">{pagination.total}</span> rezultate
+                            </p>
+                        </div>
+                        <div>
+                            <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                                <button
+                                    onClick={() => setPagination(prev => ({ ...prev, page: Math.max(1, prev.page - 1) }))}
+                                    disabled={pagination.page === 1}
+                                    className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                >
+                                    Previous
+                                </button>
+                                <button
+                                    onClick={() => setPagination(prev => ({ ...prev, page: Math.min(pagination.totalPages, prev.page + 1) }))}
+                                    disabled={pagination.page === pagination.totalPages}
+                                    className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 bg-white text-sm font-medium text-gray-500 hover:bg-gray-50 disabled:bg-gray-100 disabled:cursor-not-allowed"
+                                >
+                                    Next
+                                </button>
+                            </nav>
+                        </div>
+                    </div>
                 </div>
             </div>
         </AdminLayout>

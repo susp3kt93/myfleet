@@ -4,6 +4,8 @@ import prisma from "../lib/prisma.js";
 import { authenticate, requireAdmin } from '../middleware/auth.js';
 import { addCompanyFilter, checkDriverLimit } from '../middleware/permissions.js';
 
+import { logActivity } from '../services/activityService.js';
+
 const router = express.Router();
 
 // All user routes require authentication and admin role
@@ -134,6 +136,15 @@ router.post('/', checkDriverLimit, async (req, res) => {
             }
         });
 
+        // Log activity
+        await logActivity(
+            req.user.companyId,
+            req.user.id,
+            'USER_CREATED',
+            `Created user ${name} (${personalId})`,
+            { createdUserId: user.id }
+        );
+
         res.status(201).json({ user });
     } catch (error) {
         console.error('Create user error:', error);
@@ -179,6 +190,16 @@ router.put('/:id', async (req, res) => {
             }
         });
 
+        // Log activity
+        const updates = Object.keys(updateData).filter(k => k !== 'password').join(', ');
+        await logActivity(
+            req.user.companyId,
+            req.user.id,
+            'USER_UPDATED',
+            `Updated user ${user.name} (${user.personalId}): ${updates}`,
+            { updatedUserId: user.id, updates: updateData }
+        );
+
         res.json({ user });
     } catch (error) {
         console.error('Update user error:', error);
@@ -197,9 +218,23 @@ router.delete('/:id', async (req, res) => {
             return res.status(400).json({ error: 'Cannot delete your own account' });
         }
 
+        const userToDelete = await prisma.user.findUnique({
+            where: { id: req.params.id },
+            select: { name: true, personalId: true }
+        });
+
         await prisma.user.delete({
             where: { id: req.params.id }
         });
+
+        // Log activity
+        await logActivity(
+            req.user.companyId,
+            req.user.id,
+            'USER_DELETED',
+            `Deleted user ${userToDelete?.name} (${userToDelete?.personalId})`,
+            { deletedUserId: req.params.id }
+        );
 
         res.json({ message: 'User deleted successfully' });
     } catch (error) {
