@@ -19,7 +19,9 @@
             "timeOffRequests": "Cereri Zile Libere",
             "timeOffRequestsDesc": "Gestionează cererile de concediu",
             "fleetVehicles": "Flotă Vehicule",
-            "fleetVehiclesDesc": "Gestionează vehiculele, kilometraj și service"
+            "fleetVehiclesDesc": "Gestionează vehiculele, kilometraj și service",
+            "audit": "Jurnal Audit",
+            "auditDesc": "Vezi log-urile de sistem"
         }
     },
     "users": {
@@ -142,5 +144,29 @@
         "day": "zi",
         "days": "zile",
         "period": "Perioadă: {{count}} zile consecutive"
+    },
+    "audit": {
+        "title": "Jurnal Audit (Sistem)",
+        "subtitle": "Monitorizează toate acțiunile tehnice din platformă",
+        "filterUser": "Toți Utilizatorii",
+        "filterAction": "Toate Acțiunile",
+        "user": "Utilizator",
+        "action": "Acțiune",
+        "details": "Detalii",
+        "date": "Dată",
+        "noActivity": "Nu există activitate înregistrată.",
+        "results": "Afișare {{start}} - {{end}} din {{total}} rezultate",
+        "prev": "Înapoi",
+        "next": "Înainte",
+        "actions_list": {
+            "USER_CREATED": "Utilizator Creat",
+            "USER_UPDATED": "Utilizator Actualizat",
+            "USER_DELETED": "Utilizator Șters",
+            "TASK_CREATED": "Task Creat",
+            "TASK_UPDATED": "Task Actualizat",
+            "TASK_DELETED": "Task Șters",
+            "TASK_COMPLETED": "Task Completat",
+            "TASK_REJECTED": "Task Respins"
+        }
     }
 }

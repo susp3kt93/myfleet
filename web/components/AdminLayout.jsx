@@ -107,12 +107,12 @@ export default function AdminLayout({ children }) {
 
                             <Link href="/admin/activity" className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-emerald-50 to-teal-50 hover:from-emerald-100 hover:to-teal-100 border border-emerald-200/50 rounded-xl shadow-sm hover:shadow-md transition-all group">
                                 <span className="text-xl group-hover:scale-110 transition-transform">📆</span>
-                                <span className="font-bold text-gray-800 text-sm tracking-wide">Activity</span>
+                                <span className="font-bold text-gray-800 text-sm tracking-wide">{tCommon('dashboard.actions.driverActivity')}</span>
                             </Link>
 
                             <Link href="/admin/audit" className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-purple-50 to-violet-50 hover:from-purple-100 hover:to-violet-100 border border-purple-200/50 rounded-xl shadow-sm hover:shadow-md transition-all group">
                                 <span className="text-xl group-hover:scale-110 transition-transform">🛡️</span>
-                                <span className="font-bold text-gray-800 text-sm tracking-wide">Audit</span>
+                                <span className="font-bold text-gray-800 text-sm tracking-wide">{tCommon('dashboard.actions.audit')}</span>
                             </Link>
 
                             <Link href="/admin/timeoff" className="flex items-center gap-2 px-5 py-2.5 bg-gradient-to-br from-rose-50 to-pink-50 hover:from-rose-100 hover:to-pink-100 border border-rose-200/50 rounded-xl shadow-sm hover:shadow-md transition-all group">
@@ -205,10 +205,10 @@ export default function AdminLayout({ children }) {
                                                 <span>📊</span> Reports
                                             </Link>
                                             <Link href="/admin/activity" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-white hover:shadow-sm rounded-xl transition-all">
-                                                <span>📆</span> Activity
+                                                <span>📆</span> {tCommon('dashboard.actions.driverActivity')}
                                             </Link>
                                             <Link href="/admin/audit" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-white hover:shadow-sm rounded-xl transition-all">
-                                                <span>🛡️</span> Audit Log
+                                                <span>🛡️</span> {tCommon('dashboard.actions.audit')}
                                             </Link>
                                             <Link href="/admin/timeoff" className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-white hover:shadow-sm rounded-xl transition-all">
                                                 <span>🏖️</span> Time Off

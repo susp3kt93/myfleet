@@ -19,7 +19,9 @@
             "timeOffRequests": "Time Off Requests",
             "timeOffRequestsDesc": "Manage driver leave requests",
             "fleetVehicles": "Fleet Vehicles",
-            "fleetVehiclesDesc": "Manage vehicles, mileage, and service"
+            "fleetVehiclesDesc": "Manage vehicles, mileage, and service",
+            "audit": "Audit Log",
+            "auditDesc": "View system logs"
         }
     },
     "users": {
@@ -142,5 +144,29 @@
         "day": "day",
         "days": "days",
         "period": "Period: {{count}} consecutive days"
+    },
+    "audit": {
+        "title": "System Audit Log",
+        "subtitle": "Monitor all technical actions in the platform",
+        "filterUser": "All Users",
+        "filterAction": "All Actions",
+        "user": "User",
+        "action": "Action",
+        "details": "Details",
+        "date": "Date",
+        "noActivity": "No audit logs found.",
+        "results": "Showing {{start}} - {{end}} of {{total}} results",
+        "prev": "Previous",
+        "next": "Next",
+        "actions_list": {
+            "USER_CREATED": "User Created",
+            "USER_UPDATED": "User Updated",
+            "USER_DELETED": "User Deleted",
+            "TASK_CREATED": "Task Created",
+            "TASK_UPDATED": "Task Updated",
+            "TASK_DELETED": "Task Deleted",
+            "TASK_COMPLETED": "Task Completed",
+            "TASK_REJECTED": "Task Rejected"
+        }
     }
 }
