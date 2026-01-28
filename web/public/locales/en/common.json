@@ -1,4 +1,10 @@
 {
+    "dashboard": {
+        "actions": {
+            "driverActivity": "Activity",
+            "audit": "Audit Log"
+        }
+    },
     "buttons": {
         "save": "Save",
         "cancel": "Cancel",

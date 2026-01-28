@@ -1,4 +1,10 @@
 {
+    "dashboard": {
+        "actions": {
+            "driverActivity": "Activitate",
+            "audit": "Audit"
+        }
+    },
     "buttons": {
         "save": "Salvează",
         "cancel": "Anulează",
