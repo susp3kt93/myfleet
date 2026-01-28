@@ -108,18 +108,20 @@ export default function EnhancedDashboardPage() {
 
     const fetchPendingTasksCount = async () => {
         try {
+            // Fetch all relevant tasks (backend filters for driver: My Tasks + Unassigned PENDING/REJECTED)
+            const myPendingResponse = await api.get('/tasks');
+
             // My pending tasks (assigned to me)
-            const myPendingResponse = await api.get('/tasks?status=PENDING');
             const myPendingTasks = Array.isArray(myPendingResponse.data.tasks)
-                ? myPendingResponse.data.tasks.filter(t => t.assignedToId === user?.id)
+                ? myPendingResponse.data.tasks.filter(t => t.assignedToId === user?.id && t.status === 'PENDING')
                 : [];
             const myCount = myPendingTasks.length;
             setPendingTasksCount(myCount);
             setShowTaskBadge(myCount > 0);
 
-            // Available tasks (marketplace - not assigned)
+            // Available tasks (marketplace - not assigned, PENDING or REJECTED)
             const availableTasks = Array.isArray(myPendingResponse.data.tasks)
-                ? myPendingResponse.data.tasks.filter(t => !t.assignedToId)
+                ? myPendingResponse.data.tasks.filter(t => !t.assignedToId && (t.status === 'PENDING' || t.status === 'REJECTED'))
                 : [];
             const availableCount = availableTasks.length;
             setAvailableTasksCount(availableCount);
@@ -300,10 +302,10 @@ export default function EnhancedDashboardPage() {
     };
 
     // Filter tasks for different views:
-    // - Calendar: Unassigned PENDING tasks (marketplace)
+    // - Calendar: Unassigned PENDING or REJECTED tasks (marketplace)
     // - Overview/Tasks tabs: My PENDING + ACCEPTED tasks (assigned to me)
     // - Completed: My COMPLETED tasks
-    const pendingTasks = allTasks.filter(t => t.status === 'PENDING' && !t.assignedToId);
+    const pendingTasks = allTasks.filter(t => (t.status === 'PENDING' || t.status === 'REJECTED') && !t.assignedToId);
     const myPendingTasks = allTasks
         .filter(t => t.status === 'PENDING' && t.assignedToId === user?.id)
         .sort((a, b) => new Date(a.scheduledDate) - new Date(b.scheduledDate)); // Oldest first
