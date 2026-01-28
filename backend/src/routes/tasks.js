@@ -36,7 +36,7 @@ router.get('/', async (req, res) => {
                 { assignedToId: req.user.id }, // My tasks
                 {
                     AND: [
-                        { status: 'PENDING' },
+                        { status: { in: ['PENDING', 'REJECTED'] } }, // Available tasks (including rejected ones)
                         { assignedToId: null }, // Available tasks
                         { companyId: req.user.companyId } // From my company only
                     ]
@@ -505,10 +505,10 @@ router.post('/:id/accept', async (req, res) => {
             return res.json({ task: fullTask });
         }
 
-        // Can only accept PENDING tasks
-        if (task.status !== 'PENDING') {
-            console.log('[POST /tasks/:id/accept] Task is not PENDING');
-            return res.status(400).json({ error: `Can only accept pending tasks (Current status: ${task.status})` });
+        // Can accept PENDING or REJECTED tasks
+        if (task.status !== 'PENDING' && task.status !== 'REJECTED') {
+            console.log(`[POST /tasks/:id/accept] Task is not PENDING or REJECTED (Status: ${task.status})`);
+            return res.status(400).json({ error: `Can only accept pending or rejected tasks (Current status: ${task.status})` });
         }
 
         // If task is unassigned, anyone can accept
@@ -619,7 +619,7 @@ router.post('/:id/reject', async (req, res) => {
         const updatedTask = await prisma.task.update({
             where: { id: req.params.id },
             data: {
-                status: 'PENDING', // Return to marketplace so other drivers can accept
+                status: 'REJECTED', // Stay in REJECTED state so Admin can see it. Admin must "Republish" to make it PENDING again.
                 assignedToId: null // Unassign from current driver
             },
             include: {
